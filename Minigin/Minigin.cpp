@@ -4,11 +4,14 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <chrono>
 #include "Minigin.h"
 #include "InputManager.h"
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+
+#include "Time.h"
 
 SDL_Window* g_window{};
 
@@ -84,11 +87,18 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& input = InputManager::GetInstance();
 
 	// todo: this update loop could use some work.
+	dae::Time& time{ Time::GetInstance() };
 	bool doContinue = true;
+	time.Start();
 	while (doContinue)
 	{
+		time.Update();
 		doContinue = input.ProcessInput();
+
 		sceneManager.Update();
+		time.HandleFixedUpdate(std::bind(&SceneManager::FixedUpdate, &sceneManager));
+		sceneManager.LateUpdate();
 		renderer.Render();
+		sceneManager.HandleObjectsLifeTime();
 	}
 }

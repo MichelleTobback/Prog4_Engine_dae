@@ -1,21 +1,62 @@
 #pragma once
 #include <memory>
-#include "Transform.h"
+
+#include "ComponentSystem.h"
 
 namespace dae
 {
-	class Texture2D;
+	typedef uint32_t GameObjectID;
 
-	// todo: this should become final.
-	class GameObject 
+	class GameObject final
 	{
 	public:
-		virtual void Update();
-		virtual void Render() const;
+		void Update();
+		void FixedUpdate();
+		void LateUpdate();
+		void Render() const;
 
-		void SetTexture(const std::string& filename);
-		void SetPosition(float x, float y);
+		void BroadcastComponentMessage(const ComponentMessage& msg);
 
+		GameObjectID GetID();
+
+		inline bool IsValid() const { return m_IsValid; }
+
+		template <typename T, typename ... TArgs>
+		T& AddComponent(TArgs&& ... args)
+		{
+			return m_ComponentSystem.AddComponent<T>(std::forward<TArgs>(args)...);
+		}
+
+		template <typename T>
+		bool RemoveComponent()
+		{
+			return m_ComponentSystem.RemoveComponent<T>();
+		}
+
+		template <typename T>
+		const T& GetComponent() const
+		{
+			return m_ComponentSystem.GetComponent<T>();
+		}
+
+		template <typename T>
+		T& GetComponent()
+		{
+			return m_ComponentSystem.GetComponent<T>();
+		}
+
+		template <typename T>
+		bool HasComponent() const
+		{
+			return m_ComponentSystem.HasComponent<T>();
+		}
+
+		inline void Destroy()
+		{
+			m_IsValid = false;
+		}
+
+		GameObject(GameObjectID id);
 		GameObject() = default;
 		virtual ~GameObject();
 		GameObject(const GameObject& other) = delete;
@@ -24,8 +65,9 @@ namespace dae
 		GameObject& operator=(GameObject&& other) = delete;
 
 	private:
-		Transform m_transform{};
-		// todo: mmm, every gameobject has a texture? Is that correct?
-		std::shared_ptr<Texture2D> m_texture{};
+
+		GameObjectID m_Id;
+		ComponentSystem m_ComponentSystem{};
+		bool m_IsValid{ true };
 	};
 }

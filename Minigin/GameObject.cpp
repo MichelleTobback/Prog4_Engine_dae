@@ -3,22 +3,43 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 
+#include "RenderComponent.h"
+
 dae::GameObject::~GameObject() = default;
 
-void dae::GameObject::Update(){}
+dae::GameObject::GameObject(GameObjectID id)
+	: m_Id{id}
+{
+
+}
+
+void dae::GameObject::Update()
+{
+	m_ComponentSystem.Update(this);
+}
+
+void dae::GameObject::FixedUpdate()
+{
+	m_ComponentSystem.FixedUpdate(this);
+}
+
+void dae::GameObject::LateUpdate()
+{
+	m_ComponentSystem.LateUpdate(this);
+}
 
 void dae::GameObject::Render() const
 {
-	const auto& pos = m_transform.GetPosition();
-	Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
+	if (HasComponent<TextureRenderComponent>())
+		GetComponent<TextureRenderComponent>().Render(this);
 }
 
-void dae::GameObject::SetTexture(const std::string& filename)
+void dae::GameObject::BroadcastComponentMessage(const ComponentMessage& msg)
 {
-	m_texture = ResourceManager::GetInstance().LoadTexture(filename);
+	m_ComponentSystem.BroadcastMessage(msg);
 }
 
-void dae::GameObject::SetPosition(float x, float y)
+dae::GameObjectID dae::GameObject::GetID()
 {
-	m_transform.SetPosition(x, y, 0.0f);
+	return m_Id;
 }
