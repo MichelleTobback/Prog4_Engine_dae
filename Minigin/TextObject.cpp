@@ -8,12 +8,12 @@
 
 #include "GameObject.h"
 
-dae::TextComponent::TextComponent(const std::string& text, std::shared_ptr<Font> font)
-	: m_NeedsUpdate(true), m_Text(text), m_Font(std::move(font))
+dae::TextComponent::TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font)
+	: m_NeedsUpdate(true), m_Text(text), m_Font(std::move(font)), Component(std::move(pOwner))
 { 
 }
 
-void dae::TextComponent::Update(GameObject* pGameObject)
+void dae::TextComponent::Update()
 {
 	if (m_NeedsUpdate)
 	{
@@ -29,8 +29,8 @@ void dae::TextComponent::Update(GameObject* pGameObject)
 			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
 		}
 		SDL_FreeSurface(surf);
-		auto& tc{ pGameObject->GetComponent<TextureComponent>() };
-		tc.SetTexture(std::make_shared<Texture2D>(texture));
+		auto tc{ GetOwner()->GetComponent<TextureComponent>()};
+		tc->SetTexture(std::make_shared<Texture2D>(texture));
 		m_NeedsUpdate = false;
 	}
 }

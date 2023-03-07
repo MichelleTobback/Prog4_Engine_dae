@@ -25,14 +25,6 @@ void dae::SceneManager::LateUpdate()
 	}
 }
 
-void dae::SceneManager::Render()
-{
-	for (const auto& scene : m_scenes)
-	{
-		scene->Render();
-	}
-}
-
 void dae::SceneManager::HandleObjectsLifeTime()
 {
 	for (const auto& scene : m_scenes)

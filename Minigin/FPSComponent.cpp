@@ -4,7 +4,21 @@
 #include "TextObject.h"
 #include "GameObject.h"
 
-void dae::FPSComponent::Update(GameObject* pGameObject)
+#include "ResourceManager.h"
+
+dae::FPSComponent::FPSComponent(GameObject* pOwner)
+	: Component(pOwner)
+{
+	if (!pOwner->HasComponent<TextComponent>())
+	{
+		auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
+		m_pTextComponent = pOwner->AddComponent<TextComponent>("", font);
+	}
+	else
+		m_pTextComponent = pOwner->GetComponent<TextComponent>();
+}
+
+void dae::FPSComponent::Update()
 {
 	//FPS LOGIC
 	m_FPSTimer += Time::GetInstance().GetDeltaTime();
@@ -16,11 +30,11 @@ void dae::FPSComponent::Update(GameObject* pGameObject)
 		m_FPSTimer = 0.0f;
 	}
 
-	if (pGameObject->HasComponent<TextComponent>())
+	if (m_pTextComponent)
 	{
 		std::string text{"FPS : "};
 		text.append(std::to_string(m_FPS));
 
-		pGameObject->GetComponent<TextComponent>().SetText(text);
+		m_pTextComponent->SetText(text);
 	}
 }

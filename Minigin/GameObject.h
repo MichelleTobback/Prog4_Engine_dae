@@ -7,9 +7,18 @@ namespace dae
 {
 	typedef uint32_t GameObjectID;
 
+	class TransformComponent;
 	class GameObject final
 	{
 	public:
+		GameObject();
+		virtual ~GameObject() = default;
+
+		GameObject(const GameObject& other) = delete;
+		GameObject(GameObject&& other) = delete;
+		GameObject& operator=(const GameObject& other) = delete;
+		GameObject& operator=(GameObject&& other) = delete;
+
 		void Update();
 		void FixedUpdate();
 		void LateUpdate();
@@ -17,14 +26,14 @@ namespace dae
 
 		void BroadcastComponentMessage(const ComponentMessage& msg);
 
-		GameObjectID GetID();
+		void AttachToGameObject(GameObject* pParent, bool keepWorld = false);
 
 		inline bool IsValid() const { return m_IsValid; }
 
 		template <typename T, typename ... TArgs>
-		T& AddComponent(TArgs&& ... args)
+		T* AddComponent(TArgs&& ... args)
 		{
-			return m_ComponentSystem.AddComponent<T>(std::forward<TArgs>(args)...);
+			return m_ComponentSystem.AddComponent<T>(this, std::forward<TArgs>(args)...);
 		}
 
 		template <typename T>
@@ -34,13 +43,13 @@ namespace dae
 		}
 
 		template <typename T>
-		const T& GetComponent() const
+		const T* GetComponent() const
 		{
 			return m_ComponentSystem.GetComponent<T>();
 		}
 
 		template <typename T>
-		T& GetComponent()
+		T* GetComponent()
 		{
 			return m_ComponentSystem.GetComponent<T>();
 		}
@@ -56,18 +65,20 @@ namespace dae
 			m_IsValid = false;
 		}
 
-		GameObject(GameObjectID id);
-		GameObject() = default;
-		virtual ~GameObject();
-		GameObject(const GameObject& other) = delete;
-		GameObject(GameObject&& other) = delete;
-		GameObject& operator=(const GameObject& other) = delete;
-		GameObject& operator=(GameObject&& other) = delete;
+		inline GameObject* GetParent() const { return m_pParent; }
+		inline const std::vector<GameObject*>& GetChildren() const { return m_pChildren; }
 
 	private:
 
-		GameObjectID m_Id;
+		inline void AddChild(GameObject* pChild) { m_pChildren.push_back(pChild); }
+		void DetachGameObject(GameObject* pChild);
+
 		ComponentSystem m_ComponentSystem{};
 		bool m_IsValid{ true };
+
+		GameObject* m_pParent{nullptr};
+		std::vector<GameObject*> m_pChildren{};
+
+		TransformComponent* m_pTransformComponent{ nullptr };
 	};
 }

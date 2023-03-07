@@ -1,17 +1,7 @@
 #include "Component.h"
 
-void dae::Component::ReceiveMessage(const ComponentMessage&)
+dae::Component::Component(GameObject* pGameObject)
+	: m_pOwner{ pGameObject }
 {
-}
 
-void dae::Component::Update(GameObject*)
-{
-}
-
-void dae::Component::FixedUpdate(GameObject*)
-{
-}
-
-void dae::Component::LateUpdate(GameObject*)
-{
 }

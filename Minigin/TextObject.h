@@ -11,17 +11,17 @@ namespace dae
 	class TextComponent final : public Component
 	{
 	public:
-		virtual void Update(GameObject* pGameObject) override;
+		TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font);
+		virtual ~TextComponent() override = default;
 
-		void SetText(const std::string& text);
-
-		TextComponent(const std::string& text, std::shared_ptr<Font> font);
-		virtual ~TextComponent() = default;
 		TextComponent(const TextComponent& other) = delete;
 		TextComponent(TextComponent&& other) = delete;
 		TextComponent& operator=(const TextComponent& other) = delete;
 		TextComponent& operator=(TextComponent&& other) = delete;
 
+		virtual void Update() override;
+
+		void SetText(const std::string& text);
 	private:
 		bool m_NeedsUpdate;
 		std::string m_Text;

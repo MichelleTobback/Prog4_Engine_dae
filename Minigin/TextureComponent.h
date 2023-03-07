@@ -12,8 +12,13 @@ namespace dae
 	class TextureComponent : public Component
 	{
 	public:
-		TextureComponent() = default;
+		TextureComponent(GameObject* pOwner);
 		virtual ~TextureComponent() override = default;
+
+		TextureComponent(const TextureComponent& other) = delete;
+		TextureComponent(TextureComponent&& other) = delete;
+		TextureComponent& operator=(const TextureComponent& other) = delete;
+		TextureComponent& operator=(TextureComponent&& other) = delete;
 
 		const std::shared_ptr<Texture2D>& GetTexture() const;
 		void SetTexture(const std::string& path);
@@ -25,6 +30,6 @@ namespace dae
 	private:
 		std::shared_ptr<Texture2D> m_pTexture{};
 
-		glm::vec2 m_Size;
+		glm::vec2 m_Size{};
 	};
 }

@@ -88,6 +88,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	// todo: this update loop could use some work.
 	dae::Time& time{ Time::GetInstance() };
+	float lag{};
 	bool doContinue = true;
 	time.Start();
 	while (doContinue)
@@ -96,9 +97,19 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		doContinue = input.ProcessInput();
 
 		sceneManager.Update();
-		time.HandleFixedUpdate(std::bind(&SceneManager::FixedUpdate, &sceneManager));
+
+		lag += time.GetDeltaTime();
+
+		while (lag >= time.GetFixedTimeStep())
+		{
+			sceneManager.FixedUpdate();
+			lag -= time.GetFixedTimeStep();
+		}
+
 		sceneManager.LateUpdate();
 		renderer.Render();
 		sceneManager.HandleObjectsLifeTime();
+
+		time.Wait();
 	}
 }

@@ -3,6 +3,11 @@
 
 #include "Texture2D.h"
 
+dae::TextureComponent::TextureComponent(GameObject* pOwner)
+    : Component(pOwner)
+{
+}
+
 const std::shared_ptr<dae::Texture2D>& dae::TextureComponent::GetTexture() const
 {
     return m_pTexture;

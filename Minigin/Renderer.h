@@ -2,8 +2,11 @@
 #include <SDL.h>
 #include "Singleton.h"
 
+#include <vector>
+
 namespace dae
 {
+	class RenderComponent;
 	class Texture2D;
 	/**
 	 * Simple RAII wrapper for the SDL renderer
@@ -25,6 +28,10 @@ namespace dae
 
 		const SDL_Color& GetBackgroundColor() const { return m_clearColor; }
 		void SetBackgroundColor(const SDL_Color& color) { m_clearColor = color; }
+
+	private:
+		std::vector<RenderComponent*> m_pRenderComponents{};
+		friend class RenderComponent;
 	};
 }
 

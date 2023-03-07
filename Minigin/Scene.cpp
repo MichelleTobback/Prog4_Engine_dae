@@ -14,7 +14,6 @@ Scene::~Scene() = default;
 void Scene::Add(std::shared_ptr<GameObject> object)
 {
 	m_Objects.emplace_back(std::move(object));
-	m_Objects.back()->AddComponent<TransformComponent>();
 }
 
 void Scene::Remove(std::shared_ptr<GameObject> object)
@@ -52,14 +51,6 @@ void dae::Scene::LateUpdate()
 
 		if (!object->IsValid())
 			m_ObjectsPendingDestroy.push(i);
-	}
-}
-
-void Scene::Render() const
-{
-	for (const auto& object : m_Objects)
-	{
-		object->Render();
 	}
 }
 

@@ -175,6 +175,7 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="RotationComponent.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentSystem.h" />
     <ClInclude Include="Font.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="TransformComponent.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="RotationComponent.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentSystem.cpp" />
     <ClCompile Include="Font.cpp" />

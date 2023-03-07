@@ -8,9 +8,27 @@ namespace dae
 	class TransformComponent final : public Component
 	{
 	public:
-		const glm::vec3& GetPosition() const { return m_position; }
-		void SetPosition(float x, float y, float z);
+		TransformComponent(GameObject* pOwner);
+		virtual ~TransformComponent() override = default;
+
+		TransformComponent(const TransformComponent& other) = delete;
+		TransformComponent(TransformComponent&& other) = delete;
+		TransformComponent& operator=(const TransformComponent& other) = delete;
+		TransformComponent& operator=(TransformComponent&& other) = delete;
+
+		const glm::vec3& GetWorldPosition();
+		const glm::vec3& GetLocalPosition() { return m_LocalPosition; }
+
+		void SetLocalPosition(const glm::vec3 position);
+
 	private:
-		glm::vec3 m_position;
+		void RecalculateWorldPosition();
+
+		glm::vec3 m_LocalPosition{};
+		glm::vec3 m_WorldPosition{};
+
+		bool m_IsPositionDirty{ false };
+
+		friend class GameObject;
 	};
 }

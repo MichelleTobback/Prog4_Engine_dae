@@ -5,17 +5,47 @@
 #include "TextureComponent.h"
 #include "TransformComponent.h"
 
-void dae::RenderComponent::Render(const GameObject*) const
+//=================================================
+// RenderComponent
+//=================================================
+
+dae::RenderComponent::RenderComponent(GameObject* pOwner)
+	: Component(pOwner)
+{
+	Renderer::GetInstance().m_pRenderComponents.push_back(this);
+}
+
+dae::RenderComponent::~RenderComponent()
+{
+	auto& renderComponents{ Renderer::GetInstance().m_pRenderComponents };
+	renderComponents.erase(std::remove(renderComponents.begin(), renderComponents.end(), this), renderComponents.end());
+}
+
+void dae::RenderComponent::Render() const
 {
 	
 }
 
-void dae::TextureRenderComponent::Render(const GameObject* pGameObject) const
-{
-	auto& textureComponent{ pGameObject->GetComponent<TextureComponent>() };
-	auto& transformComponent{ pGameObject->GetComponent<TransformComponent>() };
-	const glm::vec3& pos{ transformComponent.GetPosition() };
-	const glm::vec2& size{ textureComponent.GetSize() };
+//=================================================
+// TextureRenderComponent
+//=================================================
 
-	Renderer::GetInstance().RenderTexture(*textureComponent.GetTexture().get(), pos.x, pos.y, size.x, size.y);
+dae::TextureRenderComponent::TextureRenderComponent(GameObject* pOwner)
+	: RenderComponent(pOwner)
+{
+	if (!pOwner->HasComponent<TextureComponent>())
+		m_pTextureComponent = pOwner->AddComponent<TextureComponent>();
+	else
+		m_pTextureComponent = pOwner->GetComponent<TextureComponent>();
+
+	m_pTransformComponent = pOwner->GetComponent<TransformComponent>();
+}
+
+void dae::TextureRenderComponent::Render() const
+{
+	const glm::vec3& pos{ m_pTransformComponent->GetWorldPosition() };
+	const glm::vec2& size{ m_pTextureComponent->GetSize() };
+	const auto& pTexture{ m_pTextureComponent->GetTexture() };
+
+	Renderer::GetInstance().RenderTexture(*pTexture, pos.x, pos.y, size.x, size.y);
 }

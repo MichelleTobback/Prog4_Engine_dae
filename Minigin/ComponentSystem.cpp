@@ -1,26 +1,26 @@
 #include "ComponentSystem.h"
 
-void dae::ComponentSystem::Update(GameObject* pGameObject)
+void dae::ComponentSystem::Update()
 {
 	for (auto& component : m_Components)
 	{
-		component.second->Update(pGameObject);
+		component.second->Update();
 	}
 }
 
-void dae::ComponentSystem::FixedUpdate(GameObject* pGameObject)
+void dae::ComponentSystem::FixedUpdate()
 {
 	for (auto& component : m_Components)
 	{
-		component.second->FixedUpdate(pGameObject);
+		component.second->FixedUpdate();
 	}
 }
 
-void dae::ComponentSystem::LateUpdate(GameObject* pGameObject)
+void dae::ComponentSystem::LateUpdate()
 {
 	for (auto& component : m_Components)
 	{
-		component.second->LateUpdate(pGameObject);
+		component.second->LateUpdate();
 	}
 }
 

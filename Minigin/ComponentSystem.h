@@ -17,9 +17,9 @@ namespace dae
 	class ComponentSystem final
 	{
 	public:
-		void Update(GameObject* pGameObject);
-		void FixedUpdate(GameObject* pGameObject);
-		void LateUpdate(GameObject* pGameObject);
+		void Update();
+		void FixedUpdate();
+		void LateUpdate();
 
 		template <typename T>
 		bool HasComponent() const
@@ -31,7 +31,7 @@ namespace dae
 		}
 
 		template <typename T>
-		const T& GetComponent() const
+		const T* GetComponent() const
 		{
 			assert(HasComponent<T>() && "Invalid Component!");
 
@@ -40,7 +40,7 @@ namespace dae
 		}
 
 		template <typename T>
-		T& GetComponent()
+		T* GetComponent()
 		{
 			assert(HasComponent<T>() && "Invalid Component!");
 
@@ -49,7 +49,7 @@ namespace dae
 		}
 
 		template <typename T, typename ... TArgs>
-		T& AddComponent(TArgs&& ... args)
+		T* AddComponent(TArgs&& ... args)
 		{
 			const char* typeName{ typeid(T).name() };
 			m_Components.insert(std::make_pair(typeName, std::make_shared<T>(std::forward<TArgs>(args)...)));
