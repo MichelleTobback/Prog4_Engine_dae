@@ -22,11 +22,11 @@ namespace dae
 		void Update();
 		void FixedUpdate();
 		void LateUpdate();
-		void Render() const;
 
 		void BroadcastComponentMessage(const ComponentMessage& msg);
 
 		void AttachToGameObject(GameObject* pParent, bool keepWorld = false);
+		void DetachGameObject(GameObject* pChild);
 
 		inline bool IsValid() const { return m_IsValid; }
 
@@ -67,11 +67,12 @@ namespace dae
 
 		inline GameObject* GetParent() const { return m_pParent; }
 		inline const std::vector<GameObject*>& GetChildren() const { return m_pChildren; }
+		TransformComponent& GetTransform() { return *m_pTransformComponent; }
 
 	private:
 
 		inline void AddChild(GameObject* pChild) { m_pChildren.push_back(pChild); }
-		void DetachGameObject(GameObject* pChild);
+		void RemoveChild(GameObject* pChild);
 
 		ComponentSystem m_ComponentSystem{};
 		bool m_IsValid{ true };

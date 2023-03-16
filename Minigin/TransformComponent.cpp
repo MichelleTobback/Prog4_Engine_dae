@@ -17,7 +17,7 @@ const glm::vec3& dae::TransformComponent::GetWorldPosition()
 void dae::TransformComponent::SetLocalPosition(const glm::vec3 position)
 {
 	m_LocalPosition = position;
-	m_IsPositionDirty = true;
+	SetPositionDirty();
 }
 
 void dae::TransformComponent::RecalculateWorldPosition()
@@ -32,5 +32,15 @@ void dae::TransformComponent::RecalculateWorldPosition()
 		m_WorldPosition = pTransformComponent->GetWorldPosition() + m_LocalPosition;
 	}
 	m_IsPositionDirty = false;
+}
 
+void dae::TransformComponent::SetPositionDirty()
+{
+	m_IsPositionDirty = true;
+	auto& children{ GetOwner()->GetChildren() };
+
+	for (auto& child : children)
+	{
+		child->GetComponent<TransformComponent>()->SetPositionDirty();
+	}
 }

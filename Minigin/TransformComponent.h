@@ -23,6 +23,7 @@ namespace dae
 
 	private:
 		void RecalculateWorldPosition();
+		void SetPositionDirty();
 
 		glm::vec3 m_LocalPosition{};
 		glm::vec3 m_WorldPosition{};
