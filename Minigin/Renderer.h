@@ -7,6 +7,7 @@
 namespace dae
 {
 	class RenderComponent;
+	class ImGuiComponent;
 	class Texture2D;
 	/**
 	 * Simple RAII wrapper for the SDL renderer
@@ -30,9 +31,11 @@ namespace dae
 		void SetBackgroundColor(const SDL_Color& color) { m_clearColor = color; }
 
 	private:
-		bool m_ShowDemo{ true };
+		bool m_ShowDemo{ false };
 		std::vector<RenderComponent*> m_pRenderComponents{};
+		std::vector<ImGuiComponent*> m_pImGuiComponents{};
 		friend class RenderComponent;
+		friend class ImGuiComponent;
 	};
 }
 

@@ -4,6 +4,7 @@
 #include "Texture2D.h"
 
 #include "RenderComponent.h"
+#include "ImGuiComponent.h"
 
 #include <imgui.h>
 #include <backends/imgui_impl_sdl2.h>
@@ -58,6 +59,13 @@ void dae::Renderer::Render()
 
 	if (m_ShowDemo)
 		ImGui::ShowDemoWindow(&m_ShowDemo);
+
+	for (auto& pComponent : m_pImGuiComponents)
+	{
+		if (pComponent)
+			pComponent->ImGuiRender();
+	}
+
 	ImGui::Render();
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 	

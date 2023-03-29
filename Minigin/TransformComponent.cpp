@@ -20,6 +20,12 @@ void dae::TransformComponent::SetLocalPosition(const glm::vec3 position)
 	SetPositionDirty();
 }
 
+void dae::TransformComponent::Translate(const glm::vec3 translation)
+{
+	m_LocalPosition += translation;
+	SetPositionDirty();
+}
+
 void dae::TransformComponent::RecalculateWorldPosition()
 {
 	auto pParent{ GetOwner()->GetParent() };

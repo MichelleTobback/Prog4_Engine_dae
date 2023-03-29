@@ -21,6 +21,8 @@ namespace dae
 
 		void SetLocalPosition(const glm::vec3 position);
 
+		void Translate(const glm::vec3 translation);
+
 	private:
 		void RecalculateWorldPosition();
 		void SetPositionDirty();

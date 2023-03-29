@@ -6,7 +6,7 @@
 #include <SDL_ttf.h>
 #include <chrono>
 #include "Minigin.h"
-#include "InputManager.h"
+#include "Input.h"
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
@@ -84,7 +84,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
-	auto& input = InputManager::GetInstance();
+	auto& input = Input::GetInstance();
 
 	// todo: this update loop could use some work.
 	dae::Time& time{ Time::GetInstance() };
@@ -94,7 +94,9 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	while (doContinue)
 	{
 		time.Update();
+
 		doContinue = input.ProcessInput();
+		input.HandleInput();
 
 		sceneManager.Update();
 
