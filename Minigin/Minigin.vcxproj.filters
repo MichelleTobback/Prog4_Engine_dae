@@ -70,14 +70,8 @@
     <Filter Include="Header Files\Platform">
       <UniqueIdentifier>{feaf8b4e-5874-4de7-8e85-ab423cfb746f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Platform\Steam">
-      <UniqueIdentifier>{459b42ec-6281-4f30-a7f9-fbd3670cd644}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Platform">
       <UniqueIdentifier>{b5d07bb5-3d50-499f-8df7-f4039c64b846}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Platform\Steam">
-      <UniqueIdentifier>{1a95fbef-5261-4997-82df-3a56eff97401}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\GameFiles">
       <UniqueIdentifier>{45d0f706-afb0-43b2-8e9b-f3845092607d}</UniqueIdentifier>
@@ -194,18 +188,6 @@
     </ClInclude>
     <ClInclude Include="Subject.h">
       <Filter>Header Files\Core\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="SteamIntegration.h">
-      <Filter>Header Files\Platform\Steam</Filter>
-    </ClInclude>
-    <ClInclude Include="SteamAchievement.h">
-      <Filter>Header Files\Platform\Steam</Filter>
-    </ClInclude>
-    <ClInclude Include="SteamAchievementSystem.h">
-      <Filter>Header Files\Platform\Steam</Filter>
-    </ClInclude>
-    <ClInclude Include="SteamAchievementUtils.h">
-      <Filter>Header Files\Platform\Steam</Filter>
     </ClInclude>
     <ClInclude Include="HealthComponent.h">
       <Filter>Header Files\GameFiles</Filter>
@@ -325,18 +307,6 @@
     </ClCompile>
     <ClCompile Include="Keyboard.cpp">
       <Filter>Source Files\Core\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="SteamIntegration.cpp">
-      <Filter>Source Files\Platform\Steam</Filter>
-    </ClCompile>
-    <ClCompile Include="SteamAchievement.cpp">
-      <Filter>Source Files\Platform\Steam</Filter>
-    </ClCompile>
-    <ClCompile Include="SteamAchievementSystem.cpp">
-      <Filter>Source Files\Platform\Steam</Filter>
-    </ClCompile>
-    <ClCompile Include="SteamAchievementUtils.cpp">
-      <Filter>Source Files\Platform\Steam</Filter>
     </ClCompile>
     <ClCompile Include="HealthComponent.cpp">
       <Filter>Source Files\GameFiles</Filter>
