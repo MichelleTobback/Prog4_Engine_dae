@@ -27,26 +27,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -100,7 +100,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdParty\steamworks\public\steam;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -112,12 +112,12 @@
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\*.dll" "$(OutputPath)" /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\steam_appid.txt" "$(OutputPath)" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -126,7 +126,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\steam_appid.txt" "$
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdParty\steamworks\public\steam;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -138,12 +138,12 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\steam_appid.txt" "$
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(OutputPath)" /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\steam_appid.txt" "$(OutputPath)" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -154,7 +154,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\steam_appid.t
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdParty\steamworks\public\steam;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -168,12 +168,12 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\steam_appid.t
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\*.dll" "$(OutputPath)" /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\steam_appid.txt" "$(OutputPath)" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -184,7 +184,7 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\steam_appid.txt" "$
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rdParty\steamworks\public\steam;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -198,12 +198,12 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\steam_appid.txt" "$
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\SDL2_image\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\$(PlatformTarget)\*.dll" "$(OutputPath)" /R /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\*.dll" "$(OutputPath)" /Y
-xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\steam_appid.txt" "$(OutputPath)" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>xinput.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\3rdParty\imgui-master\backends\imgui_impl_opengl2.h" />
@@ -215,38 +215,30 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\steam_appid.t
     <ClInclude Include="..\3rdParty\imgui-master\imstb_rectpack.h" />
     <ClInclude Include="..\3rdParty\imgui-master\imstb_textedit.h" />
     <ClInclude Include="..\3rdParty\imgui-master\imstb_truetype.h" />
-    <ClInclude Include="Command.h" />
-    <ClInclude Include="Controller.h" />
-    <ClInclude Include="HealthComponent.h" />
-    <ClInclude Include="ImGuiComponent.h" />
-    <ClInclude Include="ImGuiPlotComponent.h" />
-    <ClInclude Include="InputCommandTestComponent.h" />
-    <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="Observer.h" />
-    <ClInclude Include="PlayerController.h" />
-    <ClInclude Include="PlayerHUD.h" />
-    <ClInclude Include="PlayerScore.h" />
-    <ClInclude Include="Prefabs.h" />
-    <ClInclude Include="RotationComponent.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="ComponentSystem.h" />
-    <ClInclude Include="Font.h" />
-    <ClInclude Include="FPSComponent.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="Minigin.h" />
-    <ClInclude Include="RenderComponent.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="Singleton.h" />
-    <ClInclude Include="Subject.h" />
-    <ClInclude Include="TextObject.h" />
-    <ClInclude Include="Texture2D.h" />
-    <ClInclude Include="TextureComponent.h" />
-    <ClInclude Include="Time.h" />
-    <ClInclude Include="TransformComponent.h" />
+    <ClInclude Include="source\Core\Command.h" />
+    <ClInclude Include="source\Input\Controller.h" />
+    <ClInclude Include="source\Platform\ImGui\ImGuiComponent.h" />
+    <ClInclude Include="source\Platform\ImGui\ImGuiPlotComponent.h" />
+    <ClInclude Include="source\Input\Keyboard.h" />
+    <ClInclude Include="source\Core\Observer.h" />
+    <ClInclude Include="source\Component\Component.h" />
+    <ClInclude Include="source\Component\ComponentSystem.h" />
+    <ClInclude Include="source\Renderer\Font.h" />
+    <ClInclude Include="source\Scene\GameObject.h" />
+    <ClInclude Include="source\Input\Input.h" />
+    <ClInclude Include="source\Core\Minigin.h" />
+    <ClInclude Include="source\Component\RenderComponent.h" />
+    <ClInclude Include="source\Renderer\Renderer.h" />
+    <ClInclude Include="source\Managers\ResourceManager.h" />
+    <ClInclude Include="source\Scene\Scene.h" />
+    <ClInclude Include="source\Managers\SceneManager.h" />
+    <ClInclude Include="source\Core\Singleton.h" />
+    <ClInclude Include="source\Core\Subject.h" />
+    <ClInclude Include="source\Component\TextComponent.h" />
+    <ClInclude Include="source\Renderer\Texture2D.h" />
+    <ClInclude Include="source\Component\TextureComponent.h" />
+    <ClInclude Include="source\Core\Time.h" />
+    <ClInclude Include="source\Component\TransformComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rdParty\imgui-master\backends\imgui_impl_opengl2.cpp" />
@@ -257,37 +249,28 @@ xcopy "$(SolutionDir)3rdParty\steamworks\redistributable_bin\win64\steam_appid.t
     <ClCompile Include="..\3rdParty\imgui-master\imgui_plot.cpp" />
     <ClCompile Include="..\3rdParty\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\3rdParty\imgui-master\imgui_widgets.cpp" />
-    <ClCompile Include="Command.cpp" />
-    <ClCompile Include="Controller.cpp" />
-    <ClCompile Include="HealthComponent.cpp" />
-    <ClCompile Include="ImGuiComponent.cpp" />
-    <ClCompile Include="ImGuiPlotComponent.cpp" />
-    <ClCompile Include="InputCommandTestComponent.cpp" />
-    <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="PlayerController.cpp" />
-    <ClCompile Include="PlayerHUD.cpp" />
-    <ClCompile Include="PlayerScore.cpp" />
-    <ClCompile Include="Prefabs.cpp" />
-    <ClCompile Include="Subject.cpp" />
-    <ClCompile Include="RotationComponent.cpp" />
-    <ClCompile Include="Component.cpp" />
-    <ClCompile Include="ComponentSystem.cpp" />
-    <ClCompile Include="Font.cpp" />
-    <ClCompile Include="FPSComponent.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Input.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Minigin.cpp" />
-    <ClCompile Include="RenderComponent.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="TextObject.cpp" />
-    <ClCompile Include="Texture2D.cpp" />
-    <ClCompile Include="TextureComponent.cpp" />
-    <ClCompile Include="Time.cpp" />
-    <ClCompile Include="TransformComponent.cpp" />
+    <ClCompile Include="source\Core\Command.cpp" />
+    <ClCompile Include="source\Input\Controller.cpp" />
+    <ClCompile Include="source\Platform\ImGui\ImGuiComponent.cpp" />
+    <ClCompile Include="source\Platform\ImGui\ImGuiPlotComponent.cpp" />
+    <ClCompile Include="source\Input\Keyboard.cpp" />
+    <ClCompile Include="source\Core\Subject.cpp" />
+    <ClCompile Include="source\Component\Component.cpp" />
+    <ClCompile Include="source\Component\ComponentSystem.cpp" />
+    <ClCompile Include="source\Renderer\Font.cpp" />
+    <ClCompile Include="source\Scene\GameObject.cpp" />
+    <ClCompile Include="source\Input\Input.cpp" />
+    <ClCompile Include="source\Core\Minigin.cpp" />
+    <ClCompile Include="source\Component\RenderComponent.cpp" />
+    <ClCompile Include="source\Renderer\Renderer.cpp" />
+    <ClCompile Include="source\Managers\ResourceManager.cpp" />
+    <ClCompile Include="source\Scene\Scene.cpp" />
+    <ClCompile Include="source\Managers\SceneManager.cpp" />
+    <ClCompile Include="source\Component\TextComponent.cpp" />
+    <ClCompile Include="source\Renderer\Texture2D.cpp" />
+    <ClCompile Include="source\Component\TextureComponent.cpp" />
+    <ClCompile Include="source\Core\Time.cpp" />
+    <ClCompile Include="source\Component\TransformComponent.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

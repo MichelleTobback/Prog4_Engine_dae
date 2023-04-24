@@ -105,104 +105,80 @@
     <ClInclude Include="..\3rdParty\imgui-master\backends\imgui_impl_sdl2.h">
       <Filter>3rdParty\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Component.h">
+    <ClInclude Include="source\Component\Component.h">
       <Filter>Header Files\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentSystem.h">
+    <ClInclude Include="source\Component\ComponentSystem.h">
       <Filter>Header Files\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="FPSComponent.h">
+    <ClInclude Include="source\Component\RenderComponent.h">
       <Filter>Header Files\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="RenderComponent.h">
+    <ClInclude Include="source\Component\TextureComponent.h">
       <Filter>Header Files\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="TextureComponent.h">
+    <ClInclude Include="source\Component\TransformComponent.h">
       <Filter>Header Files\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="TransformComponent.h">
-      <Filter>Header Files\Scene\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
+    <ClInclude Include="source\Scene\Scene.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="SceneManager.h">
+    <ClInclude Include="source\Managers\SceneManager.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h">
+    <ClInclude Include="source\Scene\GameObject.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="TextObject.h">
+    <ClInclude Include="source\Component\TextComponent.h">
       <Filter>Header Files\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.h">
+    <ClInclude Include="source\Renderer\Renderer.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Texture2D.h">
+    <ClInclude Include="source\Renderer\Texture2D.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Font.h">
+    <ClInclude Include="source\Renderer\Font.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\imgui-master\imgui_plot.h">
       <Filter>3rdParty\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="ImGuiComponent.h">
+    <ClInclude Include="source\Platform\ImGui\ImGuiComponent.h">
       <Filter>Header Files\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Time.h">
+    <ClInclude Include="source\Core\Time.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Singleton.h">
+    <ClInclude Include="source\Core\Singleton.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Minigin.h">
+    <ClInclude Include="source\Core\Minigin.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManager.h">
+    <ClInclude Include="source\Managers\ResourceManager.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Command.h">
+    <ClInclude Include="source\Core\Command.h">
       <Filter>Header Files\Core\Command</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
+    <ClInclude Include="source\Input\Input.h">
       <Filter>Header Files\Core\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Controller.h">
+    <ClInclude Include="source\Input\Controller.h">
       <Filter>Header Files\Core\Input</Filter>
     </ClInclude>
-    <ClInclude Include="ImGuiPlotComponent.h">
+    <ClInclude Include="source\Platform\ImGui\ImGuiPlotComponent.h">
       <Filter>Header Files\Scene\Components\TestComponents</Filter>
     </ClInclude>
-    <ClInclude Include="InputCommandTestComponent.h">
-      <Filter>Header Files\Scene\Components\TestComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="RotationComponent.h">
-      <Filter>Header Files\Scene\Components\TestComponents</Filter>
-    </ClInclude>
-    <ClInclude Include="Keyboard.h">
+    <ClInclude Include="source\Input\Keyboard.h">
       <Filter>Header Files\Core\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Observer.h">
+    <ClInclude Include="source\Core\Observer.h">
       <Filter>Header Files\Core\Event</Filter>
     </ClInclude>
-    <ClInclude Include="Subject.h">
+    <ClInclude Include="source\Core\Subject.h">
       <Filter>Header Files\Core\Event</Filter>
-    </ClInclude>
-    <ClInclude Include="HealthComponent.h">
-      <Filter>Header Files\GameFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Prefabs.h">
-      <Filter>Header Files\GameFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerHUD.h">
-      <Filter>Header Files\GameFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerController.h">
-      <Filter>Header Files\GameFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerScore.h">
-      <Filter>Header Files\GameFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -227,101 +203,74 @@
     <ClCompile Include="..\3rdParty\imgui-master\backends\imgui_impl_sdl2.cpp">
       <Filter>3rdParty\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Component.cpp">
+    <ClCompile Include="source\Component\Component.cpp">
       <Filter>Source Files\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentSystem.cpp">
+    <ClCompile Include="source\Component\ComponentSystem.cpp">
       <Filter>Source Files\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="FPSComponent.cpp">
+    <ClCompile Include="source\Component\RenderComponent.cpp">
       <Filter>Source Files\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="RenderComponent.cpp">
+    <ClCompile Include="source\Component\TextureComponent.cpp">
       <Filter>Source Files\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="TextureComponent.cpp">
+    <ClCompile Include="source\Component\TransformComponent.cpp">
       <Filter>Source Files\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="TransformComponent.cpp">
-      <Filter>Source Files\Scene\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
+    <ClCompile Include="source\Scene\Scene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
+    <ClCompile Include="source\Scene\GameObject.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
+    <ClCompile Include="source\Managers\SceneManager.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="TextObject.cpp">
+    <ClCompile Include="source\Component\TextComponent.cpp">
       <Filter>Source Files\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Font.cpp">
+    <ClCompile Include="source\Renderer\Font.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
+    <ClCompile Include="source\Renderer\Texture2D.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
+    <ClCompile Include="source\Renderer\Renderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\imgui-master\imgui_plot.cpp">
       <Filter>3rdParty\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Time.cpp">
+    <ClCompile Include="source\Core\Time.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="source\Core\Minigin.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Minigin.cpp">
+    <ClCompile Include="source\Managers\ResourceManager.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGuiComponent.cpp">
+    <ClCompile Include="source\Platform\ImGui\ImGuiComponent.cpp">
       <Filter>Source Files\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Command.cpp">
-      <Filter>Source Files\Core\Command</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
+    <ClCompile Include="source\Input\Input.cpp">
       <Filter>Source Files\Core\Input</Filter>
     </ClCompile>
-    <ClCompile Include="Controller.cpp">
+    <ClCompile Include="source\Input\Controller.cpp">
       <Filter>Source Files\Core\Input</Filter>
     </ClCompile>
-    <ClCompile Include="ImGuiPlotComponent.cpp">
+    <ClCompile Include="source\Platform\ImGui\ImGuiPlotComponent.cpp">
       <Filter>Source Files\Scene\Components\TestComponents</Filter>
     </ClCompile>
-    <ClCompile Include="InputCommandTestComponent.cpp">
-      <Filter>Source Files\Scene\Components\TestComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="RotationComponent.cpp">
-      <Filter>Source Files\Scene\Components\TestComponents</Filter>
-    </ClCompile>
-    <ClCompile Include="Subject.cpp">
+    <ClCompile Include="source\Core\Subject.cpp">
       <Filter>Source Files\Core\Event</Filter>
     </ClCompile>
-    <ClCompile Include="Keyboard.cpp">
+    <ClCompile Include="source\Input\Keyboard.cpp">
       <Filter>Source Files\Core\Input</Filter>
     </ClCompile>
-    <ClCompile Include="HealthComponent.cpp">
-      <Filter>Source Files\GameFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="Prefabs.cpp">
-      <Filter>Source Files\GameFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerHUD.cpp">
-      <Filter>Source Files\GameFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerController.cpp">
-      <Filter>Source Files\GameFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerScore.cpp">
-      <Filter>Source Files\GameFiles</Filter>
+    <ClCompile Include="source\Core\Command.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
