@@ -11,5 +11,6 @@ dae::ActionCommand::ActionCommand(const std::function<void()>& fnAction)
 
 void dae::ActionCommand::Execute()
 {
-	m_FnAction();
+	if (m_FnAction)
+		m_FnAction();
 }

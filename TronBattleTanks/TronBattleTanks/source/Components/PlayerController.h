@@ -1,8 +1,11 @@
 #pragma once
 #include "Component/Component.h"
 
+#include <glm/glm.hpp>
+
 namespace dae
 {
+	class TransformComponent;
 	class HealthComponent;
 	class PlayerController : public Component
 	{
@@ -17,13 +20,15 @@ namespace dae
 
 		void Attack();
 		void DealDamage(float damage);
-		void SetOpponent(PlayerController* pOpponent);
 		void Reset();
+
+		void Move(const glm::vec2& dir);
 
 	private:
 		int m_ControllerIndex;
+		float m_MovementSpeed{ 2.f };
 
 		HealthComponent* m_pHealth{nullptr};
-		PlayerController* m_pOpponent{ nullptr };
+		TransformComponent* m_pTransform{ nullptr };
 	};
 }

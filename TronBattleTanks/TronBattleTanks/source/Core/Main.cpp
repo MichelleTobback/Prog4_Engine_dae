@@ -9,14 +9,16 @@
 
 #include "Core/Minigin.h"
 #include "Managers/SceneManager.h"
+#include "Prefabs.h"
 
 void load()
 {
-	dae::SceneManager::GetInstance().CreateScene("Demo");
+	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
+	dae::Prefab::CreatePlayer(&scene, 3.f);
 }
 
 int main(int, char* []) {
-	dae::Minigin engine("../Data/");
+	dae::Minigin engine("Content/");
 	engine.Run(load);
 	return 0;
 }

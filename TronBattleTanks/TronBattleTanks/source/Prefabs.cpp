@@ -4,7 +4,6 @@
 //player
 #include "Components/HealthComponent.h"
 #include "Components/PlayerController.h"
-#include  "Components/PlayerScore.h"
 
 //rendering
 #include "Component/TextureComponent.h"
@@ -23,7 +22,8 @@ dae::GameObject* dae::Prefab::CreatePlayer(Scene* pScene, float health, int cont
 
 	go->AddComponent<HealthComponent>(health, health);
 	go->AddComponent<PlayerController>(controllerIndex);
-	go->AddComponent<PlayerScore>();
+	go->AddComponent<TextureComponent>()->SetTexture("Sprites/Dot2.png");
+	go->AddComponent<TextureRenderComponent>();
 
 	return go.get();
 }

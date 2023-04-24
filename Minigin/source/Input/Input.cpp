@@ -28,6 +28,16 @@ void dae::Input::AddActionCommand(const InputActionCommand& actionCommand)
 	m_ActionCommands.push_back(actionCommand);
 }
 
+void dae::Input::AddValueCommand(const InputValueCommand<float>& valueCommand)
+{
+	m_ValueCommands.push_back(valueCommand);
+}
+
+void dae::Input::AddAxisCommand(const InputValueCommand<glm::vec2>& axisCommand)
+{
+	m_AxisCommands.push_back(axisCommand);
+}
+
 void dae::Input::UpdateControllers()
 {
 	for (auto& pController : m_Controllers)
@@ -45,6 +55,28 @@ void dae::Input::HandleCommands()
 		else
 		{
 			HandleKeyboardActionCommand(action);
+		}
+	}
+	for (auto& action : m_ValueCommands)
+	{
+		if (action.IsController)
+		{
+			HandleControllerValueCommand(action);
+		}
+		else
+		{
+			HandleKeyboardValueCommand(action);
+		}
+	}
+	for (auto& action : m_AxisCommands)
+	{
+		if (action.IsController)
+		{
+			HandleControllerAxisCommand(action);
+		}
+		else
+		{
+			HandleKeyboardAxisCommand(action);
 		}
 	}
 }
@@ -108,6 +140,86 @@ void dae::Input::HandleKeyboardActionCommand(InputActionCommand& action)
 	{
 		if (m_pKeyboard->IsKeyPressed(action.Keyboard.Key))
 		{
+			action.Action.Execute();
+		}
+	}
+	break;
+	}
+}
+
+void dae::Input::HandleControllerValueCommand(InputValueCommand<float>&)
+{
+}
+
+void dae::Input::HandleKeyboardValueCommand(InputValueCommand<float>& action)
+{
+	switch (action.Keyboard.State)
+	{
+	case dae::Keyboard::KeyState::Down:
+	{
+		if (m_pKeyboard->IsKeyDown(action.Keyboard.Key))
+		{
+			action.Action.SetValue(action.value);
+			action.Action.Execute();
+		}
+	}
+	break;
+
+	case dae::Keyboard::KeyState::Released:
+	{
+		if (m_pKeyboard->IsKeyUp(action.Keyboard.Key))
+		{
+			action.Action.SetValue(action.value);
+			action.Action.Execute();
+		}
+	}
+	break;
+
+	case dae::Keyboard::KeyState::Pressed:
+	{
+		if (m_pKeyboard->IsKeyPressed(action.Keyboard.Key))
+		{
+			action.Action.SetValue(action.value);
+			action.Action.Execute();
+		}
+	}
+	break;
+	}
+}
+
+void dae::Input::HandleControllerAxisCommand(InputValueCommand<glm::vec2>&)
+{
+}
+
+void dae::Input::HandleKeyboardAxisCommand(InputValueCommand<glm::vec2>& action)
+{
+	switch (action.Keyboard.State)
+	{
+	case dae::Keyboard::KeyState::Down:
+	{
+		if (m_pKeyboard->IsKeyDown(action.Keyboard.Key))
+		{
+			action.Action.SetValue(action.value);
+			action.Action.Execute();
+		}
+	}
+	break;
+
+	case dae::Keyboard::KeyState::Released:
+	{
+		if (m_pKeyboard->IsKeyUp(action.Keyboard.Key))
+		{
+			action.Action.SetValue(action.value);
+			action.Action.Execute();
+		}
+	}
+	break;
+
+	case dae::Keyboard::KeyState::Pressed:
+	{
+		if (m_pKeyboard->IsKeyPressed(action.Keyboard.Key))
+		{
+			action.Action.SetValue(action.value);
 			action.Action.Execute();
 		}
 	}
