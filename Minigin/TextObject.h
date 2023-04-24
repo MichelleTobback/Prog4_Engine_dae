@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "Component.h"
+#include <glm/glm.hpp>
 
 namespace dae
 {
@@ -11,7 +12,7 @@ namespace dae
 	class TextComponent final : public Component
 	{
 	public:
-		TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font);
+		TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 		virtual ~TextComponent() override = default;
 
 		TextComponent(const TextComponent& other) = delete;
@@ -26,5 +27,6 @@ namespace dae
 		bool m_NeedsUpdate;
 		std::string m_Text;
 		std::shared_ptr<Font> m_Font;
+		glm::vec4 m_Color;
 	};
 }

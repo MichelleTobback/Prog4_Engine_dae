@@ -1,29 +1,9 @@
 //#include <SDL.h>
 #include "Input.h"
-#include <backends/imgui_impl_sdl2.h>
 
 bool dae::Input::ProcessInput()
 {
-	SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		if (e.type == SDL_QUIT) {
-			return false;
-		}
-		if (e.type == SDL_KEYDOWN) {
-			
-		}
-		if (e.type == SDL_MOUSEBUTTONDOWN) {
-			
-		}
-		// etc...
-		// 
-		//ImGui Input
-		ImGui_ImplSDL2_ProcessEvent(&e);
-	}
-
-
-
-	return true;
+	return m_pKeyboard->ProcessInput();
 }
 
 dae::Input::Input()
@@ -33,36 +13,19 @@ dae::Input::Input()
 	{
 		m_Controllers.push_back(std::make_unique<dae::Controller>(i));
 	}
+	m_pKeyboard = std::make_unique<dae::Keyboard>();
 }
 
 void dae::Input::HandleInput()
 {
+	UpdateKeyboard();
 	UpdateControllers();
-	HandleControllersCommands();
-	HandleKeyboardCommands();
+	HandleCommands();
 }
 
-void dae::Input::AddControllerActionCommand(const ControllerActionCommand& actionCommand)
+void dae::Input::AddActionCommand(const InputActionCommand& actionCommand)
 {
-	m_ControllerCommands.push_back(actionCommand);
-}
-
-void dae::Input::AddKeyboardActionCommand(const KeyboardActionCommand& actionCommand)
-{
-	m_KeyboardCommands.push_back(actionCommand);
-}
-
-void dae::Input::HandleKeyboardCommands()
-{
-	auto keys{ SDL_GetKeyboardState(NULL) };
-	for (auto& keyboardCommand : m_KeyboardCommands)
-	{
-		int buttonCode{ static_cast<int>(keyboardCommand.Button) };
-		if (keys[buttonCode])
-		{
-			keyboardCommand.action.Execute();
-		}
-	}
+	m_ActionCommands.push_back(actionCommand);
 }
 
 void dae::Input::UpdateControllers()
@@ -71,38 +34,88 @@ void dae::Input::UpdateControllers()
 		pController->Update();
 }
 
-void dae::Input::HandleControllersCommands()
+void dae::Input::HandleCommands()
 {
-	for (auto& controllerCommand : m_ControllerCommands)
+	for (auto& action : m_ActionCommands)
 	{
-		switch (controllerCommand.ButtonState)
+		if (action.IsController)
 		{
-		case dae::Controller::ControllerButtonState::Down:
-		{
-			if (m_Controllers[controllerCommand.ControllerID]->IsButtonDown(controllerCommand.Button))
-			{
-				controllerCommand.action.Execute();
-			}
+			HandleControllerActionCommand(action);
 		}
-		break;
-
-		case dae::Controller::ControllerButtonState::Released:
+		else
 		{
-			if (m_Controllers[controllerCommand.ControllerID]->IsButtonUp(controllerCommand.Button))
-			{
-				controllerCommand.action.Execute();
-			}
-		}
-		break;
-
-		case dae::Controller::ControllerButtonState::Pressed:
-		{
-			if (m_Controllers[controllerCommand.ControllerID]->IsButtonPressed(controllerCommand.Button))
-			{
-				controllerCommand.action.Execute();
-			}
-		}
-		break;
+			HandleKeyboardActionCommand(action);
 		}
 	}
+}
+
+void dae::Input::HandleControllerActionCommand(InputActionCommand& action)
+{
+	switch (action.Controller.ButtonState)
+	{
+	case dae::Controller::ControllerButtonState::Down:
+	{
+		if (m_Controllers[action.Controller.ControllerID]->IsButtonDown(action.Controller.Button))
+		{
+			action.Action.Execute();
+		}
+	}
+	break;
+
+	case dae::Controller::ControllerButtonState::Released:
+	{
+		if (m_Controllers[action.Controller.ControllerID]->IsButtonUp(action.Controller.Button))
+		{
+			action.Action.Execute();
+		}
+	}
+	break;
+
+	case dae::Controller::ControllerButtonState::Pressed:
+	{
+		if (m_Controllers[action.Controller.ControllerID]->IsButtonPressed(action.Controller.Button))
+		{
+			action.Action.Execute();
+		}
+	}
+	break;
+	}
+}
+
+void dae::Input::HandleKeyboardActionCommand(InputActionCommand& action)
+{
+	switch (action.Keyboard.State)
+	{
+	case dae::Keyboard::KeyState::Down:
+	{
+		if (m_pKeyboard->IsKeyDown(action.Keyboard.Key))
+		{
+			action.Action.Execute();
+		}
+	}
+	break;
+
+	case dae::Keyboard::KeyState::Released:
+	{
+		if (m_pKeyboard->IsKeyUp(action.Keyboard.Key))
+		{
+			action.Action.Execute();
+		}
+	}
+	break;
+
+	case dae::Keyboard::KeyState::Pressed:
+	{
+		if (m_pKeyboard->IsKeyPressed(action.Keyboard.Key))
+		{
+			action.Action.Execute();
+		}
+	}
+	break;
+	}
+}
+
+void dae::Input::UpdateKeyboard()
+{
+	m_pKeyboard->Update();
 }

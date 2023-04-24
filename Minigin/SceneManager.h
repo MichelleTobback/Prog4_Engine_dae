@@ -16,6 +16,9 @@ namespace dae
 		void FixedUpdate();
 		void LateUpdate();
 		void HandleObjectsLifeTime();
+
+		Scene* GetCurrent() { return m_scenes[0].get(); }
+
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;

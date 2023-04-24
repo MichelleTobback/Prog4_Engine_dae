@@ -3,9 +3,9 @@
 
 #include "Controller.h"
 #include "Command.h"
+#include "Keyboard.h"
 
 #include <map>
-#include <SDL.h>
 
 namespace dae
 {
@@ -17,13 +17,22 @@ namespace dae
 			unsigned int ControllerID{};
 			Controller::ControllerButton Button{};
 			Controller::ControllerButtonState ButtonState{};
-			ActionCommand action;
 		};
 
 		struct KeyboardActionCommand
 		{
-			SDL_Scancode Button{};
-			ActionCommand action;
+			Keyboard::KeyCode Key{};
+			Keyboard::KeyState State{};
+		};
+
+		struct InputActionCommand
+		{
+			InputActionCommand(const ActionCommand& actionCommand)
+				: Action{actionCommand}{}
+			ControllerActionCommand Controller{};
+			KeyboardActionCommand Keyboard{};
+			ActionCommand Action;
+			bool IsController{ false };
 		};
 
 		Input();
@@ -31,16 +40,18 @@ namespace dae
 		bool ProcessInput();
 
 		void HandleInput();
-		void AddControllerActionCommand(const ControllerActionCommand& actionCommand);
-		void AddKeyboardActionCommand(const KeyboardActionCommand& actionCommand);
+		void AddActionCommand(const InputActionCommand& actionCommand);
 
 	private:
-		std::vector<KeyboardActionCommand> m_KeyboardCommands{};
-		std::vector<ControllerActionCommand> m_ControllerCommands{};
+		std::vector<InputActionCommand> m_ActionCommands{};
 		std::vector<std::unique_ptr<Controller>> m_Controllers;
+		std::unique_ptr<Keyboard> m_pKeyboard{ nullptr };
 
-		void HandleKeyboardCommands();
-		void HandleControllersCommands();
+		void HandleCommands();
+		void HandleControllerActionCommand(InputActionCommand& action);
+		void HandleKeyboardActionCommand(InputActionCommand& action);
+
 		void UpdateControllers();
+		void UpdateKeyboard();
 	};
 }

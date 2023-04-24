@@ -8,8 +8,8 @@
 
 #include "GameObject.h"
 
-dae::TextComponent::TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font)
-	: m_NeedsUpdate(true), m_Text(text), m_Font(std::move(font)), Component(std::move(pOwner))
+dae::TextComponent::TextComponent(GameObject* pOwner, const std::string& text, std::shared_ptr<Font> font, const glm::vec4& color)
+	: Component(std::move(pOwner)), m_NeedsUpdate(true), m_Text(text), m_Font(std::move(font)), m_Color{color}
 { 
 }
 
@@ -17,7 +17,12 @@ void dae::TextComponent::Update()
 {
 	if (m_NeedsUpdate)
 	{
-		const SDL_Color color = { 255,255,255 }; // only white text is supported now
+		const SDL_Color color = 
+		{ 
+			static_cast<Uint8>(m_Color.r * 255),
+			static_cast<Uint8>(m_Color.g * 255),
+			static_cast<Uint8>(m_Color.b * 255) 
+		};
 		const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), color);
 		if (surf == nullptr) 
 		{

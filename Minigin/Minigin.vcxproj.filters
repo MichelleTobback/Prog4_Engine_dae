@@ -61,6 +61,30 @@
     <Filter Include="Header Files\Scene\Components\TestComponents">
       <UniqueIdentifier>{e7052c6d-d322-45ec-9bb4-3d177e79d8e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\Event">
+      <UniqueIdentifier>{cb9c018f-b793-4779-87d4-7c8193b2dc90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Event">
+      <UniqueIdentifier>{998ab5f2-3594-48e1-9e69-bd508ca60f3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Platform">
+      <UniqueIdentifier>{feaf8b4e-5874-4de7-8e85-ab423cfb746f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Platform\Steam">
+      <UniqueIdentifier>{459b42ec-6281-4f30-a7f9-fbd3670cd644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform">
+      <UniqueIdentifier>{b5d07bb5-3d50-499f-8df7-f4039c64b846}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform\Steam">
+      <UniqueIdentifier>{1a95fbef-5261-4997-82df-3a56eff97401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameFiles">
+      <UniqueIdentifier>{45d0f706-afb0-43b2-8e9b-f3845092607d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameFiles">
+      <UniqueIdentifier>{f52420ee-0d56-4d48-aab0-490d59e30f25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\3rdParty\imgui-master\imconfig.h">
@@ -165,6 +189,39 @@
     <ClInclude Include="Keyboard.h">
       <Filter>Header Files\Core\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Observer.h">
+      <Filter>Header Files\Core\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Subject.h">
+      <Filter>Header Files\Core\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamIntegration.h">
+      <Filter>Header Files\Platform\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamAchievement.h">
+      <Filter>Header Files\Platform\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamAchievementSystem.h">
+      <Filter>Header Files\Platform\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamAchievementUtils.h">
+      <Filter>Header Files\Platform\Steam</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthComponent.h">
+      <Filter>Header Files\GameFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs.h">
+      <Filter>Header Files\GameFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHUD.h">
+      <Filter>Header Files\GameFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.h">
+      <Filter>Header Files\GameFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerScore.h">
+      <Filter>Header Files\GameFiles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rdParty\imgui-master\imgui.cpp">
@@ -263,8 +320,38 @@
     <ClCompile Include="RotationComponent.cpp">
       <Filter>Source Files\Scene\Components\TestComponents</Filter>
     </ClCompile>
+    <ClCompile Include="Subject.cpp">
+      <Filter>Source Files\Core\Event</Filter>
+    </ClCompile>
     <ClCompile Include="Keyboard.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamIntegration.cpp">
+      <Filter>Source Files\Platform\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamAchievement.cpp">
+      <Filter>Source Files\Platform\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamAchievementSystem.cpp">
+      <Filter>Source Files\Platform\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="SteamAchievementUtils.cpp">
+      <Filter>Source Files\Platform\Steam</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Prefabs.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerHUD.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>Source Files\GameFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerScore.cpp">
+      <Filter>Source Files\GameFiles</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

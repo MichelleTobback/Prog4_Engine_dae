@@ -10,6 +10,7 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "SteamIntegration.h"
 
 #include "Time.h"
 
@@ -85,6 +86,9 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = Input::GetInstance();
+	auto& steam = SteamIntegration::GetInstance();
+
+	steam.Init();
 
 	// todo: this update loop could use some work.
 	dae::Time& time{ Time::GetInstance() };
@@ -94,10 +98,9 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	while (doContinue)
 	{
 		time.Update();
-
 		doContinue = input.ProcessInput();
 		input.HandleInput();
-
+		steam.Update();
 		sceneManager.Update();
 
 		lag += time.GetDeltaTime();
@@ -114,4 +117,5 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 		time.Wait();
 	}
+	steam.Shutdown();
 }

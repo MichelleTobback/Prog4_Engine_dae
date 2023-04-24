@@ -8,19 +8,24 @@ namespace dae
 	public:
 		virtual ~Command() = default;
 		virtual void Execute() = 0;
-		virtual void Undo() = 0;
 	};
 
 	class ActionCommand final : public Command
 	{
 	public:
-		explicit ActionCommand(const std::function<void()>& fnAction);
 		virtual ~ActionCommand() override = default;
 
 		virtual void Execute() override;
-		virtual void Undo() override {} //nothing to undo
+
+		template<typename T, typename Func> 
+		inline static ActionCommand Create(T* t, Func&& fn) 
+		{
+			return ActionCommand{ std::bind(fn, t) };
+		}
 
 	private:
 		std::function<void()> m_FnAction;
+
+		explicit ActionCommand(const std::function<void()>& fnAction);
 	};
 }
