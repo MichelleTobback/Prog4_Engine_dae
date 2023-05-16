@@ -26,9 +26,10 @@ namespace dae
 
 		const glm::vec2& GetSize() const;
 		void SetSize(const glm::vec2 size);
+		bool HasTexture() const { return m_pTexture != nullptr; }
 
 	private:
-		std::shared_ptr<Texture2D> m_pTexture{};
+		std::shared_ptr<Texture2D> m_pTexture{nullptr};
 
 		glm::vec2 m_Size{};
 	};

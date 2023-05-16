@@ -1,4 +1,6 @@
 #pragma once
+#include "Core/UUID.h"
+
 #include <memory>
 #include <string>
 
@@ -24,10 +26,13 @@ namespace dae
 		Component& operator=(const Component& other) = delete;
 		Component& operator=(Component&& other) = delete;
 
+		virtual void Awake(){}
 		virtual void ReceiveMessage(const ComponentMessage&){}
 		virtual void Update(){}
 		virtual void FixedUpdate(){}
 		virtual void LateUpdate() {}
+
+		UUID GetUUID() const;
 
 		inline GameObject* GetOwner() const { return m_pOwner; }
 
@@ -38,6 +43,8 @@ namespace dae
 			T* ptr{ dynamic_cast<T*>(this) };
 			return ptr;
 		}
+
+
 
 	private:
 		GameObject* m_pOwner;

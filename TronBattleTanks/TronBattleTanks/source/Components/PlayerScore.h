@@ -1,6 +1,6 @@
 #pragma once
 #include "Component/Component.h"
-#include "Core/Observer.h"
+#include "Core/Subject.h"
 #include <memory>
 
 namespace dae
@@ -12,7 +12,7 @@ namespace dae
 		IncreaseScore(PlayerScore* pScore);
 		virtual ~IncreaseScore() = default;
 
-		virtual void Invoke(const Event& event) override;
+		virtual void Invoke(const Event& event, Subject* pSubject) override;
 
 	private:
 		PlayerScore* m_pScore;

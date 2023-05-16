@@ -3,7 +3,7 @@
 
 dae::Texture2D::~Texture2D()
 {
-	SDL_DestroyTexture(m_texture);
+	SDL_DestroyTexture(m_Texture);
 }
 
 glm::ivec2 dae::Texture2D::GetSize() const
@@ -15,10 +15,11 @@ glm::ivec2 dae::Texture2D::GetSize() const
 
 SDL_Texture* dae::Texture2D::GetSDLTexture() const
 {
-	return m_texture;
+	return m_Texture;
 }
 
-dae::Texture2D::Texture2D(SDL_Texture* texture)
+dae::Texture2D::Texture2D(SDL_Texture* texture, const std::string& path)
+	: m_FilePath{path}
 {
-	m_texture = texture;
+	m_Texture = texture;
 }

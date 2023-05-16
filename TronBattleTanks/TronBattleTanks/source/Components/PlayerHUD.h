@@ -12,7 +12,7 @@ namespace dae
 		PlayerHealthTextBinding(TextComponent* pText, const std::string& healthPrefix = "");
 		virtual ~PlayerHealthTextBinding() = default;
 
-		virtual void Invoke(const Event& event) override;
+		virtual void Invoke(const Event& event, Subject* pSubject) override;
 
 	private:
 		TextComponent* m_pText;
@@ -24,7 +24,7 @@ namespace dae
 		PlayerScoreTextBinding(TextComponent* pText, const std::string& healthPrefix = "");
 		virtual ~PlayerScoreTextBinding() = default;
 
-		virtual void Invoke(const Event& event) override;
+		virtual void Invoke(const Event& event, Subject* pSubject) override;
 
 	private:
 		TextComponent* m_pText;

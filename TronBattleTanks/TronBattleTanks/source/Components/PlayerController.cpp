@@ -3,24 +3,43 @@
 #include "Input/Input.h"
 #include "Scene/GameObject.h"
 #include "PlayerScore.h"
+#include "Components/MovementComponent.h"
 #include "Core/Time.h"
+#include <memory>
+#include "Scene/Scene.h"
+//rendering
+#include "Component/TextureComponent.h"
+#include "Component/RenderComponent.h"
+#include "TankCanon.h"
 
 dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 	: Component{pOwner}
 	, m_ControllerIndex{controllerIndex}
 {
-	m_pTransform = &GetOwner()->GetTransform();
+	auto pScene{ GetOwner()->GetScene() };
+	m_pMovement = GetOwner()->AddComponent<MovementComponent>();
+
+	//Body
+	auto pTankBody{ pScene->Instantiate(GetOwner())};
+	//sprite
+	pTankBody->AddComponent<TextureComponent>()->SetTexture("Sprites/TankBody.png");
+	pTankBody->AddComponent<TextureRenderComponent>();
+
+	//Canon
+	m_pTankCanon = pScene->Instantiate(GetOwner());
+	auto pCanon{ m_pTankCanon->AddComponent<TankCanon>() };
+
 	//attack
-	//{
-	//	Input::InputActionCommand actionCommand{ ActionCommand::Create(this, &PlayerController::Attack) };
-	//	actionCommand.IsController = (controllerIndex >= 0);
-	//	actionCommand.Keyboard.Key = Keyboard::KeyCode::Space;
-	//	actionCommand.Keyboard.State = Keyboard::KeyState::Pressed;
-	//	actionCommand.Controller.ButtonState = Controller::ControllerButtonState::Down;
-	//	actionCommand.Controller.Button = Controller::ControllerButton::ButtonA;
-	//	actionCommand.Controller.ControllerID = controllerIndex;
-	//	Input::GetInstance().AddActionCommand(actionCommand);
-	//}
+	{
+		Input::InputActionCommand actionCommand{ ActionCommand::Create(pCanon, &TankCanon::Shoot) };
+		actionCommand.IsController = (controllerIndex >= 0);
+		actionCommand.Keyboard.Key = Keyboard::KeyCode::Space;
+		actionCommand.Keyboard.State = Keyboard::KeyState::Pressed;
+		actionCommand.Controller.ButtonState = Controller::ControllerButtonState::Down;
+		actionCommand.Controller.Button = Controller::ControllerButton::ButtonA;
+		actionCommand.Controller.ControllerID = controllerIndex;
+		Input::GetInstance().AddActionCommand(actionCommand);
+	}
 
 	//Movement
 	{
@@ -60,6 +79,26 @@ dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 		Input::GetInstance().AddAxisCommand(actionCommand);
 	}
 
+	//rotation
+	{
+		float dir{ 1.f };
+		Input::InputValueCommand<float> actionCommand{ ValueCommand<float>::Create(&PlayerController::Rotate, this) };
+		actionCommand.value = dir;
+		actionCommand.IsController = false;
+		actionCommand.Keyboard.Key = Keyboard::KeyCode::Right;
+		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
+		Input::GetInstance().AddValueCommand(actionCommand);
+	}
+	{
+		float dir{ -1.f };
+		Input::InputValueCommand actionCommand{ ValueCommand<float>::Create(&PlayerController::Rotate, this) };
+		actionCommand.value = dir;
+		actionCommand.IsController = false;
+		actionCommand.Keyboard.Key = Keyboard::KeyCode::Left;
+		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
+		Input::GetInstance().AddValueCommand(actionCommand);
+	}
+
 	//Reset
 	{
 		Input::InputActionCommand actionCommand{ ActionCommand::Create(this, &PlayerController::Reset) };
@@ -70,6 +109,11 @@ dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 	}
 
 	m_pHealth = GetOwner()->GetComponent<HealthComponent>();
+}
+
+void dae::PlayerController::Update()
+{
+	
 }
 
 void dae::PlayerController::Attack()
@@ -89,6 +133,28 @@ void dae::PlayerController::Reset()
 
 void dae::PlayerController::Move(const glm::vec2& dir)
 {
-	float speed{ m_MovementSpeed * Time::GetInstance().GetDeltaTime() };
-	m_pTransform->Translate({ dir.x * speed, dir.y * speed, 0.f });
+	//float epsilon{ 0.01f };
+	//if (std::abs(dir.x) > epsilon)
+	//{
+	//	if (std::abs(m_pMovement->GetVelocity().y) < epsilon && Math::AreSignsEqual(dir.x, m_pMovement->GetVelocity().x))
+	//	{
+	//		m_pMovement->Move({ dir.x, 0.f });
+	//	}
+	//}
+	//else if (std::abs(dir.y) > epsilon)
+	//{
+	//	if (std::abs(m_pMovement->GetVelocity().x) < epsilon && Math::AreSignsEqual(dir.y, m_pMovement->GetVelocity().y))
+	//	{
+	//		m_pMovement->Move({ 0.f, dir.y });
+	//	}
+	//}
+
+	m_pMovement->Move({ dir.x, dir.y });
+}
+
+void dae::PlayerController::Rotate(float dir)
+{
+	float dt{ Time::GetInstance().GetDeltaTime() };
+	float speed{ m_RotationSpeed * dt * dir };
+	m_pTankCanon->GetTransform().Rotate(speed);
 }

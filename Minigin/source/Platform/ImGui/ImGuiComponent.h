@@ -1,7 +1,7 @@
 #pragma once
 #include "Component/Component.h"
 
-#include <imgui.h>
+#include <../imgui-master/imgui.h>
 
 namespace dae
 {

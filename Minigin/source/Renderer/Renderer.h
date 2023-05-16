@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include "Core/Singleton.h"
 
+#include <glm/glm.hpp>
 #include <vector>
 
 namespace dae
@@ -24,6 +25,9 @@ namespace dae
 
 		void RenderTexture(const Texture2D& texture, float x, float y) const;
 		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
+		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height, float rotation) const;
+		void RenderTexture(const Texture2D& texture, float x, float y, float srcX, float srcY, float srcWidth, float srcHeight, float rotation) const;
+		void RenderQuad(float x, float y, float width, float height, const glm::vec4& color);
 
 		SDL_Renderer* GetSDLRenderer() const;
 

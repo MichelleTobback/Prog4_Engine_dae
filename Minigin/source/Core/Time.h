@@ -15,7 +15,7 @@ namespace dae
 		void Wait();
 		TimePoint Now();
 
-		inline float GetDeltaTime() const { return m_DeltaTime; }
+		inline float GetDeltaTime() const { return m_DeltaTime / 1000.f; }
 		inline float GetDuration() const { return std::chrono::duration<float>(m_CurrentTime - m_StartTime).count(); }
 		inline const TimePoint& GetTime() const { return m_CurrentTime; }
 		inline float GetFixedTimeStep() const { return m_FixedTimeStep; }

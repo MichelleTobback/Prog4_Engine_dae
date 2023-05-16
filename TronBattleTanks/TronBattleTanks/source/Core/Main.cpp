@@ -10,11 +10,19 @@
 #include "Core/Minigin.h"
 #include "Managers/SceneManager.h"
 #include "Prefabs.h"
+#include "Editor/Editor.h"
 
 void load()
 {
-	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
-	dae::Prefab::CreatePlayer(&scene, 3.f);
+	//auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
+	dae::SceneManager::GetInstance().LoadScene("Scenes/test.scene");
+	
+	//dae::Prefab::CreateTestLevel(&scene);
+
+	//dae::Prefab::CreatePlayer(&scene, 3.f);
+	
+	dae::Editor editor{};
+	editor.Init();
 }
 
 int main(int, char* []) {

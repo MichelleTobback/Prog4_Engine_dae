@@ -1,5 +1,4 @@
 #include "PlayerScore.h"
-#include "Core/Subject.h"
 
 dae::PlayerScore::PlayerScore(GameObject* pOwner)
 	: Component{pOwner}
@@ -31,7 +30,7 @@ dae::IncreaseScore::IncreaseScore(PlayerScore* pScore)
 	
 }
 
-void dae::IncreaseScore::Invoke(const Event&)
+void dae::IncreaseScore::Invoke(const Event&, Subject*)
 {
 	m_pScore->AddScore();
 }

@@ -1,10 +1,11 @@
 #pragma once
 #include "Component/Component.h"
 
-#include <glm/glm.hpp>
+#include "Core/Math.h"
 
 namespace dae
 {
+	class MovementComponent;
 	class TransformComponent;
 	class HealthComponent;
 	class PlayerController : public Component
@@ -18,17 +19,22 @@ namespace dae
 		PlayerController& operator=(const PlayerController& other) = delete;
 		PlayerController& operator=(PlayerController&& other) = delete;
 
+		virtual void Update() override;
+
 		void Attack();
 		void DealDamage(float damage);
 		void Reset();
 
 		void Move(const glm::vec2& dir);
+		void Rotate(float dir);
 
 	private:
 		int m_ControllerIndex;
-		float m_MovementSpeed{ 2.f };
+		float m_RotationSpeed{ 45.f };
 
 		HealthComponent* m_pHealth{nullptr};
-		TransformComponent* m_pTransform{ nullptr };
+		MovementComponent* m_pMovement{ nullptr };
+
+		GameObject* m_pTankCanon{};
 	};
 }

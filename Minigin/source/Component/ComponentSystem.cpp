@@ -2,6 +2,12 @@
 
 void dae::ComponentSystem::Update()
 {
+	for (int i{}; i < m_pComponentsToAwake.size(); ++i)
+	{
+		m_pComponentsToAwake.front()->Awake();
+		m_pComponentsToAwake.pop();
+	}
+
 	for (auto& component : m_Components)
 	{
 		component.second->Update();

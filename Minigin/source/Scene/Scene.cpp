@@ -9,16 +9,50 @@ unsigned int Scene::m_IdCounter = 0;
 
 Scene::Scene(const std::string& name) : m_Name(name) {}
 
+GameObject* dae::Scene::GetGameObject(UUID uuid)
+{
+	if (uuid.IsValid() && m_Objects.find(uuid) != m_Objects.end())
+	{
+		return m_Objects.at(uuid).get();
+	}
+	return nullptr;
+}
+
 Scene::~Scene() = default;
 
-void Scene::Add(std::shared_ptr<GameObject> object)
+GameObject* Scene::Add(std::shared_ptr<GameObject> object)
 {
-	m_Objects.emplace_back(std::move(object));
+	//m_Objects.emplace_back(std::move(object));
+	//return m_Objects.back().get();
+
+	UUID uuid{ object->GetUUID() };
+	m_Objects.emplace(uuid, std::move(object));
+	return m_Objects[uuid].get();
 }
+
+GameObject* dae::Scene::Instantiate(GameObject* pParent, const glm::vec3& pos)
+{
+	auto pGameObject{ Add(std::make_shared<GameObject>(this)) };
+	if (pParent)
+		pGameObject->AttachToGameObject(pParent);
+	pGameObject->GetTransform().SetLocalPosition(pos);
+	return pGameObject;
+}
+
+GameObject* dae::Scene::Instantiate(UUID uuid, GameObject* pParent, const glm::vec3& pos)
+{
+	auto pGameObject{ Add(std::make_shared<GameObject>(this, uuid)) };
+	if (pParent)
+		pGameObject->AttachToGameObject(pParent);
+	pGameObject->GetTransform().SetLocalPosition(pos);
+	return pGameObject;
+}
+
 
 void Scene::Remove(std::shared_ptr<GameObject> object)
 {
-	m_Objects.erase(std::remove(m_Objects.begin(), m_Objects.end(), object), m_Objects.end());
+	//m_Objects.erase(std::remove(m_Objects.begin(), m_Objects.end(), object), m_Objects.end());
+	m_Objects.erase(object->GetUUID());
 }
 
 void Scene::RemoveAll()
@@ -28,29 +62,28 @@ void Scene::RemoveAll()
 
 void Scene::Update()
 {
-	for(auto& object : m_Objects)
+	for(auto& [uuid, pGameObject] : m_Objects)
 	{
-		object->Update();
+		pGameObject->Update();
 	}
 }
 
 void dae::Scene::FixedUpdate()
 {
-	for (auto& object : m_Objects)
+	for (auto& [uuid, pGameObject] : m_Objects)
 	{
-		object->FixedUpdate();
+		pGameObject->FixedUpdate();
 	}
 }
 
 void dae::Scene::LateUpdate()
 {
-	for (size_t i{}; i < m_Objects.size(); i++)
+	for (auto& [uuid, pGameObject] : m_Objects)
 	{
-		auto& object{m_Objects[i]};
-		object->LateUpdate();
+		pGameObject->LateUpdate();
 
-		if (!object->IsValid())
-			m_ObjectsPendingDestroy.push(i);
+		if (!pGameObject->IsValid())
+			m_ObjectsPendingDestroy.push(uuid);
 	}
 }
 

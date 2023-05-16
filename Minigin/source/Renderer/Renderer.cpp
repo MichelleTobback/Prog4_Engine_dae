@@ -86,6 +86,10 @@ void dae::Renderer::Destroy()
 	}
 }
 
+//====================================================================================
+// TextureRender
+//====================================================================================
+
 void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
 {
 	SDL_Rect dst{};
@@ -103,6 +107,64 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 	dst.w = static_cast<int>(width);
 	dst.h = static_cast<int>(height);
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+}
+
+void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, float width, float height, float rotation) const
+{
+	SDL_Rect dst{};
+	dst.x = static_cast<int>(x);
+	dst.y = static_cast<int>(y);
+	dst.w = static_cast<int>(width);
+	dst.h = static_cast<int>(height);
+	SDL_Point offset{static_cast<int>(width * 0.5f), static_cast<int>(height * 0.5f)};
+	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, rotation, &offset, SDL_FLIP_NONE);
+}
+
+void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, float srcX, float srcY, float srcWidth, float srcHeight, float rotation) const
+{
+	SDL_Rect dst{};
+	dst.x = static_cast<int>(x);
+	dst.y = static_cast<int>(y);
+	dst.w = static_cast<int>(srcWidth);
+	dst.h = static_cast<int>(srcHeight);
+
+	SDL_Rect src{};
+	src.x = static_cast<int>(srcX);
+	src.y = static_cast<int>(srcY);
+	src.w = static_cast<int>(srcWidth);
+	src.h = static_cast<int>(srcHeight);
+
+	SDL_Point offset{ src.x + static_cast<int>(srcWidth * 0.5f), src.y + static_cast<int>(srcHeight * 0.5f) };
+
+	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst, rotation, &offset, SDL_FLIP_NONE);
+}
+
+//====================================================================================
+// QuadRender
+//====================================================================================
+
+void dae::Renderer::RenderQuad(float x, float y, float width, float height, const glm::vec4& color)
+{
+	SDL_Color colorSdl{};
+	colorSdl.r = static_cast<Uint8>(color.r);
+	colorSdl.g = static_cast<Uint8>(color.g);
+	colorSdl.b = static_cast<Uint8>(color.b);
+	colorSdl.a = static_cast<Uint8>(color.a);
+	SDL_SetRenderDrawColor(m_renderer, colorSdl.r, colorSdl.g, colorSdl.b, colorSdl.a);
+
+	int xI{ static_cast<int>(x) };
+	int yI{ static_cast<int>(y) };
+	int widthI{ static_cast<int>(width) };
+	int heightI{ static_cast<int>(height) };
+	constexpr int numVerts{ 4 };
+	SDL_Point verts[numVerts]
+	{
+		{xI, yI},
+		{xI + widthI, yI},
+		{xI + widthI, yI + heightI},
+		{xI, yI + heightI}
+	};
+	SDL_RenderDrawLines(m_renderer, &verts[0], numVerts);
 }
 
 inline SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }

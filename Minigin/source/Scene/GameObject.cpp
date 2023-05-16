@@ -4,12 +4,21 @@
 #include "Renderer/Renderer.h"
 
 #include "Component/RenderComponent.h"
-#include "Component/TransformComponent.h"
+
+#include "Scene/Scene.h"
 
 
-dae::GameObject::GameObject()
+dae::GameObject::GameObject(Scene* pScene)
+	: GameObject(pScene, UUID())
+{
+	
+}
+
+dae::GameObject::GameObject(Scene* pScene, UUID uuid)
+	: m_pScene{ pScene }
 {
 	m_pTransformComponent = AddComponent<TransformComponent>();
+	m_pUUID = AddComponent<UUIDComponent>(uuid);
 }
 
 void dae::GameObject::Update()
@@ -50,7 +59,8 @@ void dae::GameObject::AttachToGameObject(GameObject* pParent, bool keepWorld)
 			glm::vec3 localPos{ m_pTransformComponent->GetLocalPosition() - parentTransform.GetWorldPosition()};
 			m_pTransformComponent->SetLocalPosition(localPos);
 		}
-		m_pTransformComponent->m_IsPositionDirty = true;
+		m_pTransformComponent->SetDirty(TransformComponent::TransformFlag::Position, true);
+		m_pTransformComponent->SetDirty(TransformComponent::TransformFlag::Rotation, true);
 	}
 }
 
@@ -61,7 +71,22 @@ void dae::GameObject::DetachGameObject(GameObject* pChild)
 	pChild->GetTransform().SetLocalPosition(GetTransform().GetWorldPosition());
 }
 
+bool dae::GameObject::IsRoot() const
+{
+	return GetParent() == nullptr;
+}
+
 void dae::GameObject::RemoveChild(GameObject* pChild)
 {
 	m_pChildren.erase(std::remove(m_pChildren.begin(), m_pChildren.end(), pChild), m_pChildren.end());
+}
+
+void dae::GameObject::Destroy()
+{
+	m_IsValid = false;
+
+	for (GameObject* pChild : m_pChildren)
+	{
+		pChild->Destroy();
+	}
 }

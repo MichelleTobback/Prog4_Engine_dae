@@ -84,7 +84,7 @@ dae::PlayerHealthTextBinding::PlayerHealthTextBinding(TextComponent* pText, cons
 {
 }
 
-void dae::PlayerHealthTextBinding::Invoke(const Event& event)
+void dae::PlayerHealthTextBinding::Invoke(const Event& event, Subject*)
 {
 	if (event.dataSize == 0)
 		return;
@@ -100,7 +100,7 @@ dae::PlayerScoreTextBinding::PlayerScoreTextBinding(TextComponent* pText, const 
 {
 }
 
-void dae::PlayerScoreTextBinding::Invoke(const Event& event)
+void dae::PlayerScoreTextBinding::Invoke(const Event& event, Subject*)
 {
 	if (event.dataSize == 0)
 		return;

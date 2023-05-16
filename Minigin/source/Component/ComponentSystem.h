@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <assert.h>
+#include <queue>
 
 namespace dae
 {
@@ -53,8 +54,9 @@ namespace dae
 		{
 			const char* typeName{ typeid(T).name() };
 			m_Components.insert(std::make_pair(typeName, std::make_shared<T>(std::forward<TArgs>(args)...)));
-
-			return m_Components.at(typeName)->As<T>();
+			auto pComponent{ m_Components.at(typeName) };
+			m_pComponentsToAwake.push(pComponent.get());
+			return pComponent->As<T>();
 		}
 
 		template <typename T>
@@ -65,12 +67,16 @@ namespace dae
 
 			const char* typeName{ typeid(T).name() };
 			m_Components.erase(typeName);
+			return true;
 		}
 
 		void BroadcastMessage(const ComponentMessage& msg);
 
 	private:
-
+		friend class SceneSerializer;
 		ComponentMap m_Components;
+
+		std::queue<Component*> m_pComponentsToAwake{};
+
 	};
 }

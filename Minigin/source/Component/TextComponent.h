@@ -23,6 +23,10 @@ namespace dae
 		virtual void Update() override;
 
 		void SetText(const std::string& text);
+		inline const std::string& GetText() const { return m_Text; }
+		inline const glm::vec4& GetColor() const { return m_Color; }
+		inline Font* GetFont() const { return m_Font.get(); }
+
 	private:
 		bool m_NeedsUpdate;
 		std::string m_Text;
