@@ -17,6 +17,6 @@ namespace dae
 		class SdlSoundSystemImpl;
 
 	private:
-		std::unique_ptr<SdlSoundSystemImpl> m_pImpl{ nullptr };
+		std::unique_ptr<SdlSoundSystemImpl> m_pImpl;
 	};
 }

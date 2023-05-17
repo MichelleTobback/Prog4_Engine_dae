@@ -10,16 +10,17 @@ namespace dae
 	class RenderComponent;
 	class ImGuiComponent;
 	class Texture2D;
+	class Window;
 	/**
 	 * Simple RAII wrapper for the SDL renderer
 	 */
 	class Renderer final : public Singleton<Renderer>
 	{
 		SDL_Renderer* m_renderer{};
-		SDL_Window* m_window{};
+		SDL_Window* m_pWindow{};
 		SDL_Color m_clearColor{};	
 	public:
-		void Init(SDL_Window* window);
+		void Init(const Window& window);
 		void Render();
 		void Destroy();
 

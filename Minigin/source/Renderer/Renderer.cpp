@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Managers/SceneManager.h"
 #include "Renderer/Texture2D.h"
+#include "Core/Window.h"
 
 #include "Component/RenderComponent.h"
 #include "Platform/ImGui/ImGuiComponent.h"
@@ -24,10 +25,16 @@ int GetOpenGLDriverIndex()
 	return openglIndex;
 }
 
-void dae::Renderer::Init(SDL_Window* window)
+void dae::Renderer::Init(const Window& pWindow)
 {
-	m_window = window;
-	m_renderer = SDL_CreateRenderer(window, GetOpenGLDriverIndex(), SDL_RENDERER_ACCELERATED);
+	m_pWindow = SDL_GetWindowFromID(pWindow.GetID());
+
+	if (m_pWindow == nullptr)
+	{
+		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
+	}
+
+	m_renderer = SDL_CreateRenderer(m_pWindow, GetOpenGLDriverIndex(), SDL_RENDERER_ACCELERATED);
 	if (m_renderer == nullptr) 
 	{
 		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
@@ -35,7 +42,7 @@ void dae::Renderer::Init(SDL_Window* window)
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGui_ImplSDL2_InitForOpenGL(window, SDL_GL_GetCurrentContext());
+	ImGui_ImplSDL2_InitForOpenGL(m_pWindow, SDL_GL_GetCurrentContext());
 	ImGui_ImplOpenGL2_Init();
 }
 
@@ -53,7 +60,7 @@ void dae::Renderer::Render()
 
 	//ImGui
 	ImGui_ImplOpenGL2_NewFrame();
-	ImGui_ImplSDL2_NewFrame(m_window);
+	ImGui_ImplSDL2_NewFrame(m_pWindow);
 	ImGui::NewFrame();
 	//SceneManager::GetInstance().OnImGuiRender();
 

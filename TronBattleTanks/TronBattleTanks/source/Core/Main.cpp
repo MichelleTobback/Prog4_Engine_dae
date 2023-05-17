@@ -16,8 +16,6 @@
 
 void load()
 {
-	std::cout << "Press SPACE to shoot (play Sound effect)\n";
-
 	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
 	//dae::SceneManager::GetInstance().LoadScene("Scenes/test.scene");
 	

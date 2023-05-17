@@ -215,6 +215,7 @@
     <ClInclude Include="..\3rdParty\imgui-master\imstb_rectpack.h" />
     <ClInclude Include="..\3rdParty\imgui-master\imstb_textedit.h" />
     <ClInclude Include="..\3rdParty\imgui-master\imstb_truetype.h" />
+    <ClInclude Include="source\Audio\AudioClip.h" />
     <ClInclude Include="source\Audio\LoggingSoundSystem.h" />
     <ClInclude Include="source\Component\SpriteAtlasComponent.h" />
     <ClInclude Include="source\Component\SpriteComponent.h" />
@@ -224,6 +225,7 @@
     <ClInclude Include="source\Core\Math.h" />
     <ClInclude Include="source\Core\Random.h" />
     <ClInclude Include="source\Core\UUID.h" />
+    <ClInclude Include="source\Core\Window.h" />
     <ClInclude Include="source\Input\Controller.h" />
     <ClInclude Include="source\Managers\ServiceLocator.h" />
     <ClInclude Include="source\Audio\SoundSystem.h" />
@@ -234,6 +236,7 @@
     <ClInclude Include="source\Component\Component.h" />
     <ClInclude Include="source\Component\ComponentSystem.h" />
     <ClInclude Include="source\Platform\SDL\SdlSoundSystem.h" />
+    <ClInclude Include="source\Platform\SDL\SdlWindow.h" />
     <ClInclude Include="source\Renderer\Font.h" />
     <ClInclude Include="source\Scene\GameObject.h" />
     <ClInclude Include="source\Input\Input.h" />
@@ -261,6 +264,7 @@
     <ClCompile Include="..\3rdParty\imgui-master\imgui_plot.cpp" />
     <ClCompile Include="..\3rdParty\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\3rdParty\imgui-master\imgui_widgets.cpp" />
+    <ClCompile Include="source\Audio\AudioClip.cpp" />
     <ClCompile Include="source\Audio\LoggingSoundSystem.cpp" />
     <ClCompile Include="source\Component\SpriteAtlasComponent.cpp" />
     <ClCompile Include="source\Component\SpriteComponent.cpp" />
@@ -278,6 +282,7 @@
     <ClCompile Include="source\Component\Component.cpp" />
     <ClCompile Include="source\Component\ComponentSystem.cpp" />
     <ClCompile Include="source\Platform\SDL\SdlSoundSystem.cpp" />
+    <ClCompile Include="source\Platform\SDL\SdlWindow.cpp" />
     <ClCompile Include="source\Renderer\Font.cpp" />
     <ClCompile Include="source\Scene\GameObject.cpp" />
     <ClCompile Include="source\Input\Input.cpp" />
