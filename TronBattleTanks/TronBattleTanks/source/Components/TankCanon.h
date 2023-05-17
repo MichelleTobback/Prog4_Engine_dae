@@ -1,5 +1,6 @@
 #pragma once
 #include "Component/Component.h"
+#include "Managers/ServiceLocator.h"
 
 namespace dae
 {
@@ -14,5 +15,6 @@ namespace dae
 
 	private:
 		GameObject* m_pSocket{};
+		SoundId m_ShootSound;
 	};
 }

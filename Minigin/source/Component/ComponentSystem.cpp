@@ -2,7 +2,7 @@
 
 void dae::ComponentSystem::Update()
 {
-	for (int i{}; i < m_pComponentsToAwake.size(); ++i)
+	while (!m_pComponentsToAwake.empty())
 	{
 		m_pComponentsToAwake.front()->Awake();
 		m_pComponentsToAwake.pop();

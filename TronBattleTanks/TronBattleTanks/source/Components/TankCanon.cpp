@@ -10,10 +10,17 @@ dae::TankCanon::TankCanon(GameObject* pOwner)
 	m_pSocket = pOwner->GetScene()->Instantiate(GetOwner());
 	m_pSocket->GetTransform().Translate({ 16.f, 16.f, 0.f });
 	Prefab::CreateTextureRendererObject(GetOwner()->GetScene(), "Sprites/TankCanon.png")->AttachToGameObject(pOwner);
+
+	auto& audio{ ServiceLocator::GetSoundSystem() };
+	m_ShootSound = audio.AddSound("Sounds/shoot.wav");
 }
 
 void dae::TankCanon::Shoot()
 {
 	auto pBullet{ GetOwner()->GetScene()->Instantiate(nullptr, m_pSocket->GetTransform().GetWorldPosition())->AddComponent<Bullet>() };
 	pBullet->GetOwner()->GetTransform().Rotate(GetOwner()->GetTransform().GetWorldRotation());
+
+	auto& audio{ ServiceLocator::GetSoundSystem() };
+	audio.Play(m_ShootSound, 50.f);
 }
+

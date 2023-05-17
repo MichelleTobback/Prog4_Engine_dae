@@ -100,7 +100,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;$(SolutionDir)\3rdParty\SDL2_mixer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -126,7 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;$(SolutionDir)\3rdParty\SDL2_mixer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -154,7 +154,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;$(SolutionDir)\3rdParty\SDL2_mixer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -184,7 +184,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin\source;$(SolutionDir)\3rdParty\imgui-master;$(SolutionDir)\3rdParty\SDL2_mixer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -215,6 +215,7 @@
     <ClInclude Include="..\3rdParty\imgui-master\imstb_rectpack.h" />
     <ClInclude Include="..\3rdParty\imgui-master\imstb_textedit.h" />
     <ClInclude Include="..\3rdParty\imgui-master\imstb_truetype.h" />
+    <ClInclude Include="source\Audio\LoggingSoundSystem.h" />
     <ClInclude Include="source\Component\SpriteAtlasComponent.h" />
     <ClInclude Include="source\Component\SpriteComponent.h" />
     <ClInclude Include="source\Component\UUIDComponent.h" />
@@ -224,12 +225,15 @@
     <ClInclude Include="source\Core\Random.h" />
     <ClInclude Include="source\Core\UUID.h" />
     <ClInclude Include="source\Input\Controller.h" />
+    <ClInclude Include="source\Managers\ServiceLocator.h" />
+    <ClInclude Include="source\Audio\SoundSystem.h" />
     <ClInclude Include="source\Platform\ImGui\ImGuiComponent.h" />
     <ClInclude Include="source\Platform\ImGui\ImGuiPlotComponent.h" />
     <ClInclude Include="source\Input\Keyboard.h" />
     <ClInclude Include="source\Core\Observer.h" />
     <ClInclude Include="source\Component\Component.h" />
     <ClInclude Include="source\Component\ComponentSystem.h" />
+    <ClInclude Include="source\Platform\SDL\SdlSoundSystem.h" />
     <ClInclude Include="source\Renderer\Font.h" />
     <ClInclude Include="source\Scene\GameObject.h" />
     <ClInclude Include="source\Input\Input.h" />
@@ -257,6 +261,7 @@
     <ClCompile Include="..\3rdParty\imgui-master\imgui_plot.cpp" />
     <ClCompile Include="..\3rdParty\imgui-master\imgui_tables.cpp" />
     <ClCompile Include="..\3rdParty\imgui-master\imgui_widgets.cpp" />
+    <ClCompile Include="source\Audio\LoggingSoundSystem.cpp" />
     <ClCompile Include="source\Component\SpriteAtlasComponent.cpp" />
     <ClCompile Include="source\Component\SpriteComponent.cpp" />
     <ClCompile Include="source\Component\UUIDComponent.cpp" />
@@ -265,12 +270,14 @@
     <ClCompile Include="source\Core\Random.cpp" />
     <ClCompile Include="source\Core\UUID.cpp" />
     <ClCompile Include="source\Input\Controller.cpp" />
+    <ClCompile Include="source\Managers\ServiceLocator.cpp" />
     <ClCompile Include="source\Platform\ImGui\ImGuiComponent.cpp" />
     <ClCompile Include="source\Platform\ImGui\ImGuiPlotComponent.cpp" />
     <ClCompile Include="source\Input\Keyboard.cpp" />
     <ClCompile Include="source\Core\Subject.cpp" />
     <ClCompile Include="source\Component\Component.cpp" />
     <ClCompile Include="source\Component\ComponentSystem.cpp" />
+    <ClCompile Include="source\Platform\SDL\SdlSoundSystem.cpp" />
     <ClCompile Include="source\Renderer\Font.cpp" />
     <ClCompile Include="source\Scene\GameObject.cpp" />
     <ClCompile Include="source\Input\Input.cpp" />

@@ -10,6 +10,12 @@
 #include "Managers/SceneManager.h"
 #include "Renderer/Renderer.h"
 #include "Managers/ResourceManager.h"
+#include "Managers/ServiceLocator.h"
+#include "Platform/SDL/SdlSoundSystem.h"
+
+#if _DEBUG
+	#include "Audio/LoggingSoundSystem.h"
+#endif
 
 #include "Time.h"
 
@@ -80,6 +86,12 @@ dae::Minigin::~Minigin()
 
 void dae::Minigin::Run(const std::function<void()>& load)
 {
+#if _DEBUG
+	ServiceLocator::RegisterSoundSystem(std::make_unique<LoggingSoundSystem>(std::make_unique<SdlSoundSystem>()));
+#else
+	ServiceLocator::RegisterSoundSystem(std::make_unique<SdlSoundSystem>());
+#endif
+
 	load();
 
 	auto& renderer = Renderer::GetInstance();
