@@ -30,19 +30,21 @@ dae::Minigin::~Minigin()
 
 void dae::Minigin::Run(const std::function<void()>& load)
 {
-#if _DEBUG
-	ServiceLocator::RegisterSoundSystem(std::make_unique<LoggingSoundSystem>(std::make_unique<SdlSoundSystem>()));
-#else
-	ServiceLocator::RegisterSoundSystem(std::make_unique<SdlSoundSystem>());
-#endif
-
 	WindowDesc windowSpecs{};
 	windowSpecs.title = "Minigin";
+	windowSpecs.width = 480;
+	windowSpecs.height = 520;
 	ServiceLocator::RegisterWindow(std::make_unique<SdlWindow>(windowSpecs));
 
 	auto& window{ ServiceLocator::GetWindow() };
 	window.Init();
 	Renderer::GetInstance().Init(window);
+
+#if _DEBUG
+	ServiceLocator::RegisterSoundSystem(std::make_unique<LoggingSoundSystem>(std::make_unique<SdlSoundSystem>()));
+#else
+	ServiceLocator::RegisterSoundSystem(std::make_unique<SdlSoundSystem>());
+#endif
 
 	load();
 

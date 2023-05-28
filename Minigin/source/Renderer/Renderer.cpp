@@ -153,25 +153,38 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, fl
 void dae::Renderer::RenderQuad(float x, float y, float width, float height, const glm::vec4& color)
 {
 	SDL_Color colorSdl{};
-	colorSdl.r = static_cast<Uint8>(color.r);
-	colorSdl.g = static_cast<Uint8>(color.g);
-	colorSdl.b = static_cast<Uint8>(color.b);
-	colorSdl.a = static_cast<Uint8>(color.a);
+	colorSdl.r = static_cast<Uint8>(color.r * 255);
+	colorSdl.g = static_cast<Uint8>(color.g * 255);
+	colorSdl.b = static_cast<Uint8>(color.b * 255);
+	colorSdl.a = static_cast<Uint8>(color.a * 255);
 	SDL_SetRenderDrawColor(m_renderer, colorSdl.r, colorSdl.g, colorSdl.b, colorSdl.a);
 
 	int xI{ static_cast<int>(x) };
 	int yI{ static_cast<int>(y) };
 	int widthI{ static_cast<int>(width) };
 	int heightI{ static_cast<int>(height) };
-	constexpr int numVerts{ 4 };
-	SDL_Point verts[numVerts]
-	{
-		{xI, yI},
-		{xI + widthI, yI},
-		{xI + widthI, yI + heightI},
-		{xI, yI + heightI}
-	};
-	SDL_RenderDrawLines(m_renderer, &verts[0], numVerts);
+	
+	SDL_Rect rect{ xI, yI, widthI, heightI };
+	SDL_RenderDrawRect(m_renderer, &rect);
+}
+
+void dae::Renderer::RenderSolidQuad(float x, float y, float width, float height, const glm::vec4& color)
+{
+	SDL_Color colorSdl{};
+	colorSdl.r = static_cast<Uint8>(color.r * 255);
+	colorSdl.g = static_cast<Uint8>(color.g * 255);
+	colorSdl.b = static_cast<Uint8>(color.b * 255);
+	colorSdl.a = static_cast<Uint8>(color.a * 255);
+	SDL_SetRenderDrawColor(m_renderer, colorSdl.r, colorSdl.g, colorSdl.b, colorSdl.a);
+
+	int xI{ static_cast<int>(x) };
+	int yI{ static_cast<int>(y) };
+	int widthI{ static_cast<int>(width) };
+	int heightI{ static_cast<int>(height) };
+	
+	SDL_Rect rect{ xI, yI, widthI, heightI };
+	SDL_RenderFillRect(m_renderer, &rect);
+	
 }
 
 inline SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }

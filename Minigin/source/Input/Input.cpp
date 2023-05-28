@@ -14,11 +14,13 @@ dae::Input::Input()
 		m_Controllers.push_back(std::make_unique<dae::Controller>(i));
 	}
 	m_pKeyboard = std::make_unique<dae::Keyboard>();
+	m_pMouse = std::make_unique<dae::Mouse>();
 }
 
 void dae::Input::HandleInput()
 {
-	UpdateKeyboard();
+	m_pMouse->Update();
+	m_pKeyboard->Update();
 	UpdateControllers();
 	HandleCommands();
 }
@@ -28,14 +30,30 @@ void dae::Input::AddActionCommand(const InputActionCommand& actionCommand)
 	m_ActionCommands.push_back(actionCommand);
 }
 
-void dae::Input::AddValueCommand(const InputValueCommand<float>& valueCommand)
+void dae::Input::AddValueCommand(const InputScalarCommand& valueCommand)
 {
 	m_ValueCommands.push_back(valueCommand);
 }
 
-void dae::Input::AddAxisCommand(const InputValueCommand<glm::vec2>& axisCommand)
+void dae::Input::AddAxisCommand(const InputAxisCommand& axisCommand)
 {
 	m_AxisCommands.push_back(axisCommand);
+}
+
+dae::Mouse* dae::Input::GetMouse() const
+{
+	return m_pMouse.get();
+}
+
+dae::Keyboard* dae::Input::GetKeyboard() const
+{
+	return m_pKeyboard.get();
+}
+
+dae::Controller* dae::Input::GetController(int index)
+{
+	assert(index < m_Controllers.size() && "no valid controller index!");
+	return m_Controllers[index].get();
 }
 
 void dae::Input::UpdateControllers()
@@ -48,35 +66,47 @@ void dae::Input::HandleCommands()
 {
 	for (auto& action : m_ActionCommands)
 	{
-		if (action.IsController)
+		if (BitFlag::IsSet(action.flags, InputCommandFlag::ControllerButton))
 		{
 			HandleControllerActionCommand(action);
 		}
-		else
+		else if (BitFlag::IsSet(action.flags, InputCommandFlag::Keyboard))
 		{
 			HandleKeyboardActionCommand(action);
+		}
+		else if (BitFlag::IsSet(action.flags, InputCommandFlag::MouseButton))
+		{
+			HandleMouseActionCommand(action);
 		}
 	}
 	for (auto& action : m_ValueCommands)
 	{
-		if (action.IsController)
+		if (BitFlag::IsSet(action.flags, InputCommandFlag::ControllerButton))
 		{
 			HandleControllerValueCommand(action);
 		}
-		else
+		else if (BitFlag::IsSet(action.flags, InputCommandFlag::Keyboard))
 		{
 			HandleKeyboardValueCommand(action);
 		}
 	}
 	for (auto& action : m_AxisCommands)
 	{
-		if (action.IsController)
+		if (BitFlag::IsSet(action.flags, InputCommandFlag::ControllerThumbStick))
 		{
 			HandleControllerAxisCommand(action);
 		}
-		else
+		else if (BitFlag::IsSet(action.flags, InputCommandFlag::Keyboard))
 		{
 			HandleKeyboardAxisCommand(action);
+		}
+		else if (BitFlag::IsSet(action.flags, InputCommandFlag::MouseMoved))
+		{
+			if (m_pMouse->MovedThisFrame())
+			{
+				action.Action.SetValue(m_pMouse->GetMouseDeltaPos());
+				action.Action.Execute();
+			}
 		}
 	}
 }
@@ -147,11 +177,35 @@ void dae::Input::HandleKeyboardActionCommand(InputActionCommand& action)
 	}
 }
 
-void dae::Input::HandleControllerValueCommand(InputValueCommand<float>&)
+void dae::Input::HandleMouseActionCommand(InputActionCommand& action)
+{
+	switch (action.Mouse.state)
+	{
+	case dae::Mouse::MouseButtonState::Down:
+	{
+		if (m_pMouse->IsButtonDown(action.Mouse.button))
+		{
+			action.Action.Execute();
+		}
+	}
+	break;
+
+	case dae::Mouse::MouseButtonState::Released:
+	{
+		if (m_pMouse->IsButtonUp(action.Mouse.button))
+		{
+			action.Action.Execute();
+		}
+	}
+	break;
+	}
+}
+
+void dae::Input::HandleControllerValueCommand(InputScalarCommand&)
 {
 }
 
-void dae::Input::HandleKeyboardValueCommand(InputValueCommand<float>& action)
+void dae::Input::HandleKeyboardValueCommand(InputScalarCommand& action)
 {
 	switch (action.Keyboard.State)
 	{
@@ -187,11 +241,11 @@ void dae::Input::HandleKeyboardValueCommand(InputValueCommand<float>& action)
 	}
 }
 
-void dae::Input::HandleControllerAxisCommand(InputValueCommand<glm::vec2>&)
+void dae::Input::HandleControllerAxisCommand(InputAxisCommand&)
 {
 }
 
-void dae::Input::HandleKeyboardAxisCommand(InputValueCommand<glm::vec2>& action)
+void dae::Input::HandleKeyboardAxisCommand(InputAxisCommand& action)
 {
 	switch (action.Keyboard.State)
 	{
@@ -225,9 +279,4 @@ void dae::Input::HandleKeyboardAxisCommand(InputValueCommand<glm::vec2>& action)
 	}
 	break;
 	}
-}
-
-void dae::Input::UpdateKeyboard()
-{
-	m_pKeyboard->Update();
 }

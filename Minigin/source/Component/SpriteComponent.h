@@ -27,7 +27,7 @@ namespace dae
 		void SetSource(float srcX = 0.f, float srcY = 0.f, float srcWidth = 0.f, float srcHeight = 0.f);
 
 		inline const glm::vec4& GetSource() const { return m_Source; }
-		inline const TextureComponent& GetTexture() const { return *m_pTexture; }
+		inline const TextureComponent* GetTexture() const { return m_pTexture; }
 
 	private:
 		TextureComponent* m_pTexture{ nullptr };

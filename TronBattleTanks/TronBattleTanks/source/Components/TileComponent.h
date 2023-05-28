@@ -1,26 +1,33 @@
 #pragma once
 
 #include "Component/Component.h"
+#include "Component/RenderComponent.h"
+#include "Scene/Serializable.h"
 
 #include <glm/glm.hpp>
 
 namespace dae
 {
 	class GridLevelComponent;
+	enum class TileFlag
+	{
+		None = 0,
+		Sprite = 1, Quad = 2
+	};
 
 	struct TileDesc
 	{
-		float Width{ 16.f };
-		float Height{ 16.f };
-		uint32_t m_SpriteIndex{};
+		QuadRendererComponent* pQuadRenderer{ nullptr };
+		SpriteRenderComponent* pRenderer{ nullptr };
+		TileFlag flags{ TileFlag::Quad };
 	};
 
 	class SpriteRenderComponent;
-	class TileComponent final : public Component
+	class TileComponent final : public Component, public Serializable
 	{
 	public:
-		TileComponent(GameObject* pOwner, GridLevelComponent* pGrid);
-		TileComponent(GameObject* pOwner, GridLevelComponent* pGrid, const TileDesc& desc);
+		TileComponent(GameObject* pOwner);
+		TileComponent(GameObject* pOnwer, const TileDesc& desc);
 		virtual ~TileComponent() override = default;
 
 		TileComponent(const TileComponent& other) = delete;
@@ -28,17 +35,14 @@ namespace dae
 		TileComponent& operator=(const TileComponent& other) = delete;
 		TileComponent& operator=(TileComponent&& other) = delete;
 
-		void SetWidth(float width);
-		void SetHeight(float height);
-		void SetSize(float width, float height);
+		virtual void Serialize(BinaryWriter& out) const override;
+		static bool Deserialize(DeserializeParams& params);
 
-		inline float GetWidth() const { return m_Desc.Width; }
-		inline float GetHeight() const { return m_Desc.Height; }
+		TileDesc& GetTileDesc();
+
+	protected:
 
 	private:
 		TileDesc m_Desc{};
-
-		GridLevelComponent* m_pGrid{ nullptr };
-		SpriteRenderComponent* m_pRenderer{ nullptr };
 	};
 }

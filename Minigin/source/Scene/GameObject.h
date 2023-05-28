@@ -5,10 +5,17 @@
 #include "Component/ComponentSystem.h"
 #include "Component/TransformComponent.h"
 #include "Core/UUID.h"
+#include "Core/Delegate.h"
 
 namespace dae
 {
 	typedef uint32_t GameObjectID;
+
+	enum class GameObjectFlag
+	{
+		None = 0,
+		Serializable = 1
+	};
 
 	class Scene;
 	class GameObject final
@@ -68,6 +75,7 @@ namespace dae
 			return m_ComponentSystem.HasComponent<T>();
 		}
 
+		bool IsFlagSet(GameObjectFlag flag);
 		void Destroy();
 
 		inline GameObject* GetParent() const { return m_pParent; }
@@ -76,8 +84,15 @@ namespace dae
 		inline UUID GetUUID() const { return m_pUUID->GetUUID(); }
 		inline const ComponentSystem& GetComponentSystem() const { return m_ComponentSystem; }
 
+		using GameObjectDelegate = Delegate<void(GameObject*)>;
+		inline GameObjectDelegate& GetOnChildAttachedDelegate() { return *m_pOnChildAttached; }
+
+	protected:
+		void SetFlag(GameObjectFlag flag, bool set);
+
 	private:
-		inline void AddChild(GameObject* pChild) { m_pChildren.push_back(pChild); }
+		friend class SceneSerializer;
+		inline void AddChild(GameObject* pChild);
 		void RemoveChild(GameObject* pChild);
 
 		ComponentSystem m_ComponentSystem{};
@@ -89,5 +104,8 @@ namespace dae
 		TransformComponent* m_pTransformComponent{ nullptr };
 		UUIDComponent* m_pUUID{ nullptr };
 		Scene* m_pScene;
+		std::unique_ptr<GameObjectDelegate> m_pOnChildAttached{nullptr};
+
+		GameObjectFlag m_Flags;
 	};
 }

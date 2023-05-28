@@ -11,20 +11,23 @@
 #include "Managers/SceneManager.h"
 #include "Prefabs.h"
 #include "Editor/Editor.h"
-
+#include "Components/TileComponent.h"
 #include <iostream>
 
 void load()
 {
-	auto& scene = dae::SceneManager::GetInstance().CreateScene("Demo");
-	//dae::SceneManager::GetInstance().LoadScene("Scenes/test.scene");
+	auto& sceneManager{ dae::SceneManager::GetInstance() };
+	sceneManager.GetOnDeserializedComponentDelegate() += &dae::TileComponent::Deserialize;
+
+	//sceneManager.CreateScene("Demo");
+	sceneManager.LoadScene("Scenes/TileTest.scene");
 	
 	//dae::Prefab::CreateTestLevel(&scene);
 
-	dae::Prefab::CreatePlayer(&scene, 3.f);
+	//dae::Prefab::CreatePlayer(&scene, 3.f);
 	
-	dae::Editor editor{};
-	editor.Init();
+	//dae::Editor editor{};
+	//editor.Init();
 }
 
 int main(int, char* []) {

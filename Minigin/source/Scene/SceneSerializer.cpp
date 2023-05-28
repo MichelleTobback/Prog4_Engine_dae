@@ -12,12 +12,18 @@
 #include "Renderer/Font.h"
 
 #include "Core/BinaryReader.h"
+#include "Core/BitFlag.h"
 
 #include <array>
 #include <functional>
 
 namespace dae
 {
+	std::unique_ptr<OnDeserializedComponentDelegate> SceneSerializer::m_pOnDeserializeComponent
+	{ 
+		std::make_unique<OnDeserializedComponentDelegate>() 
+	};
+
 	struct SceneFileData
 	{
 		int numGameObjects{};
@@ -59,22 +65,27 @@ namespace dae
 		int fontSize{};
 	};
 
-	
+	static void SerializeComponent(Component* pComponent, BinaryWriter& out)
+	{
+		out.WriteString(typeid(*pComponent).name());
+
+		Serializable* pSerializable{ dynamic_cast<Serializable*>(pComponent) };
+		if (pSerializable != nullptr)
+		{
+			pSerializable->Serialize(out);
+		}
+	}
 
 	template<typename T, typename Fn>
-	static bool SerializeComponent(GameObject* pGameObject, BinaryWriter& out, Fn fn)
+	static bool SerializeComponent(Component* pComponent, BinaryWriter& out, Fn fn)
 	{
-		if (pGameObject->HasComponent<T>())
+		if (pComponent->Is<T>())
 		{
-			auto pComponent{ pGameObject->GetComponent<T>() };
-			//ComponentFileData componentFileData{};
-
 			std::string name{ typeid(T).name() };
-			//out.Write(componentFileData);
 			//typename
 			out.WriteString(name);
 
-			fn(pComponent, out);
+			fn(dynamic_cast<T*>(pComponent), out);
 
 			return true;
 		}
@@ -112,6 +123,7 @@ void dae::OnGameObjectDeserialized::Invoke(const Event& event, Subject* pSubject
 void dae::SceneSerializer::Serialize(Scene* pScene, const std::filesystem::path& path)
 {
 	m_pScene = pScene;
+
 	std::filesystem::path fullPath{ ResourceManager::GetInstance().GetDataPath() + path.string() };
 	if (BinaryWriter output(fullPath); output)
 	{
@@ -127,7 +139,7 @@ void dae::SceneSerializer::Serialize(Scene* pScene, const std::filesystem::path&
 
 void dae::SceneSerializer::SerializeGameObject(GameObject* pGameObject, BinaryWriter& out)
 {
-	if (!pGameObject->GetUUID().IsValid())
+	if (!BitFlag::IsSet(pGameObject->m_Flags, GameObjectFlag::Serializable))
 		return;
 
 	auto& pComponents{ pGameObject->GetComponentSystem().m_Components };
@@ -142,101 +154,103 @@ void dae::SceneSerializer::SerializeGameObject(GameObject* pGameObject, BinaryWr
 	//auto& pChildren{ pGameObject->GetChildren() };
 	if (!pGameObject->IsRoot())
 		objectDesc.parentUuid = pGameObject->GetParent()->GetUUID();
-	objectDesc.numComponents = (pComponents.size() > 2) ? static_cast<int>(pComponents.size()) - 2 : 0; // totalComponents - (transform and uuid)
+	objectDesc.numComponents = static_cast<int>(pComponents.size());
 
 	out.Write(objectDesc);
 
-	int numSerializedComponents{};
-	//==================================================
-	// TextureComponent
-	//==================================================
+	for (auto pComponent : pComponents)
+	{
+		//TODO - Move component serialization to component using Serializable interface
+		// 
+		//==================================================
+		// TextureComponent
+		//==================================================
 
-	SerializeComponent<TextureComponent>(pGameObject, out, [&numSerializedComponents](TextureComponent* pComponent, BinaryWriter& out)
-		{
-			bool validTexture{ pComponent->HasTexture() };
-			Texture2D* pTexture{ (validTexture) ? pComponent->GetTexture().get() : nullptr };
-			if (validTexture)
-				out.WriteString(pTexture->GetPath());
-			else
-				out.Write(0);
-			++numSerializedComponents;
-		});
-
-	//==================================================
-	// SpriteComponent
-	//==================================================
-	SerializeComponent<SpriteComponent>(pGameObject, out, [&numSerializedComponents](SpriteComponent* pComponent, BinaryWriter& out)
-		{
-			SpriteFileData spriteData{};
-			spriteData.source = pComponent->GetSource();
-			spriteData.textureUuid = pComponent->GetTexture().GetUUID();
-
-			out.Write(spriteData);
-			++numSerializedComponents;
-		});
-
-	//==================================================
-	// SpriteAtlasComponent
-	//==================================================
-	SerializeComponent<SpriteAtlasComponent>(pGameObject, out, [&numSerializedComponents](SpriteAtlasComponent* pComponent, BinaryWriter& out)
-		{
-			SpriteAtlasFileData data{};
-			auto& pSprites{ pComponent->GetSprites() };
-			data.numSprites = static_cast<int>(pSprites.size());
-			data.textureUuid = pComponent->GetTexture().GetUUID();
-			std::vector<uint64_t> pSpriteUuids(data.numSprites);
-			for (int i{}; i < data.numSprites; ++i)
+		if (SerializeComponent<TextureComponent>(pComponent.second.get(), out, [](TextureComponent* pComponent, BinaryWriter& out)
 			{
-				pSpriteUuids[i] = pSprites[i]->GetUUID();
-			}
+				bool validTexture{ pComponent->HasTexture() };
+				Texture2D* pTexture{ (validTexture) ? pComponent->GetTexture().get() : nullptr };
+				if (validTexture)
+					out.WriteString(pTexture->GetPath());
+				else
+					out.Write(0);
+			})) continue;
 
-			out.Write(data);
-			out.WriteArray(&pSpriteUuids[0], pSpriteUuids.size());
+		//==================================================
+		// SpriteComponent
+		//==================================================
+		if (SerializeComponent<SpriteComponent>(pComponent.second.get(), out, [](SpriteComponent* pComponent, BinaryWriter& out)
+			{
+				SpriteFileData spriteData{};
+				spriteData.source = pComponent->GetSource();
+				auto pTexture{ pComponent->GetTexture() };
+				spriteData.textureUuid = (pTexture) ? pTexture->GetUUID() : UUID(0u);
 
-			++numSerializedComponents;
-		});
-	//==================================================
-	// TextComponent
-	//==================================================
-	SerializeComponent<TextComponent>(pGameObject, out, [&numSerializedComponents](TextComponent* pComponent, BinaryWriter& out)
-		{
-			TextCompFileData txtData{};
-			auto pFont{ pComponent->GetFont() };
-			txtData.fontSize = pFont->GetSize();
-			txtData.color = pComponent->GetColor();
+				out.Write(spriteData);
+			})) continue;
 
-			out.Write(txtData);
-			out.WriteString(pFont->GetPath());
-			out.WriteString(pComponent->GetText());
+		//==================================================
+		// SpriteAtlasComponent
+		//==================================================
+		if (SerializeComponent<SpriteAtlasComponent>(pComponent.second.get(), out, [](SpriteAtlasComponent* pComponent, BinaryWriter& out)
+			{
+				SpriteAtlasFileData data{};
+				auto& pSprites{ pComponent->GetSprites() };
+				data.numSprites = static_cast<int>(pSprites.size());
+				auto pTexture{ &pComponent->GetTexture() };
+				data.textureUuid = (pTexture) ? pTexture->GetUUID() : UUID(0u);
+				std::vector<uint64_t> pSpriteUuids(data.numSprites);
+				for (int i{}; i < data.numSprites; ++i)
+				{
+					pSpriteUuids[i] = pSprites[i]->GetUUID();
+				}
 
-			++numSerializedComponents;
-		});
-	//==================================================
-	// TextureRendererComponent
-	//==================================================
-	SerializeComponent<TextureRenderComponent>(pGameObject, out, [&numSerializedComponents](TextureRenderComponent* pComponent, BinaryWriter& out)
-		{
-			uint64_t textureUuid{ pComponent->GetTexture()->GetUUID() };
+				out.Write(data);
 
-			out.Write(textureUuid);
+				if (pSpriteUuids.size() > 0)
+					out.WriteArray(&pSpriteUuids[0], pSpriteUuids.size());
+				else
+					out.Write(0);
 
-			++numSerializedComponents;
-		});
-	//==================================================
-	// SpriteRenderComponent
-	//==================================================
-	SerializeComponent<SpriteRenderComponent>(pGameObject, out, [&numSerializedComponents](SpriteRenderComponent* pComponent, BinaryWriter& out)
-		{
-			uint64_t spriteUuid{ pComponent->GetSprite()->GetUUID() };
+			})) continue;
 
-			out.Write(spriteUuid);
+		//==================================================
+		// TextComponent
+		//==================================================
+		if (SerializeComponent<TextComponent>(pComponent.second.get(), out, [](TextComponent* pComponent, BinaryWriter& out)
+			{
+				TextCompFileData txtData{};
+				auto pFont{ pComponent->GetFont() };
+				txtData.fontSize = pFont->GetSize();
+				txtData.color = pComponent->GetColor();
 
-			++numSerializedComponents;
-		});
+				out.Write(txtData);
+				out.WriteString(pFont->GetPath());
+				out.WriteString(pComponent->GetText());
+			})) continue;
 
-	int componentsLeft{ objectDesc.numComponents - numSerializedComponents };
-	for (int i{}; i < componentsLeft; ++i)
-		out.Write(0);
+		//==================================================
+		// TextureRendererComponent
+		//==================================================
+		if (SerializeComponent<TextureRenderComponent>(pComponent.second.get(), out, [](TextureRenderComponent* pComponent, BinaryWriter& out)
+			{
+				uint64_t textureUuid{ (pComponent->GetTexture()) ? pComponent->GetTexture()->GetUUID() : UUID(0u) };
+
+				out.Write(textureUuid);
+			})) continue;
+
+		//==================================================
+		// SpriteRenderComponent
+		//==================================================
+		if (SerializeComponent<SpriteRenderComponent>(pComponent.second.get(), out, [](SpriteRenderComponent* pComponent, BinaryWriter& out)
+			{
+				uint64_t spriteUuid{ (pComponent->GetSprite()) ? pComponent->GetSprite()->GetUUID() : UUID(0u) };
+
+				out.Write(spriteUuid);
+			})) continue;
+
+		SerializeComponent(pComponent.second.get(), out);
+	}
 }
 
 dae::GameObject* dae::SceneSerializer::GetDeserializedGameObject(UUID uuid, UUID parent)
@@ -414,6 +428,11 @@ void dae::SceneSerializer::Deserialize(Scene* pScene, const std::filesystem::pat
 								return true;
 							});
 					}
+					else
+					{
+						DeserializeParams params{input, pInstance, componentName, m_OnDeserialized };
+						m_pOnDeserializeComponent->Invoke(params);
+					}
 				}
 			}
 
@@ -424,4 +443,9 @@ void dae::SceneSerializer::Deserialize(Scene* pScene, const std::filesystem::pat
 		m_GameObjectDeserialized.Clear();
 		m_OnDeserialized.clear();
 	}
+}
+
+dae::OnDeserializedComponentDelegate* dae::SceneSerializer::GetOnDeserializedComponentDelegate()
+{
+	return m_pOnDeserializeComponent.get();
 }

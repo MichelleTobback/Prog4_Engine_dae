@@ -17,5 +17,18 @@ namespace dae
 		{
 			return std::signbit(x) == std::signbit(y);
 		}
+
+		inline static bool isPointInsideRect(const glm::vec2& point, const glm::vec2& rectPosition, const glm::vec2& rectSize) 
+		{
+			float left = rectPosition.x;
+			float right = rectPosition.x + rectSize.x;
+			float top = rectPosition.y;
+			float bottom = rectPosition.y + rectSize.y;
+
+			return (point.x >= left && point.x <= right && point.y >= top && point.y <= bottom);
+		}
+
+	private:
+		Math() = default;
 	};
 }

@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Managers/ResourceManager.h"
 #include "Renderer/Renderer.h"
+#include "Core/BitFlag.h"
 
 #include "Component/RenderComponent.h"
 
@@ -15,10 +16,20 @@ dae::GameObject::GameObject(Scene* pScene)
 }
 
 dae::GameObject::GameObject(Scene* pScene, UUID uuid)
-	: m_pScene{ pScene }
+	: m_pScene{ pScene }, m_Flags{}
 {
 	m_pTransformComponent = AddComponent<TransformComponent>();
-	m_pUUID = AddComponent<UUIDComponent>(uuid);
+	m_pOnChildAttached = std::make_unique<GameObjectDelegate>();
+
+	if (uuid > 0u)
+	{
+		BitFlag::Set(m_Flags, GameObjectFlag::Serializable, true);
+		m_pUUID = AddComponent<UUIDComponent>(uuid);
+	}
+	else
+	{
+		m_pUUID = AddComponent<UUIDComponent>(UUID());
+	}
 }
 
 void dae::GameObject::Update()
@@ -61,6 +72,9 @@ void dae::GameObject::AttachToGameObject(GameObject* pParent, bool keepWorld)
 		}
 		m_pTransformComponent->SetDirty(TransformComponent::TransformFlag::Position, true);
 		m_pTransformComponent->SetDirty(TransformComponent::TransformFlag::Rotation, true);
+
+		if (!pParent->IsFlagSet(GameObjectFlag::Serializable))
+			SetFlag(GameObjectFlag::Serializable, false);
 	}
 }
 
@@ -74,6 +88,23 @@ void dae::GameObject::DetachGameObject(GameObject* pChild)
 bool dae::GameObject::IsRoot() const
 {
 	return GetParent() == nullptr;
+}
+
+bool dae::GameObject::IsFlagSet(GameObjectFlag flag)
+{
+	return BitFlag::IsSet(m_Flags, flag);
+}
+
+void dae::GameObject::SetFlag(GameObjectFlag flag, bool set)
+{
+	BitFlag::Set(m_Flags, flag, set);
+}
+
+inline void dae::GameObject::AddChild(GameObject* pChild)
+{
+	m_pChildren.push_back(pChild);
+	if (m_pOnChildAttached)
+		m_pOnChildAttached->Invoke(pChild);
 }
 
 void dae::GameObject::RemoveChild(GameObject* pChild)

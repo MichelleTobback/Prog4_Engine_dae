@@ -6,6 +6,7 @@
 #include "TransformComponent.h"
 #include "SpriteComponent.h"
 #include "Renderer/Texture2D.h"
+#include "Component/QuadComponent.h"
 
 //=================================================
 // RenderComponent
@@ -54,8 +55,6 @@ void dae::TextureRenderComponent::Render() const
 {
 	glm::vec3 pos{ m_pTransformComponent->GetWorldPosition() };
 	const glm::vec2& size{ m_pTextureComponent->GetSize() };
-	pos.x -= size.x * 0.5f;
-	pos.y -= size.y * 0.5f;
 	const auto& pTexture{ m_pTextureComponent->GetTexture() };
 
 	Renderer::GetInstance().RenderTexture(*pTexture, pos.x, pos.y, size.x, size.y, m_pTransformComponent->GetWorldRotation());
@@ -75,11 +74,33 @@ dae::SpriteRenderComponent::SpriteRenderComponent(GameObject* pOwner, SpriteComp
 void dae::SpriteRenderComponent::Render() const
 {
 	glm::vec3 pos{ m_pTransformComponent->GetWorldPosition() };
-	//const glm::vec2& size{ m_pSpriteComponent->GetTexture().GetSize()};
-	//pos.x -= size.x * 0.5f;
-	//pos.y -= size.y * 0.5f;
-	const auto& pTexture{ m_pSpriteComponent->GetTexture().GetTexture() };
-	auto& src{ m_pSpriteComponent->GetSource() };
+	auto pTexture{ (m_pSpriteComponent && m_pSpriteComponent->GetTexture()) ? m_pSpriteComponent->GetTexture()->GetTexture() : nullptr };
+	if (pTexture)
+	{
+		auto& src{ m_pSpriteComponent->GetSource() };
 
-	Renderer::GetInstance().RenderTexture(*pTexture, pos.x, pos.y, src.x, src.y, src.z, src.w, m_pTransformComponent->GetWorldRotation());
+		Renderer::GetInstance().RenderTexture(*pTexture, pos.x, pos.y, src.x, src.y, src.z, src.w, m_pTransformComponent->GetWorldRotation());
+	}
+}
+
+//=================================================
+// QuadRendererComponent
+//=================================================
+
+dae::QuadRendererComponent::QuadRendererComponent(GameObject* pOwner, QuadComponent* pQuadComponent)
+	: RenderComponent(pOwner)
+	, m_pQuad{ pQuadComponent }
+{
+	m_pTransformComponent = &pOwner->GetTransform();
+}
+
+void dae::QuadRendererComponent::Render() const
+{
+	glm::vec3 pos{ m_pTransformComponent->GetWorldPosition() };
+	const glm::vec2& size{ m_pQuad->GetSize() };
+
+	if (m_pQuad->IsSolid())
+		Renderer::GetInstance().RenderSolidQuad(pos.x, pos.y, size.x, size.y, m_pQuad->GetColor());
+	else
+		Renderer::GetInstance().RenderQuad(pos.x, pos.y, size.x, size.y, m_pQuad->GetColor());
 }

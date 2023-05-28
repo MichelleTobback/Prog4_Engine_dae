@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include "Core/Singleton.h"
+#include "Scene/Serializable.h"
 #include <filesystem>
 
 namespace dae
@@ -21,6 +22,8 @@ namespace dae
 		void HandleObjectsLifeTime();
 
 		Scene* GetCurrent() { return m_scenes[0].get(); }
+
+		OnDeserializedComponentDelegate& GetOnDeserializedComponentDelegate();
 
 	private:
 		friend class Singleton<SceneManager>;

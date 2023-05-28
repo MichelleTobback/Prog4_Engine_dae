@@ -32,12 +32,13 @@ dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 	//attack
 	{
 		Input::InputActionCommand actionCommand{ ActionCommand::Create(pCanon, &TankCanon::Shoot) };
-		actionCommand.IsController = (controllerIndex >= 0);
-		actionCommand.Keyboard.Key = Keyboard::KeyCode::Space;
-		actionCommand.Keyboard.State = Keyboard::KeyState::Pressed;
+		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, (controllerIndex == 0));
+		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::ControllerButton, (controllerIndex >= 0));
 		actionCommand.Controller.ButtonState = Controller::ControllerButtonState::Down;
 		actionCommand.Controller.Button = Controller::ControllerButton::ButtonA;
 		actionCommand.Controller.ControllerID = controllerIndex;
+		actionCommand.Keyboard.Key = Keyboard::KeyCode::Space;
+		actionCommand.Keyboard.State = Keyboard::KeyState::Pressed;
 		Input::GetInstance().AddActionCommand(actionCommand);
 	}
 
@@ -45,8 +46,8 @@ dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 	{
 		glm::vec2 dir{-1.f, 0.f};
 		Input::InputValueCommand<glm::vec2> actionCommand{ ValueCommand<glm::vec2>::Create(&PlayerController::Move, this) };
+		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
 		actionCommand.value = dir;
-		actionCommand.IsController = false;
 		actionCommand.Keyboard.Key = Keyboard::KeyCode::A;
 		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
 		Input::GetInstance().AddAxisCommand(actionCommand);
@@ -54,8 +55,8 @@ dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 	{
 		glm::vec2 dir{ 1.f, 0.f };
 		Input::InputValueCommand<glm::vec2> actionCommand{ ValueCommand<glm::vec2>::Create(&PlayerController::Move, this) };
+		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
 		actionCommand.value = dir;
-		actionCommand.IsController = false;
 		actionCommand.Keyboard.Key = Keyboard::KeyCode::D;
 		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
 		Input::GetInstance().AddAxisCommand(actionCommand);
@@ -63,8 +64,8 @@ dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 	{
 		glm::vec2 dir{ 0.f, 1.f };
 		Input::InputValueCommand<glm::vec2> actionCommand{ ValueCommand<glm::vec2>::Create(&PlayerController::Move, this) };
+		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
 		actionCommand.value = dir;
-		actionCommand.IsController = false;
 		actionCommand.Keyboard.Key = Keyboard::KeyCode::S;
 		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
 		Input::GetInstance().AddAxisCommand(actionCommand);
@@ -72,8 +73,8 @@ dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 	{
 		glm::vec2 dir{ 0.f, -1.f };
 		Input::InputValueCommand<glm::vec2> actionCommand{ ValueCommand<glm::vec2>::Create(&PlayerController::Move, this) };
+		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
 		actionCommand.value = dir;
-		actionCommand.IsController = false;
 		actionCommand.Keyboard.Key = Keyboard::KeyCode::W;
 		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
 		Input::GetInstance().AddAxisCommand(actionCommand);
@@ -83,8 +84,8 @@ dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 	{
 		float dir{ 1.f };
 		Input::InputValueCommand<float> actionCommand{ ValueCommand<float>::Create(&PlayerController::Rotate, this) };
+		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
 		actionCommand.value = dir;
-		actionCommand.IsController = false;
 		actionCommand.Keyboard.Key = Keyboard::KeyCode::Right;
 		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
 		Input::GetInstance().AddValueCommand(actionCommand);
@@ -92,8 +93,8 @@ dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 	{
 		float dir{ -1.f };
 		Input::InputValueCommand actionCommand{ ValueCommand<float>::Create(&PlayerController::Rotate, this) };
+		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
 		actionCommand.value = dir;
-		actionCommand.IsController = false;
 		actionCommand.Keyboard.Key = Keyboard::KeyCode::Left;
 		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
 		Input::GetInstance().AddValueCommand(actionCommand);
@@ -102,7 +103,7 @@ dae::PlayerController::PlayerController(GameObject* pOwner, int controllerIndex)
 	//Reset
 	{
 		Input::InputActionCommand actionCommand{ ActionCommand::Create(this, &PlayerController::Reset) };
-		actionCommand.IsController = false;
+		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
 		actionCommand.Keyboard.Key = Keyboard::KeyCode::R;
 		actionCommand.Keyboard.State = Keyboard::KeyState::Pressed;
 		Input::GetInstance().AddActionCommand(actionCommand);

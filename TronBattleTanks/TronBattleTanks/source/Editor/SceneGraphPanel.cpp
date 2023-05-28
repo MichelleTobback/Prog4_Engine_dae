@@ -72,7 +72,7 @@ void dae::SceneGraphPanel::OnImGuiRender()
 	auto& pObjects{ pScene->GetObjects() };
 	for (auto& [uuid, pGameObject] : pObjects)
 	{
-		if (uuid != GetUUID() && pGameObject->IsRoot())
+		if (pGameObject->IsRoot() && pGameObject->IsFlagSet(GameObjectFlag::Serializable))
 			RenderGameObjectNode(pGameObject.get());
 	}
 

@@ -69,3 +69,8 @@ void dae::SceneManager::SaveScene(Scene& scene, const std::filesystem::path& fil
 		serializer.Serialize(&scene, file);
 	}
 }
+
+dae::OnDeserializedComponentDelegate& dae::SceneManager::GetOnDeserializedComponentDelegate()
+{
+	return *dae::SceneSerializer::GetOnDeserializedComponentDelegate();
+}

@@ -1,5 +1,8 @@
 #pragma once
 #include "Component.h"
+#include "Component/QuadComponent.h"
+#include "SpriteComponent.h"
+#include "TextureComponent.h"
 
 namespace dae
 {
@@ -59,10 +62,29 @@ namespace dae
 
 		virtual void Render() const override;
 
+		inline void SetSpriteComponent(SpriteComponent* pSpriteComponent) { m_pSpriteComponent = pSpriteComponent; }
 		inline SpriteComponent* GetSprite() const { return m_pSpriteComponent; }
 
 	private:
 		SpriteComponent* m_pSpriteComponent;
+		TransformComponent* m_pTransformComponent{ nullptr };
+	};
+
+	class QuadRendererComponent final : public RenderComponent
+	{
+	public:
+		QuadRendererComponent(GameObject* pOwner, QuadComponent* pSpriteComponent);
+		virtual ~QuadRendererComponent() override = default;
+
+		QuadRendererComponent(const QuadRendererComponent& other) = delete;
+		QuadRendererComponent(QuadRendererComponent&& other) = delete;
+		QuadRendererComponent& operator=(const QuadRendererComponent& other) = delete;
+		QuadRendererComponent& operator=(QuadRendererComponent&& other) = delete;
+
+		virtual void Render() const override;
+
+	private:
+		QuadComponent* m_pQuad{nullptr};
 		TransformComponent* m_pTransformComponent{ nullptr };
 	};
 }

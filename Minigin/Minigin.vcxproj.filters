@@ -225,6 +225,18 @@
     <ClInclude Include="source\Platform\SDL\SdlWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\Component\QuadComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Core\Delegate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Component\UI\ButtonComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Input\Mouse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rdParty\imgui-master\imgui.cpp">
@@ -351,6 +363,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Platform\SDL\SdlWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Component\QuadComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Component\UI\ButtonComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Input\Mouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

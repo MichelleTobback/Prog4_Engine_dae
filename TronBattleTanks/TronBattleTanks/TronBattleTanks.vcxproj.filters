@@ -54,6 +54,9 @@
     <ClCompile Include="source\Editor\SceneGraphPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\Editor\TileGridEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Prefabs.h">
@@ -90,6 +93,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\Editor\SceneGraphPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Editor\TileGridEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

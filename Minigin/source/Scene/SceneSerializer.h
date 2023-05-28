@@ -5,26 +5,14 @@
 #include "Core/UUID.h"
 #include "Core/Subject.h"
 #include "Scene/Scene.h"
+#include "Core/Delegate.h"
+#include "Serializable.h"
 
 #include <functional>
 
 namespace dae
 {
 	class GameObject;
-	using OnGameObjectDeserializedFn = std::function<bool(GameObject*, Scene*)>;
-	class OnGameObjectDeserialized final : public Observer
-	{
-	public:
-		OnGameObjectDeserialized(UUID uuid, Scene* pScene, OnGameObjectDeserializedFn fn);
-		virtual ~OnGameObjectDeserialized() = default;
-
-		virtual void Invoke(const Event& event, Subject* pSubject) override;
-
-	private:
-		UUID m_GameObject{};
-		Scene* m_pScene;
-		OnGameObjectDeserializedFn m_Func;
-	};
 
 	class SceneSerializer final
 	{
@@ -37,6 +25,8 @@ namespace dae
 		void Serialize(Scene* pScene, const std::filesystem::path& path);
 		void Deserialize(Scene* pScene, const std::filesystem::path& path);
 
+		static OnDeserializedComponentDelegate* GetOnDeserializedComponentDelegate();
+
 	private:
 		friend class SceneManager;
 		SceneSerializer() = default;
@@ -47,10 +37,11 @@ namespace dae
 		template<typename Fn>
 		void DeserializeComponentOnRefInstantiated(UUID gameObject, Fn fn);
 
-		Scene* m_pScene;
+		Scene* m_pScene{};
 
 		Subject m_GameObjectDeserialized{};
 		std::list<OnGameObjectDeserialized> m_OnDeserialized{};
+		static std::unique_ptr<OnDeserializedComponentDelegate> m_pOnDeserializeComponent;
 	};
 }
 

@@ -6,6 +6,7 @@
 
 namespace dae
 {
+	class Scene;
 	class GameObject;
 	class Component;
 
@@ -35,6 +36,7 @@ namespace dae
 		UUID GetUUID() const;
 
 		inline GameObject* GetOwner() const { return m_pOwner; }
+		Scene* GetScene() const;
 
 		template <typename T>
 		T* As()
@@ -44,9 +46,16 @@ namespace dae
 			return ptr;
 		}
 
-
+		template <typename T>
+		bool Is();
 
 	private:
 		GameObject* m_pOwner;
 	};
+
+	template<typename T>
+	inline bool Component::Is()
+	{
+		return std::strcmp(typeid(T).name(), typeid(*this).name()) == 0;
+	}
 }

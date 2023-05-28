@@ -217,16 +217,21 @@
     <ClInclude Include="..\3rdParty\imgui-master\imstb_truetype.h" />
     <ClInclude Include="source\Audio\AudioClip.h" />
     <ClInclude Include="source\Audio\LoggingSoundSystem.h" />
+    <ClInclude Include="source\Component\QuadComponent.h" />
     <ClInclude Include="source\Component\SpriteAtlasComponent.h" />
     <ClInclude Include="source\Component\SpriteComponent.h" />
+    <ClInclude Include="source\Component\UI\ButtonComponent.h" />
     <ClInclude Include="source\Component\UUIDComponent.h" />
     <ClInclude Include="source\Core\BinaryReader.h" />
+    <ClInclude Include="source\Core\BitFlag.h" />
     <ClInclude Include="source\Core\Command.h" />
+    <ClInclude Include="source\Core\Delegate.h" />
     <ClInclude Include="source\Core\Math.h" />
     <ClInclude Include="source\Core\Random.h" />
     <ClInclude Include="source\Core\UUID.h" />
     <ClInclude Include="source\Core\Window.h" />
     <ClInclude Include="source\Input\Controller.h" />
+    <ClInclude Include="source\Input\Mouse.h" />
     <ClInclude Include="source\Managers\ServiceLocator.h" />
     <ClInclude Include="source\Audio\SoundSystem.h" />
     <ClInclude Include="source\Platform\ImGui\ImGuiComponent.h" />
@@ -254,6 +259,7 @@
     <ClInclude Include="source\Core\Time.h" />
     <ClInclude Include="source\Component\TransformComponent.h" />
     <ClInclude Include="source\Scene\SceneSerializer.h" />
+    <ClInclude Include="source\Scene\Serializable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rdParty\imgui-master\backends\imgui_impl_opengl2.cpp" />
@@ -266,14 +272,17 @@
     <ClCompile Include="..\3rdParty\imgui-master\imgui_widgets.cpp" />
     <ClCompile Include="source\Audio\AudioClip.cpp" />
     <ClCompile Include="source\Audio\LoggingSoundSystem.cpp" />
+    <ClCompile Include="source\Component\QuadComponent.cpp" />
     <ClCompile Include="source\Component\SpriteAtlasComponent.cpp" />
     <ClCompile Include="source\Component\SpriteComponent.cpp" />
+    <ClCompile Include="source\Component\UI\ButtonComponent.cpp" />
     <ClCompile Include="source\Component\UUIDComponent.cpp" />
     <ClCompile Include="source\Core\BinaryReader.cpp" />
     <ClCompile Include="source\Core\Command.cpp" />
     <ClCompile Include="source\Core\Random.cpp" />
     <ClCompile Include="source\Core\UUID.cpp" />
     <ClCompile Include="source\Input\Controller.cpp" />
+    <ClCompile Include="source\Input\Mouse.cpp" />
     <ClCompile Include="source\Managers\ServiceLocator.cpp" />
     <ClCompile Include="source\Platform\ImGui\ImGuiComponent.cpp" />
     <ClCompile Include="source\Platform\ImGui\ImGuiPlotComponent.cpp" />
