@@ -1,4 +1,5 @@
 #include "QuadComponent.h"
+#include "Scene/GameObject.h"
 
 dae::QuadComponent::QuadComponent(GameObject* pOwner, const glm::vec2& size, const glm::vec4& color, bool isSolid)
     : Component(pOwner)

@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "Renderer/Texture2D.h"
 
 #include <memory>
 #include <glm/glm.hpp>

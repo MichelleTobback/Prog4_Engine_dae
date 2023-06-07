@@ -30,10 +30,28 @@ void dae::ComponentSystem::LateUpdate()
 	}
 }
 
+void dae::ComponentSystem::ForEach(const ComponentFunc& fn) const
+{
+	for (auto& component : m_Components)
+	{
+		fn(component.second.get());
+	}
+}
+
+size_t dae::ComponentSystem::Count() const
+{
+	return m_Components.size();
+}
+
 void dae::ComponentSystem::BroadcastMessage(const ComponentMessage& msg)
 {
 	for (auto& component : m_Components)
 	{
 		component.second->ReceiveMessage(msg);
 	}
+}
+
+bool dae::ComponentSystem::HasComponent(const std::string& typeName) const
+{
+	return m_Components.find(typeName.c_str()) != m_Components.end();
 }

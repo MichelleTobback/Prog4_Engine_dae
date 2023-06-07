@@ -90,6 +90,11 @@ bool dae::GameObject::IsRoot() const
 	return GetParent() == nullptr;
 }
 
+bool dae::GameObject::HasComponent(const std::string& typeName) const
+{
+	return m_ComponentSystem.HasComponent(typeName);
+}
+
 bool dae::GameObject::IsFlagSet(GameObjectFlag flag)
 {
 	return BitFlag::IsSet(m_Flags, flag);

@@ -4,6 +4,7 @@
 #include "GridLevelComponent.h"
 #include "Component/RenderComponent.h"
 #include "Core/BitFlag.h"
+#include <memory>
 
 dae::TileComponent::TileComponent(GameObject* pOwner)
 	: TileComponent(pOwner, TileDesc())
@@ -25,27 +26,41 @@ struct TileBlock
 	int flags{};
 };
 
-void dae::TileComponent::Serialize(BinaryWriter& out) const
+dae::TileDesc& dae::TileComponent::GetTileDesc()
 {
+	return m_Desc;
+}
+
+dae::TileComponentSerializer::TileComponentSerializer()
+	: Serializable{ Serializable::Create<TileComponent>() }
+{
+}
+
+void dae::TileComponentSerializer::Serialize(BinaryWriter& out, Component* pComponent) const
+{
+	TileComponent* pSpriteComponent{ pComponent->As<TileComponent>() };
 	TileBlock block{};
-	block.flags = static_cast<int>(m_Desc.flags);
-	block.quadUuid = (m_Desc.pQuadRenderer) ? m_Desc.pQuadRenderer->GetUUID() : UUID(0u);
-	block.spriteUuid = (m_Desc.pRenderer) ? m_Desc.pRenderer->GetUUID() : UUID(0u);
+	TileDesc desc{ pSpriteComponent->GetTileDesc() };
+	block.flags = static_cast<int>(desc.flags);
+	block.quadUuid = (desc.pQuadRenderer) ? desc.pQuadRenderer->GetUUID() : UUID(0u);
+	block.spriteUuid = (desc.pRenderer) ? desc.pRenderer->GetUUID() : UUID(0u);
 	out.Write(block);
 }
 
-bool dae::TileComponent::Deserialize(DeserializeParams& params)
+dae::Component* dae::TileComponentSerializer::Deserialize(DeserializeParams& params)
 {
-	if (params.componentName._Equal(typeid(TileComponent).name()))
+	if (params.pGameObject)
 	{
 		TileBlock block{};
 		params.in.Read(block);
 
 		TileDesc desc{};
 		desc.flags = static_cast<TileFlag>(block.flags);
-		auto pInstance{ params.pGameObject->AddComponent<TileComponent>(desc) };
+		TileComponent* pInstance{ params.pGameObject->AddComponent<TileComponent>(desc) };
 
-		OnGameObjectDeserialized waitForQuad{ block.quadUuid, params.pGameObject->GetScene(), [pInstance](GameObject* pObj, Scene*)->bool
+		auto waitForQuad{ std::make_unique<OnGameObjectDeserialized>(UUID(block.quadUuid), params.pGameObject->GetScene(),
+			std::vector<std::string>{Component::GetName<QuadComponent>()},
+			[pInstance](GameObject* pObj)->bool
 			{
 				if (pObj->HasComponent<QuadRendererComponent>())
 				{
@@ -53,9 +68,11 @@ bool dae::TileComponent::Deserialize(DeserializeParams& params)
 					return true;
 				}
 				return false;
-			}};
+			}) };
 
-		OnGameObjectDeserialized waitForSprite{ block.spriteUuid, params.pGameObject->GetScene(), [pInstance](GameObject* pObj, Scene*)->bool
+		auto waitForSprite{ std::make_unique<OnGameObjectDeserialized>(block.spriteUuid, params.pGameObject->GetScene(),
+			std::vector<std::string>{Component::GetName<SpriteComponent>()},
+			[pInstance](GameObject* pObj)->bool
 			{
 				if (pObj->HasComponent<SpriteRenderComponent>())
 				{
@@ -63,17 +80,12 @@ bool dae::TileComponent::Deserialize(DeserializeParams& params)
 					return true;
 				}
 				return false;
-			} };
+			}) };
 
-		params.outOnDeserialized.push_back(waitForQuad);
-		params.outOnDeserialized.push_back(waitForSprite);
+		params.outOnDeserialized.push(std::move(waitForQuad));
+		params.outOnDeserialized.push(std::move(waitForSprite));
 
-		return true;
+		return pInstance;
 	}
-	return false;
-}
-
-dae::TileDesc& dae::TileComponent::GetTileDesc()
-{
-	return m_Desc;
+	return nullptr;
 }

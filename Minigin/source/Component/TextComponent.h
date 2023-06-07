@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "Component.h"
+#include "Renderer/Font.h"
 #include <glm/glm.hpp>
 
 namespace dae

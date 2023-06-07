@@ -13,6 +13,13 @@ dae::SpriteComponent::SpriteComponent(GameObject* pOwner, TextureComponent* pTex
 {
 }
 
+void dae::SpriteComponent::SetTexture(TextureComponent* pTexture, bool texSizeIsSrc)
+{
+	m_pTexture = pTexture;
+	if (texSizeIsSrc)
+		SetSource({0.f, 0.f, 0.f, 0.f});
+}
+
 void dae::SpriteComponent::SetTexture(TextureComponent* pTexture, const glm::vec4& src)
 {
 	m_pTexture = pTexture;

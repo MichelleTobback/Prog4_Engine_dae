@@ -41,21 +41,30 @@ namespace dae
 		template <typename T>
 		T* As()
 		{
-			//static_assert(std::is_base_of<Component, T>::value, "T must derived from Component!");
+			//static_assert(std::is_base_of<Component, T>::value, "T must derive from Component!");
 			T* ptr{ dynamic_cast<T*>(this) };
 			return ptr;
 		}
 
 		template <typename T>
-		bool Is();
+		bool Is() const;
+		template <typename T>
+		static std::string GetName();
+
+		std::string GetName() const;
 
 	private:
 		GameObject* m_pOwner;
 	};
 
 	template<typename T>
-	inline bool Component::Is()
+	inline bool Component::Is() const
 	{
-		return std::strcmp(typeid(T).name(), typeid(*this).name()) == 0;
+		return std::strcmp(Component::GetName<T>().c_str(), typeid(*this).name()) == 0;
+	}
+	template<typename T>
+	inline std::string Component::GetName()
+	{
+		return typeid(T).name();
 	}
 }

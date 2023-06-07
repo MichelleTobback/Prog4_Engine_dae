@@ -17,17 +17,18 @@
 void load()
 {
 	auto& sceneManager{ dae::SceneManager::GetInstance() };
-	sceneManager.GetOnDeserializedComponentDelegate() += &dae::TileComponent::Deserialize;
+	//auto& pComponentFactory{ *sceneManager.GetComponentFactory() };
+	//pComponentFactory.RegisterComponent<dae::TileComponent>();
 
-	//sceneManager.CreateScene("Demo");
-	sceneManager.LoadScene("Scenes/TileTest.scene");
+	sceneManager.CreateScene("Demo");
+	//sceneManager.LoadScene("Scenes/Level.scene");
 	
 	//dae::Prefab::CreateTestLevel(&scene);
 
 	//dae::Prefab::CreatePlayer(&scene, 3.f);
 	
-	//dae::Editor editor{};
-	//editor.Init();
+	dae::Editor editor{};
+	editor.Init();
 }
 
 int main(int, char* []) {

@@ -2,7 +2,7 @@
 
 dae::Subject::~Subject()
 {
-	
+	 
 }
 
 void dae::Subject::AddObserver(Observer* pObserver)
@@ -17,25 +17,37 @@ void dae::Subject::RemoveObserver(Observer* pObserver)
 
 void dae::Subject::MarkForDestroy(Observer* pObserver)
 {
-	m_pObserversToRemove.push(pObserver);
+	auto it{ std::find(m_pObservers.begin(), m_pObservers.end(), pObserver) };
+	if (it != m_pObservers.end())
+	{
+		m_ObserversPendingDestroy = true;
+		(*it) = nullptr;
+	}
 }
 
 void dae::Subject::Invoke(const Event& event)
 {
-	for (auto pObserver : m_pObservers)
+	for (size_t i{}; i < m_pObservers.size(); ++i)
 	{
-		pObserver->Invoke(event, this);
+		auto pObserver{ m_pObservers[i] };
+		if (pObserver)
+			pObserver->Invoke(event, this);
 	}
-	while (!m_pObserversToRemove.empty())
-	{
-		RemoveObserver(m_pObserversToRemove.front());
-		m_pObserversToRemove.pop();
-	}
+	if (m_ObserversPendingDestroy)
+		RemoveInvalidObservers();
 }
 
 void dae::Subject::Clear()
 {
 	m_pObservers.clear();
-	while (!m_pObserversToRemove.empty())
-		m_pObserversToRemove.pop();
+}
+
+void dae::Subject::RemoveInvalidObservers()
+{
+	m_pObservers.erase(std::remove_if(m_pObservers.begin(), m_pObservers.end(), [](const auto& observer) 
+		{
+			return !observer;
+		}), m_pObservers.end());
+
+	m_ObserversPendingDestroy = false;
 }

@@ -63,3 +63,8 @@ bool dae::BinaryWriter::WriteString(const std::string& str)
 	}
 	return false;
 }
+
+void dae::BinaryWriter::SetPos(uint32_t pos)
+{
+	m_Out.seekp(pos);
+}

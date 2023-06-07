@@ -30,8 +30,8 @@ void dae::TileGridEditor::Awake()
 	//scene version
 	m_pSceneSpriteAtlas = GetScene()->Instantiate(m_pGrid)->AddComponent<SpriteAtlasComponent>(pTextureComponent);
 
-	CreateSpritesFromGrid();
-	CreateTileGrid();
+	//CreateSpritesFromGrid();
+	//CreateTileGrid();
 }
 
 void dae::TileGridEditor::OnImGuiRender()

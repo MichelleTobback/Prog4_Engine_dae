@@ -74,6 +74,7 @@ namespace dae
 		{
 			return m_ComponentSystem.HasComponent<T>();
 		}
+		bool HasComponent(const std::string& typeName) const;
 
 		bool IsFlagSet(GameObjectFlag flag);
 		void Destroy();

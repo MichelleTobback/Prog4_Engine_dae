@@ -4,6 +4,7 @@
 #include <memory>
 #include "Core/Singleton.h"
 #include "Scene/Serializable.h"
+#include "Scene/ComponentFactory.h"
 #include <filesystem>
 
 namespace dae
@@ -23,11 +24,12 @@ namespace dae
 
 		Scene* GetCurrent() { return m_scenes[0].get(); }
 
-		OnDeserializedComponentDelegate& GetOnDeserializedComponentDelegate();
+		ComponentFactory* GetComponentFactory();
 
 	private:
 		friend class Singleton<SceneManager>;
-		SceneManager() = default;
+		SceneManager();
 		std::vector<std::shared_ptr<Scene>> m_scenes;
+		std::unique_ptr<ComponentFactory> m_pComponentFactory;
 	};
 }

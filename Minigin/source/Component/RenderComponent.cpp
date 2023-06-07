@@ -64,11 +64,21 @@ void dae::TextureRenderComponent::Render() const
 // SpriteRenderComponent
 //=================================================
 
+dae::SpriteRenderComponent::SpriteRenderComponent(GameObject* pOwner)
+	: SpriteRenderComponent(pOwner, nullptr)
+{
+}
+
 dae::SpriteRenderComponent::SpriteRenderComponent(GameObject* pOwner, SpriteComponent* pSpriteComponent)
 	: RenderComponent(pOwner)
 	, m_pSpriteComponent{pSpriteComponent}
 {
-	m_pTransformComponent = pOwner->GetComponent<TransformComponent>();
+	
+}
+
+void dae::SpriteRenderComponent::Awake()
+{
+	m_pTransformComponent = &GetOwner()->GetTransform();
 }
 
 void dae::SpriteRenderComponent::Render() const
@@ -87,11 +97,22 @@ void dae::SpriteRenderComponent::Render() const
 // QuadRendererComponent
 //=================================================
 
+void dae::QuadRendererComponent::Awake()
+{
+	m_pTransformComponent = &GetOwner()->GetTransform();
+}
+
+dae::QuadRendererComponent::QuadRendererComponent(GameObject* pOwner)
+	: QuadRendererComponent(pOwner, nullptr)
+{
+
+}
+
 dae::QuadRendererComponent::QuadRendererComponent(GameObject* pOwner, QuadComponent* pQuadComponent)
 	: RenderComponent(pOwner)
 	, m_pQuad{ pQuadComponent }
 {
-	m_pTransformComponent = &pOwner->GetTransform();
+	
 }
 
 void dae::QuadRendererComponent::Render() const
@@ -103,4 +124,9 @@ void dae::QuadRendererComponent::Render() const
 		Renderer::GetInstance().RenderSolidQuad(pos.x, pos.y, size.x, size.y, m_pQuad->GetColor());
 	else
 		Renderer::GetInstance().RenderQuad(pos.x, pos.y, size.x, size.y, m_pQuad->GetColor());
+}
+
+void dae::QuadRendererComponent::SetQuad(dae::QuadComponent* pQuad)
+{
+	m_pQuad = pQuad;
 }

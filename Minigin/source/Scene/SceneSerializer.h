@@ -25,40 +25,29 @@ namespace dae
 		void Serialize(Scene* pScene, const std::filesystem::path& path);
 		void Deserialize(Scene* pScene, const std::filesystem::path& path);
 
-		static OnDeserializedComponentDelegate* GetOnDeserializedComponentDelegate();
-
 	private:
 		friend class SceneManager;
 		SceneSerializer() = default;
 
-		void SerializeGameObject(GameObject* pGameObject, BinaryWriter& out);
+		void SerializeGameObject(GameObject* pGameObject, BinaryWriter& out, ComponentFactory& factory);
 		//instantiates the gameobject if not already deserialized
 		GameObject* GetDeserializedGameObject(UUID uuid, UUID parent = 0u);
 		template<typename Fn>
-		void DeserializeComponentOnRefInstantiated(UUID gameObject, Fn fn);
+		void DeserializeComponentOnRefInstantiated(UUID gameObject, const std::vector<std::string>& components, Fn fn);
 
 		Scene* m_pScene{};
+		int m_SerializableObjects{};
 
 		Subject m_GameObjectDeserialized{};
-		std::list<OnGameObjectDeserialized> m_OnDeserialized{};
-		static std::unique_ptr<OnDeserializedComponentDelegate> m_pOnDeserializeComponent;
+		std::list<std::unique_ptr<OnGameObjectDeserialized>> m_OnDeserialized{};
+		static void RegisterEngineComponents(ComponentFactory& factory);
 	};
 }
 
 template<typename Fn>
-void dae::SceneSerializer::DeserializeComponentOnRefInstantiated(dae::UUID gameObject, Fn fn)
+void dae::SceneSerializer::DeserializeComponentOnRefInstantiated(dae::UUID gameObject, const std::vector<std::string>& components, Fn fn)
 {
-	OnGameObjectDeserialized observer{ gameObject, m_pScene, fn };
-	if (m_pScene->GetGameObject(gameObject) != nullptr)
-	{
-		Event event{};
-		uint64_t obj{ static_cast<uint64_t>(gameObject) };
-		event.SetData(obj);
-		observer.Invoke(event, &m_GameObjectDeserialized);
-	}
-	else
-	{
-		m_OnDeserialized.push_back(observer);
-		m_GameObjectDeserialized.AddObserver(&m_OnDeserialized.back());
-	}
+	auto pOnDeserialized{ std::make_unique<OnGameObjectDeserialized>(gameObject, m_pScene, components, fn) };
+	m_OnDeserialized.push_back(std::move(pOnDeserialized));
+	m_GameObjectDeserialized.AddObserver(m_OnDeserialized.back().get());
 }

@@ -3,6 +3,7 @@
 #include "Component/QuadComponent.h"
 #include "SpriteComponent.h"
 #include "TextureComponent.h"
+#include "Scene/Serializable.h"
 
 namespace dae
 {
@@ -42,6 +43,7 @@ namespace dae
 		virtual void Render() const override;
 
 		inline TextureComponent* GetTexture() const { return m_pTextureComponent; }
+		inline void SetTexture(TextureComponent* pTextureComponent) { m_pTextureComponent = pTextureComponent; }
 
 	private:
 		TextureComponent* m_pTextureComponent{ nullptr };
@@ -52,6 +54,7 @@ namespace dae
 	class SpriteRenderComponent final : public RenderComponent
 	{
 	public:
+		SpriteRenderComponent(GameObject* pOwner);
 		SpriteRenderComponent(GameObject* pOwner, SpriteComponent* pSpriteComponent);
 		virtual ~SpriteRenderComponent() override = default;
 
@@ -60,6 +63,7 @@ namespace dae
 		SpriteRenderComponent& operator=(const TextureRenderComponent& other) = delete;
 		SpriteRenderComponent& operator=(TextureRenderComponent&& other) = delete;
 
+		virtual void Awake() override;
 		virtual void Render() const override;
 
 		inline void SetSpriteComponent(SpriteComponent* pSpriteComponent) { m_pSpriteComponent = pSpriteComponent; }
@@ -73,6 +77,7 @@ namespace dae
 	class QuadRendererComponent final : public RenderComponent
 	{
 	public:
+		QuadRendererComponent(GameObject* pOwner);
 		QuadRendererComponent(GameObject* pOwner, QuadComponent* pSpriteComponent);
 		virtual ~QuadRendererComponent() override = default;
 
@@ -81,7 +86,10 @@ namespace dae
 		QuadRendererComponent& operator=(const QuadRendererComponent& other) = delete;
 		QuadRendererComponent& operator=(QuadRendererComponent&& other) = delete;
 
+		virtual void Awake() override;
 		virtual void Render() const override;
+
+		void SetQuad(QuadComponent* pQuad);
 
 	private:
 		QuadComponent* m_pQuad{nullptr};

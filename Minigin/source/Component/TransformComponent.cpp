@@ -67,7 +67,7 @@ void dae::TransformComponent::RecalculateWorldPosition()
 		m_WorldPosition = m_LocalPosition;
 	else
 	{
-		auto pTransformComponent{ pParent->GetComponent<TransformComponent>() };
+		auto pTransformComponent{ &pParent->GetTransform() };
 		const float rotation{ glm::radians(pTransformComponent->GetLocalRotation()) };
 		if (rotation > 0.f)
 		{
@@ -89,7 +89,7 @@ void dae::TransformComponent::RecalculateWorldRotation()
 		m_WorldRotation = m_LocalRotation;
 	else
 	{
-		auto pTransformComponent{ pParent->GetComponent<TransformComponent>() };
+		auto pTransformComponent{ &pParent->GetTransform() };
 		m_WorldRotation = pTransformComponent->GetWorldRotation() + m_LocalRotation;
 	}
 	SetDirty(TransformFlag::Rotation, false);
@@ -105,7 +105,7 @@ void dae::TransformComponent::SetDirty(TransformFlag flag, bool isDirty)
 		auto& children{ GetOwner()->GetChildren() };
 		for (auto& child : children)
 		{
-			child->GetComponent<TransformComponent>()->SetDirty(flag, isDirty);
+			child->GetTransform().SetDirty(flag, isDirty);
 		}
 	}
 	else

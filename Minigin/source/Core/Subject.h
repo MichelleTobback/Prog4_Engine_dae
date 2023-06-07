@@ -21,6 +21,8 @@ namespace dae
 
 	private:
 		std::vector<Observer*> m_pObservers;
-		std::queue<Observer*> m_pObserversToRemove{};
+		bool m_ObserversPendingDestroy{ false };
+
+		void RemoveInvalidObservers();
 	};
 }

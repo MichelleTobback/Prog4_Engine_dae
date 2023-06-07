@@ -4,6 +4,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <functional>
 
 #include <assert.h>
 #include <queue>
@@ -13,7 +14,7 @@ namespace dae
 	class GameObject;
 
 	constexpr size_t MAX_COMPONENTS = 32;
-	typedef std::unordered_map<const char*, std::shared_ptr<Component>> ComponentMap;
+	typedef std::unordered_map<std::string, std::shared_ptr<Component>> ComponentMap;
 
 	class ComponentSystem final
 	{
@@ -22,13 +23,11 @@ namespace dae
 		void FixedUpdate();
 		void LateUpdate();
 
+		bool HasComponent(const std::string& typeName) const;
 		template <typename T>
 		bool HasComponent() const
 		{
-			const char* typeName{ typeid(T).name() };
-			bool hasComponent{ m_Components.find(typeName) != m_Components.end() };
-
-			return hasComponent;
+			return HasComponent(Component::GetName<T>());
 		}
 
 		template <typename T>
@@ -36,23 +35,20 @@ namespace dae
 		{
 			assert(HasComponent<T>() && "Invalid Component!");
 
-			const char* typeName{ typeid(T).name() };
-			return m_Components.at(typeName)->As<T>();
+			return m_Components.at(Component::GetName<T>())->As<T>();
 		}
 
 		template <typename T>
 		T* GetComponent()
 		{
 			assert(HasComponent<T>() && "Invalid Component!");
-
-			const char* typeName{ typeid(T).name() };
-			return m_Components.at(typeName)->As<T>();
+			return m_Components.at(Component::GetName<T>())->As<T>();
 		}
 
 		template <typename T, typename ... TArgs>
 		T* AddComponent(TArgs&& ... args)
 		{
-			const char* typeName{ typeid(T).name() };
+			const std::string typeName{ Component::GetName<T>() };
 			m_Components.insert(std::make_pair(typeName, std::make_shared<T>(std::forward<TArgs>(args)...)));
 			auto pComponent{ m_Components.at(typeName) };
 			m_pComponentsToAwake.push(pComponent.get());
@@ -65,10 +61,13 @@ namespace dae
 			if (!HasComponent<T>())
 				return false;
 
-			const char* typeName{ typeid(T).name() };
-			m_Components.erase(typeName);
+			m_Components.erase(Component::GetName<T>());
 			return true;
 		}
+
+		using ComponentFunc = std::function<void(Component*)>;
+		void ForEach(const ComponentFunc& fn) const;
+		size_t Count() const;
 
 		void BroadcastMessage(const ComponentMessage& msg);
 

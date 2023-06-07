@@ -218,6 +218,7 @@
     <ClInclude Include="source\Audio\AudioClip.h" />
     <ClInclude Include="source\Audio\LoggingSoundSystem.h" />
     <ClInclude Include="source\Component\QuadComponent.h" />
+    <ClInclude Include="source\Component\SerializableComponents.h" />
     <ClInclude Include="source\Component\SpriteAtlasComponent.h" />
     <ClInclude Include="source\Component\SpriteComponent.h" />
     <ClInclude Include="source\Component\UI\ButtonComponent.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="source\Platform\SDL\SdlSoundSystem.h" />
     <ClInclude Include="source\Platform\SDL\SdlWindow.h" />
     <ClInclude Include="source\Renderer\Font.h" />
+    <ClInclude Include="source\Scene\ComponentFactory.h" />
     <ClInclude Include="source\Scene\GameObject.h" />
     <ClInclude Include="source\Input\Input.h" />
     <ClInclude Include="source\Core\Minigin.h" />
@@ -273,6 +275,7 @@
     <ClCompile Include="source\Audio\AudioClip.cpp" />
     <ClCompile Include="source\Audio\LoggingSoundSystem.cpp" />
     <ClCompile Include="source\Component\QuadComponent.cpp" />
+    <ClCompile Include="source\Component\SerializableComponents.cpp" />
     <ClCompile Include="source\Component\SpriteAtlasComponent.cpp" />
     <ClCompile Include="source\Component\SpriteComponent.cpp" />
     <ClCompile Include="source\Component\UI\ButtonComponent.cpp" />
@@ -293,6 +296,7 @@
     <ClCompile Include="source\Platform\SDL\SdlSoundSystem.cpp" />
     <ClCompile Include="source\Platform\SDL\SdlWindow.cpp" />
     <ClCompile Include="source\Renderer\Font.cpp" />
+    <ClCompile Include="source\Scene\ComponentFactory.cpp" />
     <ClCompile Include="source\Scene\GameObject.cpp" />
     <ClCompile Include="source\Input\Input.cpp" />
     <ClCompile Include="source\Core\Minigin.cpp" />

@@ -70,7 +70,13 @@ void dae::SceneManager::SaveScene(Scene& scene, const std::filesystem::path& fil
 	}
 }
 
-dae::OnDeserializedComponentDelegate& dae::SceneManager::GetOnDeserializedComponentDelegate()
+dae::ComponentFactory* dae::SceneManager::GetComponentFactory()
 {
-	return *dae::SceneSerializer::GetOnDeserializedComponentDelegate();
+	return m_pComponentFactory.get();
+}
+
+dae::SceneManager::SceneManager()
+	: m_pComponentFactory{std::make_unique<ComponentFactory>()}
+{
+	SceneSerializer::RegisterEngineComponents(*m_pComponentFactory);
 }

@@ -23,7 +23,7 @@ namespace dae
 	};
 
 	class SpriteRenderComponent;
-	class TileComponent final : public Component, public Serializable
+	class TileComponent final : public Component
 	{
 	public:
 		TileComponent(GameObject* pOwner);
@@ -35,8 +35,8 @@ namespace dae
 		TileComponent& operator=(const TileComponent& other) = delete;
 		TileComponent& operator=(TileComponent&& other) = delete;
 
-		virtual void Serialize(BinaryWriter& out) const override;
-		static bool Deserialize(DeserializeParams& params);
+		//virtual void Serialize(BinaryWriter& out) const override;
+		//static Component* Deserialize(DeserializeParams& params);
 
 		TileDesc& GetTileDesc();
 
@@ -44,5 +44,15 @@ namespace dae
 
 	private:
 		TileDesc m_Desc{};
+	};
+
+	class TileComponentSerializer final : public Serializable
+	{
+	public:
+		TileComponentSerializer();
+		virtual ~TileComponentSerializer() override = default;
+
+		virtual void Serialize(BinaryWriter& out, Component* pComponent) const override;
+		virtual Component* Deserialize(DeserializeParams& params) override;
 	};
 }

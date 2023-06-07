@@ -1,8 +1,6 @@
 #include "Component/TextureComponent.h"
 #include "Managers/ResourceManager.h"
 
-#include "Renderer/Texture2D.h"
-
 dae::TextureComponent::TextureComponent(GameObject* pOwner)
     : Component(pOwner)
 {

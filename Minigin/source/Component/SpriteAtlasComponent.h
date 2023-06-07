@@ -12,6 +12,7 @@ namespace dae
 	class SpriteAtlasComponent final : public Component
 	{
 	public:
+		SpriteAtlasComponent(GameObject* pOwner);
 		SpriteAtlasComponent(GameObject* pOwner, TextureComponent* pTexture);
 		virtual ~SpriteAtlasComponent() override = default;
 

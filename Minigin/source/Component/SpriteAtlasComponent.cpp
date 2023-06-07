@@ -2,6 +2,11 @@
 #include "Scene/GameObject.h"
 #include "Scene/Scene.h"
 
+dae::SpriteAtlasComponent::SpriteAtlasComponent(GameObject* pOwner)
+	: SpriteAtlasComponent(pOwner, nullptr)
+{
+}
+
 dae::SpriteAtlasComponent::SpriteAtlasComponent(GameObject* pOwner, TextureComponent* pTexture)
 	: Component(pOwner)
 	, m_pTexture{pTexture}

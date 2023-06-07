@@ -35,6 +35,8 @@ namespace dae
 		bool WriteArray(T* pData, size_t size);
 		bool WriteString(const std::string& str);
 
+		void SetPos(uint32_t pos);
+
 
 		operator bool() const { return (m_Out) ? true : false; }
 

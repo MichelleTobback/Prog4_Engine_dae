@@ -18,3 +18,8 @@ dae::Scene* dae::Component::GetScene() const
 {
 	return GetOwner()->GetScene();
 }
+
+std::string dae::Component::GetName() const
+{
+	return typeid(*this).name();
+}

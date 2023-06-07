@@ -21,6 +21,7 @@ namespace dae
 		SpriteComponent& operator=(const SpriteComponent& other) = delete;
 		SpriteComponent& operator=(SpriteComponent&& other) = delete;
 
+		void SetTexture(TextureComponent* pTexture, bool texSizeIsSrc);
 		void SetTexture(TextureComponent* pTexture, const glm::vec4& src);
 		void SetTexture(TextureComponent* pTexture, float srcX = 0.f, float srcY = 0.f, float srcWidth = 0.f, float srcHeight = 0.f);
 		void SetSource(const glm::vec4& src);
