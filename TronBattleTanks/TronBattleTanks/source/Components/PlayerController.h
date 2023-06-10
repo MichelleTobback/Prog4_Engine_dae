@@ -5,9 +5,7 @@
 
 namespace dae
 {
-	class MovementComponent;
-	class TransformComponent;
-	class HealthComponent;
+	class TankComponent;
 	class PlayerController : public Component
 	{
 	public:
@@ -19,22 +17,10 @@ namespace dae
 		PlayerController& operator=(const PlayerController& other) = delete;
 		PlayerController& operator=(PlayerController&& other) = delete;
 
-		virtual void Update() override;
-
-		void Attack();
-		void DealDamage(float damage);
-		void Reset();
-
-		void Move(const glm::vec2& dir);
-		void Rotate(float dir);
+		inline TankComponent& GetTank() const { return *m_pTank; }
 
 	private:
 		int m_ControllerIndex;
-		float m_RotationSpeed{ 45.f };
-
-		HealthComponent* m_pHealth{nullptr};
-		MovementComponent* m_pMovement{ nullptr };
-
-		GameObject* m_pTankCanon{};
+		TankComponent* m_pTank{ nullptr };
 	};
 }

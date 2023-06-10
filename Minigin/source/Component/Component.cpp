@@ -9,6 +9,11 @@ dae::Component::Component(GameObject* pGameObject)
 }
 
 
+dae::TransformComponent& dae::Component::GetTransform()
+{
+	return GetOwner()->GetTransform();
+}
+
 dae::UUID dae::Component::GetUUID() const
 {
 	return GetOwner()->GetUUID();

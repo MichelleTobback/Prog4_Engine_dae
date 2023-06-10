@@ -18,6 +18,7 @@ namespace dae
 		//returns remaining
 		float DealDamage(float amount);
 		void Heal(float amount);
+		void SetMax(float value, bool refill = false);
 
 		float GetValue() const { return m_CurrentValue; }
 		float GetMaxValue() const { return m_MaxValue; }

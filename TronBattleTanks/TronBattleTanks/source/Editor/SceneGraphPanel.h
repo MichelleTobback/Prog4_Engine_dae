@@ -17,6 +17,8 @@ namespace dae
 		SceneGraphPanel& operator=(const SceneGraphPanel& other) = delete;
 		SceneGraphPanel& operator=(SceneGraphPanel&& other) = delete;
 
+		void SelectGameObject(GameObject* pGameObject);
+
 	protected:
 		virtual void OnImGuiRender();
 

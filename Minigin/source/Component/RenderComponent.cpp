@@ -57,7 +57,7 @@ void dae::TextureRenderComponent::Render() const
 	const glm::vec2& size{ m_pTextureComponent->GetSize() };
 	const auto& pTexture{ m_pTextureComponent->GetTexture() };
 
-	Renderer::GetInstance().RenderTexture(*pTexture, pos.x, pos.y, size.x, size.y, m_pTransformComponent->GetWorldRotation());
+	Renderer::GetInstance().RenderTexture(*pTexture, pos.x, pos.y, 0.f, 0.f, size.x, size.y, m_pTransformComponent->GetWorldRotationAngle());
 }
 
 //=================================================
@@ -73,12 +73,12 @@ dae::SpriteRenderComponent::SpriteRenderComponent(GameObject* pOwner, SpriteComp
 	: RenderComponent(pOwner)
 	, m_pSpriteComponent{pSpriteComponent}
 {
-	
+	m_pTransformComponent = &GetOwner()->GetTransform();
 }
 
 void dae::SpriteRenderComponent::Awake()
 {
-	m_pTransformComponent = &GetOwner()->GetTransform();
+	
 }
 
 void dae::SpriteRenderComponent::Render() const
@@ -87,9 +87,11 @@ void dae::SpriteRenderComponent::Render() const
 	auto pTexture{ (m_pSpriteComponent && m_pSpriteComponent->GetTexture()) ? m_pSpriteComponent->GetTexture()->GetTexture() : nullptr };
 	if (pTexture)
 	{
-		auto& src{ m_pSpriteComponent->GetSource() };
+		const auto& src{ m_pSpriteComponent->GetSource() };
 
-		Renderer::GetInstance().RenderTexture(*pTexture, pos.x, pos.y, src.x, src.y, src.z, src.w, m_pTransformComponent->GetWorldRotation());
+		float worldRotation{ m_pTransformComponent->GetWorldRotationAngle() };
+
+		Renderer::GetInstance().RenderTexture(*pTexture, pos.x, pos.y, src.x, src.y, src.z, src.w, worldRotation);
 	}
 }
 
@@ -99,7 +101,7 @@ void dae::SpriteRenderComponent::Render() const
 
 void dae::QuadRendererComponent::Awake()
 {
-	m_pTransformComponent = &GetOwner()->GetTransform();
+	
 }
 
 dae::QuadRendererComponent::QuadRendererComponent(GameObject* pOwner)
@@ -112,7 +114,7 @@ dae::QuadRendererComponent::QuadRendererComponent(GameObject* pOwner, QuadCompon
 	: RenderComponent(pOwner)
 	, m_pQuad{ pQuadComponent }
 {
-	
+	m_pTransformComponent = &GetOwner()->GetTransform();
 }
 
 void dae::QuadRendererComponent::Render() const

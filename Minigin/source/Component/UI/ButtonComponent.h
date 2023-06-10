@@ -48,6 +48,7 @@ namespace dae
 
 		ButtonDelegate& GetOnPressedDelegate() { return *m_pOnPressedDelegate; }
 		ButtonDelegate& GetOnReleasedDelegate() { return *m_pOnReleasedDelegate; }
+		ButtonDelegate& GetOnHoveredDelegate() { return *m_pOnHoveredDelegate; }
 
 	private:
 		QuadComponent* m_pQuad{ nullptr };
@@ -61,6 +62,7 @@ namespace dae
 
 		std::unique_ptr<ButtonDelegate> m_pOnPressedDelegate{ nullptr };
 		std::unique_ptr<ButtonDelegate> m_pOnReleasedDelegate{ nullptr };
+		std::unique_ptr<ButtonDelegate> m_pOnHoveredDelegate{ nullptr };
 
 		bool IsFlagSet(UIButtonFlag flag) const;
 		void OnPressed();

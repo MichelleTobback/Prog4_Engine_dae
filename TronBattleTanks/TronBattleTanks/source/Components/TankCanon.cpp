@@ -7,17 +7,28 @@
 dae::TankCanon::TankCanon(GameObject* pOwner)
 	: Component(pOwner)
 {
-	m_pSocket = pOwner->GetScene()->Instantiate(GetOwner());
-	m_pSocket->GetTransform().Translate({ 16.f, 16.f, 0.f });
-	Prefab::CreateTextureRendererObject(GetOwner()->GetScene(), "Sprites/TankCanon.png")->AttachToGameObject(pOwner);
+	auto pTankCenter{ pOwner->GetScene()->Instantiate(GetOwner()->GetParent(), { 18.f, 18.f, 0.f }) };
+	m_pSocket = pOwner->GetScene()->Instantiate(pTankCenter, {18.f, 0.f, 0.f});
+	
+	auto pVisual{ Prefab::CreateTextureRendererObject(GetOwner()->GetScene(), "Sprites/TankCanon.png") };
+	pVisual->AttachToGameObject(GetOwner());
 
 	m_pShootSound = std::make_unique<AudioClip>("Sounds/shoot.wav");
+
+	//debug
+	auto pDebug{ Prefab::CreateTextureRendererObject(GetOwner()->GetScene(), "Sprites/Bullet.png") };
+	pDebug->AttachToGameObject(m_pSocket);
+}
+
+void dae::TankCanon::Update()
+{
+	m_pSocket->GetParent()->GetTransform().SetLocalRotation(GetTransform().GetLocalRotation());
 }
 
 void dae::TankCanon::Shoot()
 {
 	auto pBullet{ GetOwner()->GetScene()->Instantiate(nullptr, m_pSocket->GetTransform().GetWorldPosition())->AddComponent<Bullet>() };
-	pBullet->GetOwner()->GetTransform().Rotate(GetOwner()->GetTransform().GetWorldRotation());
+	pBullet->GetTransform().Rotate(GetTransform().GetWorldRotationAngle());
 
 	m_pShootSound->Play();
 }

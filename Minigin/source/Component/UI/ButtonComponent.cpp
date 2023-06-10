@@ -10,6 +10,7 @@ dae::ButtonComponent::ButtonComponent(GameObject* pOwner, const glm::vec2& size)
 	BitFlag::Set(m_Flags, UIButtonFlag::DefaultState, true);
 	m_pOnPressedDelegate = std::make_unique<ButtonDelegate>();
 	m_pOnReleasedDelegate = std::make_unique<ButtonDelegate>();
+	m_pOnHoveredDelegate = std::make_unique<ButtonDelegate>();
 	m_pQuad = GetOwner()->AddComponent<QuadComponent>(size, m_DefaultLayout.color);
 	m_pQuadRenderer = GetOwner()->AddComponent<QuadRendererComponent>(m_pQuad);
 	m_pSpriteRenderer = GetOwner()->AddComponent<SpriteRenderComponent>(m_DefaultLayout.pSprite);
@@ -172,6 +173,8 @@ void dae::ButtonComponent::OnMouseEnter()
 	}
 
 	m_pQuad->SetColor(m_HoveredLayout.color);
+
+	m_pOnHoveredDelegate->Invoke();
 }
 
 void dae::ButtonComponent::OnMouseExit()

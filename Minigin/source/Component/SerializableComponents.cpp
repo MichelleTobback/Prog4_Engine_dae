@@ -5,7 +5,9 @@
 #include "TextureComponent.h"
 #include "TextComponent.h"
 #include "SpriteAtlasComponent.h"
+#include "Component/Physics/RigidBody2DComponent.h"
 #include "Managers/ResourceManager.h"
+#include "Core/BitFlag.h"
 
 namespace dae
 {
@@ -421,4 +423,180 @@ namespace dae
         return nullptr;
     }
 #pragma endregion //SpriteAtlasComponent
+
+#pragma region RigidBody2DComponentSerializer
+    //=================================
+    // RigidBody2DComponent
+    //=================================
+    struct ColliderInfo
+    {
+        uint64_t uuid{};
+        int type{};
+    };
+
+    struct RigdiBody2DBlock
+    {
+        float restitution{};
+        float mass{};
+        int collisionMode{};
+        int numColliders{};
+    };
+
+    RigidBody2DComponentSerializer::RigidBody2DComponentSerializer()
+        : Serializable{ Serializable::Create<RigidBody2DComponent>() }
+    {
+    }
+    void RigidBody2DComponentSerializer::Serialize(BinaryWriter& out, Component* pComponent) const
+    {
+        RigidBody2DComponent* pRigidBody{ pComponent->As<RigidBody2DComponent>() };
+
+        RigdiBody2DBlock data{};
+        const auto& pColliders{ pRigidBody->GetColliders() };
+        data.numColliders = static_cast<int>(pColliders.size());
+        data.collisionMode = static_cast<int>(pRigidBody->GetCollisionMode());
+        data.mass = pRigidBody->GetMass();
+        data.restitution = pRigidBody->GetRestitution();
+
+        std::vector<ColliderInfo> colliders(data.numColliders);
+        for (int i{}; i < data.numColliders; ++i)
+        {
+            colliders[i].uuid = pColliders[i]->GetUUID();
+            colliders[i].type = static_cast<int>(pColliders[i]->GetType());
+        }
+
+        out.Write(data);
+
+        if (colliders.size() > 0)
+            out.WriteArray(&colliders[0], colliders.size());
+        else
+            out.Write(0);
+    }
+    Component* RigidBody2DComponentSerializer::Deserialize(DeserializeParams& params)
+    {
+        if (params.pGameObject)
+        {
+            RigdiBody2DBlock rigidBodyData{};
+            params.in.Read(rigidBodyData);
+
+            RigidBody2DComponent* pInstance{ params.pGameObject->AddComponent<RigidBody2DComponent>() };
+            if (rigidBodyData.collisionMode == 0)
+                pInstance->SetStatic();
+            else
+                pInstance->SetDynamic();
+            pInstance->SetMass(rigidBodyData.mass);
+            pInstance->SetRestitution(rigidBodyData.restitution);
+
+            std::vector<ColliderInfo> colliders(rigidBodyData.numColliders);
+            params.in.ReadArray(colliders);
+
+            std::for_each(colliders.begin(), colliders.end(), [pInstance, params](ColliderInfo colliderInfo)
+                {
+                    ColliderType type{ static_cast<ColliderType>(colliderInfo.type) };
+                    std::string colliderTypeName{};
+                    switch (type)
+                    {
+                    case ColliderType::Box:
+                    {
+                        colliderTypeName = Component::GetName<BoxCollider2DComponent>();
+                    }
+                        break;
+
+                    case ColliderType::Circle:
+                    {
+
+                    }
+                        break;
+                    }
+
+                    auto waitForCollider{ std::make_unique<OnGameObjectDeserialized>(colliderInfo.uuid, params.pGameObject->GetScene(),
+                    std::vector<std::string>{colliderTypeName},
+                    [type, pInstance](GameObject* pObj)->bool
+                    {
+                            switch (type)
+                            {
+                            case ColliderType::Box:
+                            {
+                                if (!pObj->HasComponent<BoxCollider2DComponent>())
+                                    return false;
+
+                                BoxCollider2DComponent* pColliderInstance{ pObj->GetComponent<BoxCollider2DComponent>() };
+                                pInstance->AddCollider(pColliderInstance);
+                            }
+                            break;
+                            }
+
+                        return true;
+                    }) };
+
+                    params.outOnDeserialized.push(std::move(waitForCollider));
+                });
+
+            return pInstance;
+        }
+        return nullptr;
+    }
+#pragma endregion RigidBody2DComponentSerializer
+
+#pragma region BoxCollider2DComponent
+    //=================================
+    // BoxCollider2DComponent
+    //=================================
+    struct ColliderBlock
+    {
+        int flags{};
+        int layer{};
+        int ingoreLayer{};
+    };
+
+    struct Box2DColliderBlock
+    {
+        ColliderBlock base{};
+        uint64_t quadUuid{};
+    };
+
+    BoxCollider2DComponentSerializer::BoxCollider2DComponentSerializer()
+        : Serializable(Serializable::Create<BoxCollider2DComponent>())
+    {
+    }
+    void BoxCollider2DComponentSerializer::Serialize(BinaryWriter& out, Component* pComponent) const
+    {
+        BoxCollider2DComponent* pCollider{ pComponent->As<BoxCollider2DComponent>() };
+
+        Box2DColliderBlock data{};
+        data.base.flags = static_cast<int>(pCollider->GetFlags());
+        data.base.layer = static_cast<int>(pCollider->GetCollisionLayer());
+        data.base.ingoreLayer = static_cast<int>(pCollider->GetCollisionIgnoreLayer());
+        data.quadUuid = pCollider->GetShape()->GetUUID();
+        out.Write(data);
+    }
+    Component* BoxCollider2DComponentSerializer::Deserialize(DeserializeParams& params)
+    {
+        if (params.pGameObject)
+        {
+            Box2DColliderBlock colliderData{};
+            params.in.Read(colliderData);
+
+            BoxCollider2DComponent* pInstance{ params.pGameObject->AddComponent<BoxCollider2DComponent>() };
+            pInstance->SetCollisionLayer(static_cast<CollisionLayer>(colliderData.base.layer));
+            pInstance->SetCollisionIgnoreLayer(static_cast<CollisionLayer>(colliderData.base.ingoreLayer), true);
+            pInstance->SetTrigger(BitFlag::IsSet(static_cast<CollisionFlags>(colliderData.base.flags), CollisionFlags::IsTrigger));
+
+            auto waitForQuad{ std::make_unique<OnGameObjectDeserialized>(colliderData.quadUuid, params.pGameObject->GetScene(),
+                std::vector<std::string>{Component::GetName<QuadComponent>()},
+                [pInstance, params](GameObject* pObj)->bool
+                {
+                    if (pObj->HasComponent<QuadComponent>())
+                    {
+                        pInstance->SetShape(pObj->GetComponent<QuadComponent>());
+                        return true;
+                    }
+                    return false;
+                }) };
+            params.outOnDeserialized.push(std::move(waitForQuad));
+
+            return pInstance;
+        }
+        return nullptr;
+    }
+#pragma endregion BoxCollider2DComponent
 }

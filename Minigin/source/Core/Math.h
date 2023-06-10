@@ -28,6 +28,16 @@ namespace dae
 			return (point.x >= left && point.x <= right && point.y >= top && point.y <= bottom);
 		}
 
+		inline static float WrapAngle(float angle)
+		{
+			angle = std::fmodf(angle, 360.0f);
+			if (angle < 0.0f)
+			{
+				angle += 360.0f;
+			}
+			return angle;
+		}
+
 	private:
 		Math() = default;
 	};

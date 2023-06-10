@@ -72,6 +72,7 @@ void dae::GameObject::AttachToGameObject(GameObject* pParent, bool keepWorld)
 		}
 		m_pTransformComponent->SetDirty(TransformComponent::TransformFlag::Position, true);
 		m_pTransformComponent->SetDirty(TransformComponent::TransformFlag::Rotation, true);
+		m_pTransformComponent->SetDirty(TransformComponent::TransformFlag::Forward, true);
 
 		if (!pParent->IsFlagSet(GameObjectFlag::Serializable))
 			SetFlag(GameObjectFlag::Serializable, false);

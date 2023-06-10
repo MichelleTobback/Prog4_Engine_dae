@@ -210,6 +210,10 @@ void dae::SceneSerializer::RegisterEngineComponents(ComponentFactory& factory)
 	factory.RegisterComponent<QuadRendererSerializer>();
 	factory.RegisterComponent<SpriteRendererSerializer>();
 	factory.RegisterComponent<TextureRendererSerializer>();
+
+	//physics
+	factory.RegisterComponent<RigidBody2DComponentSerializer>();
+	factory.RegisterComponent<BoxCollider2DComponentSerializer>();
 }
 
 void dae::SceneSerializer::Deserialize(Scene* pScene, const std::filesystem::path& path)

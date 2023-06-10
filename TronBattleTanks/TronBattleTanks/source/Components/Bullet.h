@@ -3,16 +3,16 @@
 
 namespace dae
 {
-	class MovementComponent;
+	class RigidBody2DComponent;
 	class Bullet : public Component
 	{
 	public:
 		Bullet(GameObject* pOwner);
 		~Bullet() = default;
 
-		virtual void Update() override;
+		virtual void Awake() override;
 
 	private:
-		MovementComponent* m_pMovement{nullptr};
+		RigidBody2DComponent* m_pRigidBody{nullptr};
 	};
 }

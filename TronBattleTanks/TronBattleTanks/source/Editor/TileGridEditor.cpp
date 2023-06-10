@@ -5,13 +5,15 @@
 #include "Managers/ServiceLocator.h"
 #include "Component/UI/ButtonComponent.h"
 #include "Components/TileComponent.h"
+#include "Component/QuadComponent.h"
 #include "Core/BitFlag.h"
 #include "Input/Input.h"
+#include "Component/Physics/RigidBody2DComponent.h"
 
 dae::TileGridEditor::TileGridEditor(GameObject* pOwner)
 	: ImGuiComponent(pOwner, "TileGrid editor")
 {
-	
+	m_pOnGameObjectSelected = std::make_unique<Delegate<void(GameObject*)>>();
 }
 
 void dae::TileGridEditor::Awake()
@@ -19,8 +21,11 @@ void dae::TileGridEditor::Awake()
 	m_pGrid = GetScene()->Instantiate();
 	auto pTextureComponent{ m_pGrid->AddComponent<TextureComponent>() };
 	pTextureComponent->SetTexture("Sprites/TronBattleTanksLevel.png");
+	m_pGridRigidBody = m_pGrid->AddComponent<RigidBody2DComponent>();
+	m_pGridRigidBody->SetStatic();
 
-	m_pTileQuad = m_pGrid->AddComponent<QuadComponent>(glm::vec2{ m_TileSize, m_TileSize });
+	m_pTileQuad = GetScene()->Instantiate(GetOwner())->AddComponent<QuadComponent>(glm::vec2{m_TileSize, m_TileSize});
+	m_pTileQuad->SetColor({ 0.6f, 0.5f, 0.2f, 1.f });
 
 	//editor version
 	Window& window{ ServiceLocator::GetWindow() };
@@ -30,39 +35,67 @@ void dae::TileGridEditor::Awake()
 	//scene version
 	m_pSceneSpriteAtlas = GetScene()->Instantiate(m_pGrid)->AddComponent<SpriteAtlasComponent>(pTextureComponent);
 
-	//CreateSpritesFromGrid();
-	//CreateTileGrid();
+	CreateSpritesFromGrid();
+	CreateTileGrid();
+
+	m_pTileQuadRenderer = GetScene()->Instantiate(GetOwner())->AddComponent<QuadRendererComponent>(m_pTileQuad);
+	m_pSpriteQuadRenderer = GetScene()->Instantiate(GetOwner(), m_pGrid->GetTransform().GetWorldPosition())->AddComponent<QuadRendererComponent>(m_pTileQuad);
 }
 
 void dae::TileGridEditor::OnImGuiRender()
 {
 	ImGui::Text("Grid settings");
-	ImGui::DragInt("cols", &m_Cols);
-	ImGui::DragInt("rows", &m_Rows);
-	ImGui::DragFloat("Tile size", &m_TileSize);
 	ImGui::Checkbox("Match grid to atlas", &m_MatchSpriteAtlas);
-	if (ImGui::Button("Create grid"))
+
+	if (ImGui::BeginCombo("Mode", GetEditorModeName(m_Mode).c_str()))
 	{
-		CreateTileGrid();
+		for (int mode{ 0 }; mode <= static_cast<int>(EditorMode::Last); ++mode)
+		{
+			EditorMode currentMode{ static_cast<EditorMode>(mode) };
+			bool selected{ m_Mode == currentMode };
+			if (ImGui::Selectable(GetEditorModeName(currentMode).c_str(), &selected))
+			{
+				m_Mode = currentMode;
+			}
+
+		}
+		ImGui::EndCombo();
 	}
 
-	ImGui::Separator();
-	ImGui::Text("Sprite atlas settings");
-	if (ImGui::Button("Sprites from grid"))
+	glm::vec2 size{ m_pTileQuad->GetSize() / m_TileSize };
+	if (ImGui::DragFloat2("TileSize", &size.x, 1.f, 1.f, m_Cols * 1.f))
 	{
-		CreateSpritesFromGrid();
+		m_pTileQuad->SetSize(size * m_TileSize);
 	}
+
+	switch (m_Mode)
+	{
+	case EditorMode::Paint:
+	{
+		ImGui::Checkbox("Solid", &m_Solid);
+	}
+	break;
+
+	case EditorMode::Rotate:
+	{
+		ImGui::DragFloat("current rotation", &m_CurrentRotation, 90.f, 0.f, 270.f);
+	}
+	break;
+	}
+
 }
 
 void dae::TileGridEditor::CreateTileGrid()
 {
 	glm::vec3 pos{};
+	m_pGridObjects.resize(m_Rows * m_Cols, {});
 
 	for (int row{}; row < m_Rows; ++row)
 	{
 		for (int cols{}; cols < m_Cols; ++cols)
 		{
-			AddTile({ pos.x, pos.y, m_TileSize, m_TileSize });
+			int index{ row * m_Cols + cols };
+			AddTile({ pos.x, pos.y, m_TileSize, m_TileSize }, index);
 			pos.x += m_TileSize;
 		}
 		pos.y += m_TileSize;
@@ -87,7 +120,6 @@ void dae::TileGridEditor::CreateSpritesFromGrid()
 
 void dae::TileGridEditor::AddSprite(const glm::vec4& source)
 {
-	uint32_t spriteIndex{ m_pSpriteAtlas->AddSprite(source) };
 	glm::vec3 pos{ source.x, source.y, 0.f };
 
 	auto pButtonObj{ GetScene()->Instantiate(m_pSpriteAtlas->GetOwner(), pos)};
@@ -99,19 +131,16 @@ void dae::TileGridEditor::AddSprite(const glm::vec4& source)
 	layout.color = { 0.5f, 0.5f, 0.f, 1.f };
 	pButton->SetLayout(layout, dae::UIButtonFlag::Hovered);
 
-	pButton->GetOnPressedDelegate() += [this, spriteIndex]() {m_pSelectedSprite = spriteIndex; };
+	pButton->GetOnPressedDelegate() += [this, pButton]()
+	{
+		if (!m_MatchSpriteAtlas)
+			m_pSpriteQuadRenderer->GetOwner()->GetTransform().SetLocalPosition(pButton->GetOwner()->GetTransform().GetWorldPosition());
+	};
 }
 
-void dae::TileGridEditor::AddTile(const glm::vec4& source)
+void dae::TileGridEditor::AddTile(const glm::vec4& source, int index)
 {
 	glm::vec3 pos{ source.x, source.y, 0.f };
-
-	auto pTileObj{ GetScene()->Instantiate(m_pGrid, pos) };
-	TileDesc desc{};
-	desc.pRenderer = pTileObj->AddComponent<SpriteRenderComponent>(m_pSpriteAtlas->GetSprite(0));
-	BitFlag::Set(desc.flags, TileFlag::Sprite, true);
-	BitFlag::Set(desc.flags, TileFlag::Quad, false);
-	TileComponent* pTile{ pTileObj->AddComponent<TileComponent>(desc) };
 
 	auto pButtonObj{ GetScene()->Instantiate(GetOwner(), pos)};
 	auto pButton{ pButtonObj->AddComponent<dae::ButtonComponent>(glm::vec2{source.z, source.w}) };
@@ -121,37 +150,105 @@ void dae::TileGridEditor::AddTile(const glm::vec4& source)
 	layout.color = { 1.f, 0.f, 0.3f, 1.f };
 	pButton->SetLayout(layout, dae::UIButtonFlag::Hovered);
 	
-	pButton->GetOnPressedDelegate() += [this, pTile, pButton]()
+	pButton->GetOnPressedDelegate() += [this, index, pButton]()->void
 	{
+		//get object
+		if (m_pGridObjects[index].pObject == nullptr)
+		{
+			m_pGridObjects[index].pObject = GetScene()->Instantiate(m_pGrid, pButton->GetOwner()->GetTransform().GetWorldPosition());
+		}
+		TileData& tile{ m_pGridObjects[index] };
+		m_pSelectedTile = tile.pObject;
+		m_pOnGameObjectSelected->Invoke(m_pSelectedTile);
+
+		switch (m_Mode)
+		{
+		case EditorMode::Paint:
+		{
+			//Sprite renderer
+			if (tile.pRenderer == nullptr)
+			{
+				tile.pRenderer = tile.pObject->AddComponent<SpriteRenderComponent>();
+			}
+			tile.pRenderer->SetSpriteComponent(AddOrCreateSprite());
+
+			if (m_Solid && tile.pCollider == nullptr)
+			{
+				tile.pCollider = tile.pObject->AddComponent<BoxCollider2DComponent>();
+				auto pQuad{ tile.pObject->AddComponent<QuadComponent>(m_pTileQuad->GetSize()) };
+				tile.pCollider->SetShape(pQuad);
+				m_pGridRigidBody->AddCollider(tile.pCollider);
+			}
+		}
+			break;
+
+		case EditorMode::Rotate:
+		{
+			tile.pObject->GetTransform().SetLocalRotation(m_CurrentRotation);
+		}
+			break;
+		}
+	};
+
+	pButton->GetOnHoveredDelegate() += [this, pButton]()
+	{
+		m_pTileQuadRenderer->GetOwner()->GetTransform().SetLocalPosition(pButton->GetOwner()->GetTransform().GetWorldPosition());
+
 		if (m_MatchSpriteAtlas)
 		{
-			glm::vec2 gridPos{ Input::GetInstance().GetMouse()->GetMousePos() / m_TileSize };
-			int index{ static_cast<int>(gridPos.y) * m_Cols + static_cast<int>(gridPos.x) };
-			pTile->GetTileDesc().pRenderer->SetSpriteComponent(AddSpriteFromAtlas(index));
+			m_pSpriteQuadRenderer->GetOwner()->GetTransform().SetLocalPosition(
+				m_pTileQuadRenderer->GetOwner()->GetTransform().GetWorldPosition() + m_pSpriteAtlas->GetOwner()->GetTransform().GetWorldPosition());
 		}
-		else
-			pTile->GetTileDesc().pRenderer->SetSpriteComponent(AddSpriteFromAtlas(m_pSelectedSprite));
 	};
 }
 
-dae::SpriteComponent* dae::TileGridEditor::AddSpriteFromAtlas(int index)
+dae::SpriteComponent* dae::TileGridEditor::AddOrCreateSprite()
 {
 	SpriteComponent* pReturnValue{ nullptr };
-	if (m_AddedSprites.find(index) != m_AddedSprites.end())
+	glm::vec3 worldPos{ m_pSpriteQuadRenderer->GetOwner()->GetTransform().GetWorldPosition() - m_pSpriteAtlas->GetOwner()->GetTransform().GetWorldPosition() };
+	worldPos /= m_TileSize;
+	glm::ivec4 dimensions{};
+	dimensions.x = static_cast<int>(worldPos.x);
+	dimensions.y = static_cast<int>(worldPos.y);
+	dimensions.z = static_cast<int>(m_pTileQuad->GetSize().x / m_TileSize);
+	dimensions.w = static_cast<int>(m_pTileQuad->GetSize().y / m_TileSize);
+
+	for (auto& [quad, pSprite] : m_AddedSprites)
 	{
-		pReturnValue = m_AddedSprites[index];
+		if (dimensions.x == quad.x && dimensions.y == quad.y
+			&& dimensions.z == quad.z && dimensions.w == quad.w)
+		{
+			return pSprite;
+		}
 	}
-	else
-	{
-		glm::vec4 source{ m_pSpriteAtlas->GetSprite(index)->GetSource() };
-		uint32_t i{ m_pSceneSpriteAtlas->AddSprite(source.x, source.y, source.z, source.z) };
-		pReturnValue = m_pSceneSpriteAtlas->GetSprite(i);
-		m_AddedSprites.emplace(index, pReturnValue);
-	}
+
+	glm::vec4 source{};
+	source.x = dimensions.x * m_TileSize;
+	source.y = dimensions.y * m_TileSize;
+	source.z = dimensions.z * m_TileSize;
+	source.w = dimensions.w * m_TileSize;
+	uint32_t i{ m_pSceneSpriteAtlas->AddSprite(source.x, source.y, source.z, source.w) };
+	pReturnValue = m_pSceneSpriteAtlas->GetSprite(i);
+	m_AddedSprites.push_back(std::make_pair(dimensions, pReturnValue));
+
 	return pReturnValue;
 }
 
-dae::SpriteComponent* dae::TileGridEditor::FindMatchingSprite()
+std::string dae::TileGridEditor::GetEditorModeName(EditorMode mode) const
 {
-	return nullptr;
+	switch (static_cast<EditorMode>(mode))
+	{
+	case EditorMode::Select:
+		return "Select";
+		break;
+
+	case EditorMode::Paint:
+		return "Paint";
+		break;
+
+	case EditorMode::Rotate:
+		return "Rotate";
+		break;
+	}
+	return "";
 }

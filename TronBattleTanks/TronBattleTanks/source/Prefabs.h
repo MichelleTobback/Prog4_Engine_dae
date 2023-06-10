@@ -18,5 +18,7 @@ namespace dae
 		static GameObject* CreateTextureRendererObject(Scene* pScene, const std::string& path);
 		static GameObject* CreateSpriteObject(Scene* pScene, const std::string& path, const glm::vec4& src = {});
 		static SpriteAtlasComponent* CreateSpriteAtlasObject(Scene* pScene, const std::string& path);
+
+		static GameObject* CreateEnemyTank(Scene* pScene);
 	};
 }

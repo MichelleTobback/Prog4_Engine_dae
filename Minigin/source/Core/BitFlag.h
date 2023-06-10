@@ -21,6 +21,8 @@ namespace dae
 	template<typename T>
 	inline void BitFlag::Set(T& bitFlags, T flag, bool set)
 	{
+		if (IsSet(bitFlags, flag) == set)
+			return;
 		bitFlags = (set)
 			? static_cast<T>(static_cast<int>(bitFlags) | static_cast<int>(flag))
 			: static_cast<T>(static_cast<int>(bitFlags) & ~static_cast<int>(flag));

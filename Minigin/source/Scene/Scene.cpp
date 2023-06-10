@@ -7,7 +7,7 @@ using namespace dae;
 
 unsigned int Scene::m_IdCounter = 0;
 
-Scene::Scene(const std::string& name) : m_Name(name) {}
+Scene::Scene(const std::string& name) : m_Name(name), m_pPhysics{std::make_unique<PhysicsScene>()} {}
 
 GameObject* dae::Scene::GetGameObject(UUID uuid)
 {

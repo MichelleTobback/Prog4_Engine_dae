@@ -2,40 +2,40 @@
 #include "Core/Time.h"
 #include "Component/TransformComponent.h"
 #include "Scene/GameObject.h"
+#include "Component/Physics/RigidBody2DComponent.h"
 
 dae::MovementComponent::MovementComponent(GameObject* pOwner)
 	: Component(pOwner)
 {
 	m_pTransform = &pOwner->GetTransform();
+	m_pRigidBody = GetOwner()->AddComponent<RigidBody2DComponent>();
+}
+
+void dae::MovementComponent::Awake()
+{
+	
 }
 
 void dae::MovementComponent::Update()
 {
-	float dt{ Time::GetInstance().GetDeltaTime() };
-	glm::vec2 deltaVel{ m_CurrentMovementDirection * dt * m_MovementSpeed };
-	m_CurrentVelocity += deltaVel;
-	float currentSpeed{ glm::length(m_CurrentVelocity) };
-	if (currentSpeed > m_MovementSpeed)
+	const float epsilon{ 0.001f };
+	//const float elapsed{ Time::GetInstance().GetDeltaTime() };
+	if (std::abs(m_CurrentMovementDirection.x) > epsilon || std::abs(m_CurrentMovementDirection.y) > epsilon)
 	{
-		glm::vec2 direction{ glm::normalize(m_CurrentVelocity) };
-		m_CurrentVelocity = direction * m_MovementSpeed;
+		glm::vec3 vel{ glm::vec3{m_CurrentMovementDirection * m_MovementSpeed, 0.f} };
+		m_pRigidBody->SetVelociy(vel);
+		m_CurrentMovementDirection = {};
+		return;
 	}
+	m_pRigidBody->SetVelociy({});
+}
 
-	m_pTransform->Translate({ m_CurrentVelocity.x, m_CurrentVelocity.y, 0.f });
-
-	if (currentSpeed > 0.1f)
-	{
-		m_CurrentVelocity -= m_CurrentVelocity * m_Deceleration * dt;
-	}
-	else
-	{
-		m_CurrentVelocity = {};
-	}
-	m_CurrentMovementDirection = {};
+void dae::MovementComponent::FixedUpdate()
+{
 }
 
 void dae::MovementComponent::Move(const glm::vec2& dir)
 {
-	m_CurrentMovementDirection += dir;
+	m_CurrentMovementDirection = dir;
 	m_CurrentMovementDirection = glm::normalize(m_CurrentMovementDirection);
 }

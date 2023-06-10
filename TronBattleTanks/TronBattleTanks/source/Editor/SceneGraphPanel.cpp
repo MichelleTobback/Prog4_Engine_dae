@@ -50,6 +50,11 @@ namespace dae
 		}
 	}
 }
+void dae::SceneGraphPanel::SelectGameObject(GameObject* pGameObject)
+{
+	if (pGameObject != nullptr && m_SelectedGameObject != pGameObject)
+		m_SelectedGameObject = pGameObject;
+}
 void dae::SceneGraphPanel::OnImGuiRender()
 {
 

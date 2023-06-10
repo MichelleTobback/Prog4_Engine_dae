@@ -9,6 +9,7 @@ namespace dae
 	class Scene;
 	class GameObject;
 	class Component;
+	class TransformComponent;
 
 	struct ComponentMessage
 	{
@@ -28,10 +29,13 @@ namespace dae
 		Component& operator=(Component&& other) = delete;
 
 		virtual void Awake(){}
+		virtual void OnDestroy() {}
 		virtual void ReceiveMessage(const ComponentMessage&){}
 		virtual void Update(){}
 		virtual void FixedUpdate(){}
 		virtual void LateUpdate() {}
+
+		TransformComponent& GetTransform();
 
 		UUID GetUUID() const;
 

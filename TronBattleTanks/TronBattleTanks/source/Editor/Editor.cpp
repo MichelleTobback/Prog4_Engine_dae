@@ -14,6 +14,11 @@ void dae::Editor::Init()
 {
 	Scene* pScene{ SceneManager::GetInstance().GetCurrent() };
 	GameObject* pEditorRoot{ pScene->Instantiate(dae::UUID(0u)) };
-	pEditorRoot->AddComponent<SceneGraphPanel>();
-	pEditorRoot->AddComponent<TileGridEditor>();
+	auto pSceneGraph{ pEditorRoot->AddComponent<SceneGraphPanel>() };
+	auto pTileEditor{ pEditorRoot->AddComponent<TileGridEditor>() };
+
+	pTileEditor->GetOnGameObjectSelected() += [pSceneGraph](GameObject* pGameObject)
+	{
+		pSceneGraph->SelectGameObject(pGameObject);
+	};
 }

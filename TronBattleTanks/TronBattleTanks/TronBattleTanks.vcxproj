@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -187,18 +187,21 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputP
     <ClCompile Include="source\Components\PlayerHUD.cpp" />
     <ClCompile Include="source\Components\PlayerScore.cpp" />
     <ClCompile Include="source\Components\TankCanon.cpp" />
+    <ClCompile Include="source\Components\TankComponent.cpp" />
     <ClCompile Include="source\Components\TileComponent.cpp" />
     <ClCompile Include="source\Core\Main.cpp" />
     <ClCompile Include="source\Editor\Editor.cpp" />
     <ClCompile Include="source\Editor\SceneGraphPanel.cpp" />
     <ClCompile Include="source\Editor\TileGridEditor.cpp" />
     <ClCompile Include="source\Prefabs.cpp" />
+    <ClCompile Include="source\State\StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Components\Bullet.h" />
     <ClInclude Include="source\Components\GridLevelComponent.h" />
     <ClInclude Include="source\Components\HealthComponent.h" />
     <ClInclude Include="source\Components\MovementComponent.h" />
+    <ClInclude Include="source\Components\TankComponent.h" />
     <ClInclude Include="source\Components\PlayerController.h" />
     <ClInclude Include="source\Components\PlayerHUD.h" />
     <ClInclude Include="source\Components\PlayerScore.h" />
@@ -208,6 +211,9 @@ xcopy "$(SolutionDir)3rdParty\SDL2_mixer\lib\$(PlatformTarget)\*.dll" "$(OutputP
     <ClInclude Include="source\Editor\SceneGraphPanel.h" />
     <ClInclude Include="source\Editor\TileGridEditor.h" />
     <ClInclude Include="source\Prefabs.h" />
+    <ClInclude Include="source\State\Enemy\EnemyStates.h" />
+    <ClInclude Include="source\State\State.h" />
+    <ClInclude Include="source\State\StateMachine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -20,15 +20,15 @@ void load()
 	//auto& pComponentFactory{ *sceneManager.GetComponentFactory() };
 	//pComponentFactory.RegisterComponent<dae::TileComponent>();
 
-	sceneManager.CreateScene("Demo");
-	//sceneManager.LoadScene("Scenes/Level.scene");
-	
+	//sceneManager.CreateScene("Demo");
+	auto& scene{ sceneManager.LoadScene("Scenes/Level1.scene") };
+
 	//dae::Prefab::CreateTestLevel(&scene);
 
-	//dae::Prefab::CreatePlayer(&scene, 3.f);
-	
-	dae::Editor editor{};
-	editor.Init();
+	dae::Prefab::CreatePlayer(&scene, 3.f)->GetTransform().Translate({ 100.f, 100.f, 0.f });
+
+	//dae::Editor editor{};
+	//editor.Init();
 }
 
 int main(int, char* []) {

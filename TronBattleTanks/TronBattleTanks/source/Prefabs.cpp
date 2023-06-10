@@ -4,6 +4,8 @@
 //player
 #include "Components/HealthComponent.h"
 #include "Components/PlayerController.h"
+#include "Component/Physics/RigidBody2DComponent.h"
+#include "Components/TankComponent.h"
 
 //rendering
 #include "Component/TextureComponent.h"
@@ -17,70 +19,22 @@
 #include "Managers/ResourceManager.h"
 #include "Component/TransformComponent.h"
 
+#include "State/StateMachine.h"
+#include "State/Enemy/EnemyStates.h"
+
+#include <iostream>
+
 dae::GameObject* dae::Prefab::CreateTestLevel(Scene* pScene)
 {
 	auto pRoot{pScene->Instantiate()};
 	auto pSpriteAtlas{ dae::Prefab::CreateSpriteAtlasObject(pScene, "Sprites/TronBattleTanksLevel.png") };
 	pSpriteAtlas->GetOwner()->AttachToGameObject(pRoot);
 
-	//GameObject* pRenderers{ pScene->Instantiate(pSpriteAtlas->GetOwner()) };
-
-	//{
-	//	auto idx{ pSpriteAtlas->AddSprite({ 0.f, 0.f, 64.f, 64.f }) };
-	//	auto pRenderer{ pScene->Instantiate(pRenderers)->AddComponent<SpriteRenderComponent>(pSpriteAtlas->GetSprite(idx)) };
-	//	pRenderer->GetOwner()->GetTransform().SetLocalPosition({ 000.f, 0.f, 0.f });
-	//}
-	//
-	//{
-	//	auto idx{ pSpriteAtlas->AddSprite({ 0.f, 000.f, 64.f, 64.f }) };
-	//	auto pRenderer{ pScene->Instantiate(pRenderers)->AddComponent<SpriteRenderComponent>(pSpriteAtlas->GetSprite(idx)) };
-	//	pRenderer->GetOwner()->GetTransform().SetLocalPosition({ 200.f, 400.f, 000.f });
-	//}
-
 	GridLevelDesc desc{};
 
 	desc.Cols = 30;
 	desc.Rows = 27;
 	desc.pSpriteAtlas = pSpriteAtlas;
-
-	//desc.Tiles =
-	//{
-	//	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	//	0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,
-	//	0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0,
-	//	0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,
-	//	0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0,
-	//	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	//};
-	//
-	//for (int y{}; y < desc.Cols; ++y)
-	//{
-	//	for (int x{}; x < desc.Rows; ++x)
-	//	{
-	//		desc.TileLayouts[]
-	//	}
-	//}
 
 	pRoot->AddComponent<GridLevelComponent>(desc);
 
@@ -91,8 +45,18 @@ dae::GameObject* dae::Prefab::CreatePlayer(Scene* pScene, float health, int cont
 {
 	auto go{ pScene->Instantiate() };
 
-	go->AddComponent<HealthComponent>(health, health);
-	go->AddComponent<PlayerController>(controllerIndex);
+	auto pController{ go->AddComponent<PlayerController>(controllerIndex) };
+	pController->GetTank().GetHealth().SetMax(health, true);
+
+	//debug
+	pController->GetTank().GetRigidBody().GetOnBeginOverlap() += [](const CollisionHit&)
+	{
+		std::cout << "begin overlap player\n";
+	};
+	pController->GetTank().GetRigidBody().GetOnEndOverlap() += [](const CollisionHit&)
+	{
+		std::cout << "end overlap player\n";
+	};
 
 	return go;
 }
@@ -137,6 +101,17 @@ dae::SpriteAtlasComponent* dae::Prefab::CreateSpriteAtlasObject(Scene* pScene, c
 	auto pSpriteComponent{ go->AddComponent<SpriteAtlasComponent>(pTextureComponent) };
 
 	return pSpriteComponent;
+}
+
+dae::GameObject* dae::Prefab::CreateEnemyTank(Scene* pScene)
+{
+	auto go{ pScene->Instantiate() };
+
+	TankComponent::TankDesc desc{};
+	desc.health = 3.f;
+	auto pTank{ go->AddComponent<TankComponent>(desc) };
+	go->AddComponent<StateMachine>(std::move(std::make_shared<EnemyIdleState>(pTank)));
+	return go;
 }
 
 dae::TextComponent* dae::Prefab::CreateTextObject(Scene* pScene, const std::string& txt, const glm::vec4& color)

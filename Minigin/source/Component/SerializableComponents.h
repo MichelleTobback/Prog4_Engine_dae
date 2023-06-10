@@ -125,4 +125,34 @@ namespace dae
 
 	private:
 	};
+
+	//=================================
+	// RigidBody2DComponent
+	//=================================
+	class RigidBody2DComponentSerializer final : public Serializable
+	{
+	public:
+		RigidBody2DComponentSerializer();
+		virtual ~RigidBody2DComponentSerializer() override = default;
+
+		virtual void Serialize(BinaryWriter& out, Component* pComponent) const override;
+		virtual Component* Deserialize(DeserializeParams& params) override;
+
+	private:
+	};
+
+	//=================================
+	// BoxCollider2DComponent
+	//=================================
+	class BoxCollider2DComponentSerializer final : public Serializable
+	{
+	public:
+		BoxCollider2DComponentSerializer();
+		virtual ~BoxCollider2DComponentSerializer() override = default;
+
+		virtual void Serialize(BinaryWriter& out, Component* pComponent) const override;
+		virtual Component* Deserialize(DeserializeParams& params) override;
+
+	private:
+	};
 }

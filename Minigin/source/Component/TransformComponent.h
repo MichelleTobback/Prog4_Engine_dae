@@ -3,6 +3,13 @@
 
 #include <glm/glm.hpp>
 
+//TODO - Make wrapper class so these includes can be moved to a cpp file
+#pragma warning(push)
+#pragma warning(disable: 4201)
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+#pragma warning(pop)
+
 namespace dae
 {
 	class TransformComponent final : public Component
@@ -28,17 +35,23 @@ namespace dae
 		TransformComponent& operator=(TransformComponent&& other) = delete;
 
 		const glm::vec3& GetWorldPosition();
-		const glm::vec3& GetLocalPosition() { return m_LocalPosition; }
-		float GetWorldRotation();
-		float GetLocalRotation() { return m_LocalRotation; }
+		const glm::vec3& GetLocalPosition() const { return m_LocalPosition; }
+		const glm::quat& GetWorldRotation();
+		const glm::quat& GetLocalRotationQuat() const { return m_LocalRotQ; }
+		float GetWorldRotationAngle();
+		float GetLocalRotation() const { return m_LocalRotation; }
 
-		void SetLocalPosition(const glm::vec3 position);
+
+		void SetLocalPosition(const glm::vec3& position);
 		void SetLocalRotation(float rotation);
 
-		void Translate(const glm::vec3 translation);
+		void Translate(const glm::vec3& translation);
 		void Rotate(float rotation);
 
-		const glm::vec2& GetForward();
+		const glm::vec3& GetForward();
+
+	protected:
+		void SetChildrenDirty(TransformFlag flag);
 
 	private:
 		void RecalculateWorldPosition();
@@ -51,11 +64,12 @@ namespace dae
 		glm::vec3 m_LocalPosition{};
 		glm::vec3 m_WorldPosition{};
 		float m_LocalRotation{};
-		float m_WorldRotation{};
+		glm::quat m_LocalRotQ;
+		glm::quat m_WorldRotQ;
 
-		glm::vec2 m_Forward{1.f, 0.f};
+		glm::vec3 m_Forward{1.f, 0.f, 0.f};
 
-		int m_DirtyFlags{ 1 | 2 };
+		int m_DirtyFlags{ 1 | 2 | 3 };
 
 		friend class GameObject;
 	};

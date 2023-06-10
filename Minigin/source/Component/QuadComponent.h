@@ -22,9 +22,20 @@ namespace dae
 		void SetColor(const glm::vec4& color);
 		bool IsSolid() const { return m_IsSolid; }
 
+		const std::vector<glm::vec2>& GetVertices();
+		void GetVerticesWorldPosition(std::vector<glm::vec2>& vertsOut);
+
+		size_t GetVertexCount() const { return m_NumVerts; }
+
 	private:
 		glm::vec2 m_Size{};
 		glm::vec4 m_Color{};
 		bool m_IsSolid{};
+
+		const size_t m_NumVerts{ 4 };
+		std::vector<glm::vec2> m_Vertices{};
+		bool m_VerticesDirty{ true };
+
+		void RecalculateVertices();
 	};
 }

@@ -11,6 +11,7 @@ namespace dae
 		TankCanon(GameObject* pOwner);
 		~TankCanon() = default;
 
+		virtual void Update() override;
 		void Shoot();
 
 	private:

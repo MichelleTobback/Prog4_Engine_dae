@@ -35,6 +35,13 @@ void dae::HealthComponent::Heal(float amount)
 	HealthChangedCallback();
 }
 
+void dae::HealthComponent::SetMax(float value, bool refill)
+{
+	m_MaxValue = value;
+	if (refill)
+		Heal(value);
+}
+
 inline void dae::HealthComponent::HealthChangedCallback()
 {
 	Event healthChanged{};

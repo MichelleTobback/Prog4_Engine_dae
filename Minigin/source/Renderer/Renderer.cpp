@@ -123,7 +123,7 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, fl
 	dst.y = static_cast<int>(y);
 	dst.w = static_cast<int>(width);
 	dst.h = static_cast<int>(height);
-	SDL_Point offset{static_cast<int>(width * 0.5f), static_cast<int>(height * 0.5f)};
+	SDL_Point offset{ dst.x + static_cast<int>(width * 0.5f), dst.y + static_cast<int>(height * 0.5f)};
 	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst, rotation, &offset, SDL_FLIP_NONE);
 }
 
@@ -141,9 +141,9 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, fl
 	src.w = static_cast<int>(srcWidth);
 	src.h = static_cast<int>(srcHeight);
 
-	SDL_Point offset{ src.x + static_cast<int>(srcWidth * 0.5f), src.y + static_cast<int>(srcHeight * 0.5f) };
+	SDL_Point offset{ dst.x + static_cast<int>(srcWidth * 0.5f), dst.y + static_cast<int>(srcHeight * 0.5f) };
 
-	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst, rotation, &offset, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst, rotation, NULL, SDL_FLIP_NONE);
 }
 
 //====================================================================================

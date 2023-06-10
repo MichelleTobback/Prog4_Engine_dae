@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/UUID.h"
 #include "Managers/SceneManager.h"
+#include "Managers/PhysicsSystem.h"
 
 #include <stack>
 #include <glm/glm.hpp>
@@ -28,6 +29,8 @@ namespace dae
 		inline const GameObjectContainer& GetObjects() const { return m_Objects; }
 		GameObject* GetGameObject(UUID uuid);
 
+		PhysicsScene& GetPhysics() { return *m_pPhysics; }
+
 		~Scene();
 		Scene(const Scene& other) = delete;
 		Scene(Scene&& other) = delete;
@@ -45,6 +48,8 @@ namespace dae
 		GameObjectContainer m_Objects{};
 
 		std::stack<UUID> m_ObjectsPendingDestroy{};
+
+		std::unique_ptr<PhysicsScene> m_pPhysics;
 
 		static unsigned int m_IdCounter; 
 	};
