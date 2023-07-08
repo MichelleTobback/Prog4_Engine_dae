@@ -52,7 +52,7 @@ dae::Keyboard* dae::Input::GetKeyboard() const
 
 dae::Controller* dae::Input::GetController(int index)
 {
-	assert(index < m_Controllers.size() && "no valid controller index!");
+	assert(size_t(index) < m_Controllers.size() && "no valid controller index!");
 	return m_Controllers[index].get();
 }
 

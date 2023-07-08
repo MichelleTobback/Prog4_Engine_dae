@@ -18,6 +18,23 @@ GameObject* dae::Scene::GetGameObject(UUID uuid)
 	return nullptr;
 }
 
+std::vector<GameObject*> dae::Scene::GetGameObjectWithTag(const std::string& tag)
+{
+	std::vector<GameObject*> tags {};
+	for (auto& [uuid, pGameObject] : m_Objects)
+	{
+		if (pGameObject &&pGameObject->HasTag(tag))
+			tags.push_back(pGameObject.get());
+	}
+	return tags;
+}
+
+void dae::Scene::DestroyGameObject(GameObject* pObject)
+{
+	pObject->SetActive(false);
+	m_ObjectsPendingDestroy.push(pObject->GetUUID());
+}
+
 Scene::~Scene() = default;
 
 GameObject* Scene::Add(std::shared_ptr<GameObject> object)
@@ -36,6 +53,7 @@ GameObject* dae::Scene::Instantiate(GameObject* pParent, const glm::vec3& pos)
 	if (pParent)
 		pGameObject->AttachToGameObject(pParent);
 	pGameObject->GetTransform().SetLocalPosition(pos);
+	pGameObject->SetActive(true);
 	return pGameObject;
 }
 
@@ -60,11 +78,30 @@ void Scene::RemoveAll()
 	m_Objects.clear();
 }
 
+void dae::Scene::Awake()
+{
+	for (auto& [uuid, pGameObject] : m_Objects)
+	{
+		if (pGameObject->IsRoot())
+			pGameObject->SetActive(true);
+	}
+}
+
+void dae::Scene::Sleep()
+{
+	for (auto& [uuid, pGameObject] : m_Objects)
+	{
+		if (pGameObject->IsRoot())
+			pGameObject->SetActive(false);
+	}
+}
+
 void Scene::Update()
 {
 	for(auto& [uuid, pGameObject] : m_Objects)
 	{
-		pGameObject->Update();
+		if (pGameObject->IsActive())
+			pGameObject->Update();
 	}
 }
 
@@ -72,7 +109,8 @@ void dae::Scene::FixedUpdate()
 {
 	for (auto& [uuid, pGameObject] : m_Objects)
 	{
-		pGameObject->FixedUpdate();
+		if (pGameObject->IsActive())
+			pGameObject->FixedUpdate();
 	}
 }
 
@@ -80,10 +118,8 @@ void dae::Scene::LateUpdate()
 {
 	for (auto& [uuid, pGameObject] : m_Objects)
 	{
-		pGameObject->LateUpdate();
-
-		if (!pGameObject->IsValid())
-			m_ObjectsPendingDestroy.push(uuid);
+		if (pGameObject->IsActive())
+			pGameObject->LateUpdate();
 	}
 }
 
@@ -91,7 +127,12 @@ void dae::Scene::HandleObjectLifeTime()
 {
 	while (!m_ObjectsPendingDestroy.empty())
 	{
-		Remove(m_Objects[m_ObjectsPendingDestroy.top()]);
+		auto pObject{ m_Objects[m_ObjectsPendingDestroy.top()] };
+		if (pObject)
+		{
+			pObject->OnDestroy();
+		}
+		m_Objects.erase(m_ObjectsPendingDestroy.top());
 		m_ObjectsPendingDestroy.pop();
 	}
 }

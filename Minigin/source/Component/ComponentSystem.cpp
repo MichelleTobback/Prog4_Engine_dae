@@ -1,5 +1,29 @@
 #include "ComponentSystem.h"
 
+dae::ComponentSystem::~ComponentSystem()
+{
+	for (auto& component : m_Components)
+	{
+		component.second->OnDestroy();
+	}
+}
+
+void dae::ComponentSystem::Awake()
+{
+	for (auto& component : m_Components)
+	{
+		component.second->Awake();
+	}
+}
+
+void dae::ComponentSystem::Sleep()
+{
+	for (auto& component : m_Components)
+	{
+		component.second->Sleep();
+	}
+}
+
 void dae::ComponentSystem::Update()
 {
 	while (!m_pComponentsToAwake.empty())
@@ -41,6 +65,16 @@ void dae::ComponentSystem::ForEach(const ComponentFunc& fn) const
 size_t dae::ComponentSystem::Count() const
 {
 	return m_Components.size();
+}
+
+void dae::ComponentSystem::Clear()
+{
+	for (auto& component : m_Components)
+	{
+		component.second->Sleep();
+		component.second->OnDestroy();
+	}
+	m_Components.clear();
 }
 
 void dae::ComponentSystem::BroadcastMessage(const ComponentMessage& msg)

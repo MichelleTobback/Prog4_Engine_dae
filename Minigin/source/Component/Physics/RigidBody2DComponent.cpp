@@ -17,7 +17,7 @@ void dae::RigidBody2DComponent::Awake()
     m_CurrentPos = GetTransform().GetLocalPosition();
 }
 
-void dae::RigidBody2DComponent::OnDestroy()
+void dae::RigidBody2DComponent::Sleep()
 {
     GetScene()->GetPhysics().RemoveRigidBody(this);
 }
@@ -45,7 +45,6 @@ void dae::RigidBody2DComponent::FixedUpdate()
     glm::vec2 acceleration{ m_Force / m_Mass };
     m_Velocity += glm::vec3{ acceleration * elapsed, 0.f };
     glm::vec3 deltaVel{ m_Velocity * elapsed };
-    //Move(deltaVel);
     GetTransform().Translate(deltaVel);
     m_Force = {};
 
@@ -69,42 +68,45 @@ void dae::RigidBody2DComponent::FixedUpdate()
                     if (!pOther)
                         continue;
 
-                    pCollider->HandleCollision(pOther, fixedVelocity, result);
+                    CollisionHit currentResult{};
+                    pCollider->HandleCollision(pOther, fixedVelocity, currentResult);
 
                     if (pOther->IsTrigger() || pCollider->IsTrigger())
                     {
-                        if (!pOther->IsOverlapping() && result.succes)
+                        if (!pOther->IsOverlapping() && currentResult.succes)
                         {
-                            //begin
-                            m_pOnBeginOverlap->Invoke(result);
-                            pRigidBody->GetOnBeginOverlap().Invoke(result);
+                            // Begin overlap
+                            m_pOnBeginOverlap->Invoke(currentResult);
+                            currentResult.pOther = GetOwner();
+                            std::swap(currentResult.pCollider, currentResult.pOtherCollider);
+                            pRigidBody->GetOnBeginOverlap().Invoke(currentResult);
+                            BitFlag::Set(pOther->m_Flags, CollisionFlags::Overlapped, true);
+                            //BitFlag::Set(pCollider->m_Flags, CollisionFlags::Overlapped, true);
                         }
-                        if (pOther->IsOverlapping() && !result.succes)
+                        else if (pOther->IsOverlapping() && !currentResult.succes)
                         {
-                            //end
-                            m_pOnEndOverlap->Invoke(result);
-                            pRigidBody->GetOnEndOverlap().Invoke(result);
+                            // End overlap
+                            m_pOnEndOverlap->Invoke(currentResult);
+                            currentResult.pOther = GetOwner();
+                            std::swap(currentResult.pCollider, currentResult.pOtherCollider);
+                            pRigidBody->GetOnEndOverlap().Invoke(currentResult);
+                            BitFlag::Set(pOther->m_Flags, CollisionFlags::Overlapped, false);
+                            //BitFlag::Set(pCollider->m_Flags, CollisionFlags::Overlapped, false);
                         }
-                        BitFlag::Set(pOther->m_Flags, CollisionFlags::Overlapped, result.succes);
-                        BitFlag::Set(pCollider->m_Flags, CollisionFlags::Overlapped, result.succes);
-                        result.succes = false;
                     }
-
-                    if (!result.succes)
-                        continue;
-
-                    pCollidingBody = pRigidBody;
-                    return false;
+                    else if (currentResult.succes)
+                    {
+                        result = currentResult;
+                        pCollidingBody = pRigidBody;
+                        return false; // Stop iterating over colliders
+                    }
                 }
                 return true;
             });
     }
 
-    
     if (result.succes && pCollidingBody)
     {
-        //Move(-result.normal * result.depth * 0.5f);
-        
         if (pCollidingBody->IsDynamic())
         {
             GetTransform().Translate(-result.normal * result.depth * 0.5f);
@@ -127,9 +129,8 @@ void dae::RigidBody2DComponent::FixedUpdate()
 
         const glm::vec2 force{ j * result.normal };
 
-        m_Velocity -= glm::vec3{force* GetMassInverse(), 0.f};
-
-        pCollidingBody->SetVelociy(pCollidingBody->GetVelocity() + glm::vec3{ (force * pCollidingBody->GetMassInverse()), 0.f});
+        m_Velocity -= glm::vec3{ force * GetMassInverse(), 0.f };
+        pCollidingBody->SetVelociy(pCollidingBody->GetVelocity() + glm::vec3{ force * pCollidingBody->GetMassInverse(), 0.f });
     }
 }
 
@@ -156,6 +157,7 @@ bool dae::RigidBody2DComponent::IsDynamic() const
 uint32_t dae::RigidBody2DComponent::AddCollider(ColliderComponent* pCollider)
 {
     m_pColliders.push_back(pCollider);
+    pCollider->SetRigidBody(this);
     return static_cast<uint32_t>(m_pColliders.size() - 1);
 }
 

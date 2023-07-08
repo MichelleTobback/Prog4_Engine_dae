@@ -19,6 +19,10 @@ namespace dae
 	class ComponentSystem final
 	{
 	public:
+		~ComponentSystem();
+
+		void Awake();
+		void Sleep();
 		void Update();
 		void FixedUpdate();
 		void LateUpdate();
@@ -68,6 +72,7 @@ namespace dae
 		using ComponentFunc = std::function<void(Component*)>;
 		void ForEach(const ComponentFunc& fn) const;
 		size_t Count() const;
+		void Clear();
 
 		void BroadcastMessage(const ComponentMessage& msg);
 

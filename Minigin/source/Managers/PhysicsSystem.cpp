@@ -1,5 +1,4 @@
 #include "PhysicsSystem.h"
-#include "Component/Physics/RigidBody2DComponent.h"
 
 #include <algorithm>
 
@@ -35,6 +34,25 @@ void dae::PhysicsScene::ForEachDynamicRigidBody(const std::function<void(RigidBo
 		});
 }
 
+bool dae::PhysicsScene::Raycast(const GeometryUtils::Ray& ray, CollisionHit& outHit, CollisionLayer collisionIngore)
+{
+	CollisionHit result{};
+	outHit.depth = ray.length + 1.f;
+	ForEachRigidBody([&](RigidBody2DComponent* pRigidBody)
+		{
+			const auto& colliders{ pRigidBody->GetColliders() };
+			for (const auto& pCollider : colliders)
+			{
+				if (pCollider->DoRaycast(ray, result, collisionIngore))
+				{
+					if (result.depth < outHit.depth)
+						outHit = result;
+				}
+			}
+		});
+	return outHit.succes;
+}
+
 void dae::PhysicsScene::AddRigidBody(RigidBody2DComponent* pRigidBody)
 {
 	m_pRigidBodies.push_back(pRigidBody);
@@ -42,5 +60,7 @@ void dae::PhysicsScene::AddRigidBody(RigidBody2DComponent* pRigidBody)
 
 void dae::PhysicsScene::RemoveRigidBody(RigidBody2DComponent* pRigidBody)
 {
+	if (m_pRigidBodies.size() == 0)
+		return;
 	m_pRigidBodies.erase(std::remove(m_pRigidBodies.begin(), m_pRigidBodies.end(), pRigidBody), m_pRigidBodies.end());
 }

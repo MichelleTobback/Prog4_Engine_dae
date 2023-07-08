@@ -1,56 +1,12 @@
 #include "GeometryUtils.h"
+#include "Core/Math.h"
 
-dae::GeometryUtils::IntersectionResult dae::GeometryUtils::AABBQuadIntersection(const glm::vec4& quad0, const glm::vec4& quad1)
+bool dae::GeometryUtils::AABBQuadOverlap(const glm::vec4& quad0, const glm::vec4& quad1)
 {
-    IntersectionResult result{};
-
     bool overlapX = (quad0.x < quad1.x + quad1.z) && (quad0.x + quad0.z > quad1.x);
     bool overlapY = (quad0.y < quad1.y + quad1.w) && (quad0.y + quad0.w > quad1.y);
 
-    if (overlapX && overlapY) 
-    {
-        result.succes = true;
-
-        float intersectionLeft = std::max(quad0.x, quad1.x);
-        float intersectionRight = std::min(quad0.x + quad0.z, quad1.x + quad1.z);
-        float intersectionTop = std::max(quad0.y, quad1.y);
-        float intersectionBottom = std::min(quad0.y + quad0.w, quad1.y + quad1.w);
-
-        glm::vec2 intersectionCenter(
-            (intersectionLeft + intersectionRight) * 0.5f,
-            (intersectionTop + intersectionBottom) * 0.5f
-        );
-
-        float diffLeft = intersectionCenter.x - quad0.x;
-        float diffRight = quad0.x + quad0.z - intersectionCenter.x;
-        float diffTop = intersectionCenter.y - quad0.y;
-        float diffBottom = quad0.y + quad0.w - intersectionCenter.y;
-
-        float minDiff = std::min({ diffLeft, diffRight, diffTop, diffBottom });
-
-        if (minDiff == diffLeft)
-        {
-            result.intersectionPoint = glm::vec2(quad0.x, glm::clamp(intersectionCenter.y, quad0.y, quad0.y + quad0.w));
-            result.intersectionNormal = glm::vec2(-1.0f, 0.0f);
-        }
-        else if (minDiff == diffRight)
-        {
-            result.intersectionPoint = glm::vec2(quad0.x + quad0.z, glm::clamp(intersectionCenter.y, quad0.y, quad0.y + quad0.w));
-            result.intersectionNormal = glm::vec2(1.0f, 0.0f);
-        }
-        else if (minDiff == diffTop)
-        {
-            result.intersectionPoint = glm::vec2(glm::clamp(intersectionCenter.x, quad0.x, quad0.x + quad0.z), quad0.y);
-            result.intersectionNormal = glm::vec2(0.0f, -1.0f);
-        }
-        else // diffBottom is the minimum difference
-        {
-            result.intersectionPoint = glm::vec2(glm::clamp(intersectionCenter.x, quad0.x, quad0.x + quad0.z), quad0.y + quad0.w);
-            result.intersectionNormal = glm::vec2(0.0f, 1.0f);
-        }
-    }
-    
-    return result;
+    return (overlapX && overlapY);
 }
 
 bool dae::GeometryUtils::SATPolygonIntersection(const std::vector<glm::vec2>& verticesA, const std::vector<glm::vec2>& verticesB, IntersectionResult& result)
@@ -221,4 +177,177 @@ const glm::vec2& dae::GeometryUtils::FindClosestPointOnPolygon(const std::vector
         }
     }
     return polyVerts[index];
+}
+
+bool dae::GeometryUtils::RayCircleIntersection(const Ray& ray, const glm::vec2& circleCenter, float circleRadius, IntersectionResult& result)
+{
+    glm::vec2 rayOrigin{ ray.origin.x, ray.origin.y };
+    glm::vec2 rayDirection{ ray.direction.x, ray.direction.y };
+
+    glm::vec2 circleToRay{ rayOrigin - circleCenter };
+    float a{ glm::dot(rayDirection, rayDirection) };
+    float b{ 2.0f * glm::dot(rayDirection, circleToRay) };
+    float c{ glm::dot(circleToRay, circleToRay) - (circleRadius * circleRadius) };
+    float discriminant{ (b * b) - (4.0f * a * c) };
+
+    if (discriminant < 0.0f)
+    {
+        result.succes = false;
+        return false;
+    }
+
+    float sqrtDiscriminant{ glm::sqrt(discriminant) };
+    float t1{ (-b - sqrtDiscriminant) / (2.0f * a) };
+    float t2{ (-b + sqrtDiscriminant) / (2.0f * a) };
+
+    if (t1 >= 0.0f && t1 <= ray.length)
+    {
+        result.intersectionPoint = rayOrigin + (rayDirection * t1);
+        result.intersectionNormal = glm::normalize(result.intersectionPoint - circleCenter);
+        result.depth = t1;
+        result.succes = true;
+
+        return true;
+    }
+
+    if (t2 >= 0.0f && t2 <= ray.length)
+    {
+        result.intersectionPoint = rayOrigin + (rayDirection * t2);
+        result.intersectionNormal = glm::normalize(result.intersectionPoint - circleCenter);
+        result.depth = t2;
+        result.succes = true;
+
+        return true;
+    }
+
+    result.succes = false;
+    return false;
+}
+
+bool dae::GeometryUtils::RayPolygonIntersection(const Ray& ray, const std::vector<glm::vec2>& polyVerts, IntersectionResult& result)
+{
+    const float epsilon{ 0.001f };
+    size_t nrVertices = static_cast<int>(polyVerts.size());
+    if (nrVertices == 0)
+    {
+        result.succes = false;
+        return false;
+    }
+
+    std::vector<IntersectionResult> intersections;
+
+    glm::vec4 r1{}, r2{};
+    r1.x = std::min(ray.origin.x, ray.origin.x + ray.direction.x * ray.length);
+    r1.y = std::min(ray.origin.y, ray.origin.y + ray.direction.y * ray.length);
+    r1.z = std::max(ray.origin.x, ray.origin.x + ray.direction.x * ray.length) - r1.x;
+    r1.w = std::max(ray.origin.y, ray.origin.y + ray.direction.y * ray.length) - r1.y;
+
+    for (size_t idx = 0; idx <= nrVertices; ++idx)
+    {
+        glm::vec2 q1 = polyVerts[(idx + 0) % nrVertices];
+        glm::vec2 q2 = polyVerts[(idx + 1) % nrVertices];
+
+        r2.x = std::min(q1.x, q2.x);
+        r2.y = std::min(q1.y, q2.y);
+        r2.z = std::max(q1.x, q2.x) - r2.x;
+        r2.w = std::max(q1.y, q2.y) - r2.y;
+
+        if (AABBQuadOverlap(r1, r2))
+        {
+            float lambda1{};
+            float lambda2{};
+            if (IntersectLineSegments(glm::vec2(ray.origin), glm::vec2(ray.origin + ray.direction * ray.length), q1, q2, lambda1, lambda2, epsilon))
+            {
+                if (lambda1 > 0 && lambda1 <= 1 && lambda2 > 0 && lambda2 <= 1)
+                {
+                    IntersectionResult intersection;
+                    intersection.intersectionPoint = glm::vec3(ray.origin.x + (ray.direction.x * ray.length * lambda1), ray.origin.y + (ray.direction.y * ray.length * lambda1), 0.0f);
+                    intersection.intersectionNormal = glm::normalize(glm::vec2(q2 - q1));
+                    intersection.depth = lambda1;
+                    intersections.push_back(intersection);
+                }
+            }
+        }
+    }
+
+    if (intersections.empty())
+    {
+        result.succes = false;
+        return false;
+    }
+
+    result = *std::min_element(intersections.begin(), intersections.end(), [](const IntersectionResult& first, const IntersectionResult& last) 
+        {
+            return first.depth < last.depth;
+        });
+
+    result.succes = true;
+    return true;
+}
+
+bool dae::GeometryUtils::IntersectLineSegments(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& q1, const glm::vec2& q2, float& outLambda1, float& outLambda2, float epsilon)
+{
+    bool intersecting{ false };
+
+    glm::vec2 p1p2{ p2 - p1 };
+    glm::vec2 q1q2{ q2 - q1 };
+
+    // Cross product to determine if parallel
+    float denom = Math::Cross(p1p2, q1q2);
+
+    // Don't divide by zero
+    if (std::abs(denom) > epsilon)
+    {
+        intersecting = true;
+
+        glm::vec2 p1q1{ q1 - p1 };
+
+        float num1 = Math::Cross(p1q1, q1q2);
+        float num2 = Math::Cross(p1q1, p1p2);
+        outLambda1 = num1 / denom;
+        outLambda2 = num2 / denom;
+    }
+    else // are parallel
+    {
+        // Connect start points
+        glm::vec2 p1q1{ q1 - p1 };
+
+        // Cross product to determine if segments and the line connecting their start points are parallel, 
+        // if so, than they are on a line
+        // if not, then there is no intersection
+        if (std::abs(Math::Cross(p1q1, q1q2) > epsilon))
+        {
+            return false;
+        }
+
+        // Check the 4 conditions
+        outLambda1 = 0;
+        outLambda2 = 0;
+        if (IsPointOnLineSegment(p1, q1, q2) ||
+            IsPointOnLineSegment(p2, q1, q2) ||
+            IsPointOnLineSegment(q1, p1, p2) ||
+            IsPointOnLineSegment(q2, p1, p2))
+        {
+            intersecting = true;
+        }
+    }
+    return intersecting;
+}
+
+bool dae::GeometryUtils::IsPointOnLineSegment(const glm::vec2& p, const glm::vec2& a, const glm::vec2& b)
+{
+    glm::vec2 ap{ p - a }, bp{ p - b };
+    // If not on same line, return false
+    if (abs(Math::Cross(ap, bp)) > 0.001f)
+    {
+        return false;
+    }
+
+    // Both vectors must point in opposite directions if p is between a and b
+    if (glm::dot(ap, bp) > 0)
+    {
+        return false;
+    }
+
+    return true;
 }

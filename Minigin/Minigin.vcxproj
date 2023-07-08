@@ -224,12 +224,14 @@
     <ClInclude Include="source\Component\SerializableComponents.h" />
     <ClInclude Include="source\Component\SpriteAtlasComponent.h" />
     <ClInclude Include="source\Component\SpriteComponent.h" />
+    <ClInclude Include="source\Component\TagComponent.h" />
     <ClInclude Include="source\Component\UI\ButtonComponent.h" />
     <ClInclude Include="source\Component\UUIDComponent.h" />
     <ClInclude Include="source\Core\BinaryReader.h" />
     <ClInclude Include="source\Core\BitFlag.h" />
     <ClInclude Include="source\Core\Command.h" />
     <ClInclude Include="source\Core\Delegate.h" />
+    <ClInclude Include="source\State\GameState\GameState.h" />
     <ClInclude Include="source\Core\GeometryUtils.h" />
     <ClInclude Include="source\Core\Math.h" />
     <ClInclude Include="source\Core\Random.h" />
@@ -267,6 +269,9 @@
     <ClInclude Include="source\Component\TransformComponent.h" />
     <ClInclude Include="source\Scene\SceneSerializer.h" />
     <ClInclude Include="source\Scene\Serializable.h" />
+    <ClInclude Include="source\State\GameState\GameMode.h" />
+    <ClInclude Include="source\State\State.h" />
+    <ClInclude Include="source\State\StateMachine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rdParty\imgui-master\backends\imgui_impl_opengl2.cpp" />
@@ -286,10 +291,12 @@
     <ClCompile Include="source\Component\SerializableComponents.cpp" />
     <ClCompile Include="source\Component\SpriteAtlasComponent.cpp" />
     <ClCompile Include="source\Component\SpriteComponent.cpp" />
+    <ClCompile Include="source\Component\TagComponent.cpp" />
     <ClCompile Include="source\Component\UI\ButtonComponent.cpp" />
     <ClCompile Include="source\Component\UUIDComponent.cpp" />
     <ClCompile Include="source\Core\BinaryReader.cpp" />
     <ClCompile Include="source\Core\Command.cpp" />
+    <ClCompile Include="source\State\GameState\GameState.cpp" />
     <ClCompile Include="source\Core\GeometryUtils.cpp" />
     <ClCompile Include="source\Core\Random.cpp" />
     <ClCompile Include="source\Core\UUID.cpp" />
@@ -321,6 +328,7 @@
     <ClCompile Include="source\Core\Time.cpp" />
     <ClCompile Include="source\Component\TransformComponent.cpp" />
     <ClCompile Include="source\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="source\State\StateMachine.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

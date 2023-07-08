@@ -205,6 +205,7 @@ void dae::SceneSerializer::RegisterEngineComponents(ComponentFactory& factory)
 	factory.RegisterComponent<TextureSerializer>();
 	factory.RegisterComponent<TextComponentSerializer>();
 	factory.RegisterComponent<SpriteAtlasComponentSerializer>();
+	factory.RegisterComponent<TagComponentSerializer>();
 
 	//renderer
 	factory.RegisterComponent<QuadRendererSerializer>();

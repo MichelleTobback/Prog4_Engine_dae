@@ -25,7 +25,7 @@ namespace dae
 		RigidBody2DComponent& operator=(RigidBody2DComponent&& other) = delete;
 
 		virtual void Awake() override;
-		virtual void OnDestroy() override;
+		virtual void Sleep() override;
 		virtual void Update() override;
 		virtual void FixedUpdate() override;
 

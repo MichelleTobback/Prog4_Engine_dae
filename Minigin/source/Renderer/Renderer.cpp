@@ -48,14 +48,36 @@ void dae::Renderer::Init(const Window& pWindow)
 
 void dae::Renderer::Render()
 {
+	while (!m_pComponentsToRemove.empty())
+	{
+		RenderComponent* componentToRemove = m_pComponentsToRemove.front();
+		m_pComponentsToRemove.pop();
+		m_pRenderComponents.erase(
+			std::remove(m_pRenderComponents.begin(), m_pRenderComponents.end(), componentToRemove),
+			m_pRenderComponents.end());
+	}
+
 	const auto& color = GetBackgroundColor();
 	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
 	SDL_RenderClear(m_renderer);
 
 	for (auto& pComponent : m_pRenderComponents)
 	{
-		if (pComponent)
+		if (pComponent && pComponent->GetLayer() == 0)
+		{
 			pComponent->Render();
+		}
+		else if (pComponent)
+		{
+			m_pRenderComponentQueue.push(pComponent);
+		}
+	}
+
+	while (!m_pRenderComponentQueue.empty())
+	{
+		RenderComponent* pComponent{ m_pRenderComponentQueue.top() };
+		pComponent->Render();
+		m_pRenderComponentQueue.pop();
 	}
 
 	//ImGui
@@ -187,4 +209,19 @@ void dae::Renderer::RenderSolidQuad(float x, float y, float width, float height,
 	
 }
 
+void dae::Renderer::AddComponent(RenderComponent* pComponent)
+{
+	m_pRenderComponents.push_back(pComponent);
+}
+
+void dae::Renderer::RemoveComponent(RenderComponent* pComponent)
+{
+	m_pComponentsToRemove.push(pComponent);
+}
+
 inline SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }
+
+bool dae::Renderer::RenderComponentComparator::operator()(const RenderComponent* a, const RenderComponent* b) const
+{
+	return a->GetLayer() > b->GetLayer();
+}

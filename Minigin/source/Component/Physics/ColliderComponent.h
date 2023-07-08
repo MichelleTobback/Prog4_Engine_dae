@@ -2,6 +2,7 @@
 #include "Component/Component.h"
 #include "Component/QuadComponent.h"
 #include "Component/CircleComponent.h"
+#include "Core/GeometryUtils.h"
 
 namespace dae
 {
@@ -20,12 +21,14 @@ namespace dae
 		Box = 0, Circle = 1
 	};
 
+	class ColliderComponent;
 	struct CollisionHit
 	{
 		glm::vec3 pointOfImpact{};
 		glm::vec3 normal{};
-		GameObject* pObject{nullptr};
-		GameObject* pOtherObject{nullptr};
+		ColliderComponent* pCollider{nullptr};
+		ColliderComponent* pOtherCollider{nullptr};
+		GameObject* pOther{ nullptr };
 		float depth{};
 		bool succes{};
 	};
@@ -47,6 +50,7 @@ namespace dae
 		ColliderComponent& operator=(ColliderComponent&& other) = delete;
 
 		virtual bool HandleCollision(ColliderComponent* pOther, const glm::vec3& fixedVel, CollisionHit& result) = 0;
+		virtual bool DoRaycast(const GeometryUtils::Ray& ray, CollisionHit& result, CollisionLayer ignoreLayers = CollisionLayer::None) = 0;
 
 		inline ColliderType GetType() const { return m_Type; }
 
@@ -88,6 +92,7 @@ namespace dae
 		BoxCollider2DComponent& operator=(BoxCollider2DComponent&& other) = delete;
 
 		virtual bool HandleCollision(ColliderComponent* pOther, const glm::vec3& fixedVel, CollisionHit& result) override;
+		virtual bool DoRaycast(const GeometryUtils::Ray& ray, CollisionHit& result, CollisionLayer ignoreLayers = CollisionLayer::None) override;
 
 		void SetShape(QuadComponent* pQuad);
 		QuadComponent* GetShape() const { return m_pShape; }
@@ -114,6 +119,7 @@ namespace dae
 		CircleColliderComponent& operator=(CircleColliderComponent&& other) = delete;
 
 		virtual bool HandleCollision(ColliderComponent* pOther, const glm::vec3& fixedVel, CollisionHit& result) override;
+		virtual bool DoRaycast(const GeometryUtils::Ray& ray, CollisionHit& result, CollisionLayer ignoreLayers = CollisionLayer::None) override;
 
 		void SetShape(CircleComponent* pCircle);
 		CircleComponent* GetShape() const { return m_pShape; }

@@ -13,17 +13,23 @@ namespace dae
 	{
 	public:
 		RenderComponent(GameObject* pOwner);
-		virtual ~RenderComponent() override;
+		virtual ~RenderComponent() override = default;
 
 		RenderComponent(const RenderComponent& other) = delete;
 		RenderComponent(RenderComponent&& other) = delete;
 		RenderComponent& operator=(const RenderComponent& other) = delete;
 		RenderComponent& operator=(RenderComponent&& other) = delete;
 
-		virtual void Render() const;
+		virtual void Awake() override;
+		virtual void Sleep() override;
+
+		virtual void Render() const = 0;
+
+		inline void SetLayer(size_t layer) { m_Layer = layer; }
+		inline size_t GetLayer() const { return m_Layer; }
 
 	private:
-
+		size_t m_Layer{ 0 };
 	};
 
 	class TextureComponent;
@@ -39,6 +45,9 @@ namespace dae
 		TextureRenderComponent(TextureRenderComponent&& other) = delete;
 		TextureRenderComponent& operator=(const TextureRenderComponent& other) = delete;
 		TextureRenderComponent& operator=(TextureRenderComponent&& other) = delete;
+
+		virtual void Awake() override;
+		virtual void Sleep() override;
 
 		virtual void Render() const override;
 
@@ -64,6 +73,8 @@ namespace dae
 		SpriteRenderComponent& operator=(TextureRenderComponent&& other) = delete;
 
 		virtual void Awake() override;
+		virtual void Sleep() override;
+
 		virtual void Render() const override;
 
 		inline void SetSpriteComponent(SpriteComponent* pSpriteComponent) { m_pSpriteComponent = pSpriteComponent; }
@@ -87,6 +98,7 @@ namespace dae
 		QuadRendererComponent& operator=(QuadRendererComponent&& other) = delete;
 
 		virtual void Awake() override;
+		virtual void Sleep() override;
 		virtual void Render() const override;
 
 		void SetQuad(QuadComponent* pQuad);

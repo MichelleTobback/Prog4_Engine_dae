@@ -8,6 +8,7 @@
 #include "Component/Physics/RigidBody2DComponent.h"
 #include "Managers/ResourceManager.h"
 #include "Core/BitFlag.h"
+#include "Component/TagComponent.h"
 
 namespace dae
 {
@@ -599,4 +600,42 @@ namespace dae
         return nullptr;
     }
 #pragma endregion BoxCollider2DComponent
+
+#pragma region TagComponent
+    //=================================
+    // Tag
+    //=================================
+
+    TagComponentSerializer::TagComponentSerializer()
+        : Serializable(Serializable::Create<TagComponent>())
+    {
+    }
+    void TagComponentSerializer::Serialize(BinaryWriter& out, Component* pComponent) const
+    {
+        TagComponent* pTag{ pComponent->As<TagComponent>() };
+        const auto& tags{ pTag->GetAll() };
+        out.Write(tags.size());
+        for (const auto& tag : tags)
+        {
+            out.WriteString(tag);
+        }
+    }
+    Component* TagComponentSerializer::Deserialize(DeserializeParams& params)
+    {
+        if (params.pGameObject)
+        {
+            size_t numTags{};
+            params.in.Read(numTags);
+
+            for (size_t i{}; i < numTags; ++i)
+            {
+                std::string tag{};
+                params.in.ReadString(tag);
+                params.pGameObject->AddTag(tag);
+            }
+            return params.pGameObject->GetTag();
+        }
+        return nullptr;
+    }
+#pragma endregion TagComponent
 }

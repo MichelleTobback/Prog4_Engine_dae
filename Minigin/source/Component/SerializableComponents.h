@@ -155,4 +155,19 @@ namespace dae
 
 	private:
 	};
+
+	//=================================
+	// Tag
+	//=================================
+	class TagComponentSerializer final : public Serializable
+	{
+	public:
+		TagComponentSerializer();
+		virtual ~TagComponentSerializer() override = default;
+
+		virtual void Serialize(BinaryWriter& out, Component* pComponent) const override;
+		virtual Component* Deserialize(DeserializeParams& params) override;
+
+	private:
+	};
 }

@@ -29,6 +29,7 @@ namespace dae
 		Component& operator=(Component&& other) = delete;
 
 		virtual void Awake(){}
+		virtual void Sleep() {}
 		virtual void OnDestroy() {}
 		virtual void ReceiveMessage(const ComponentMessage&){}
 		virtual void Update(){}

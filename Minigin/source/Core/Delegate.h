@@ -16,6 +16,19 @@ namespace dae
             m_Functions.emplace_back(func);
         }
 
+        void operator-=(const std::function<T(Args...)>& func)
+        {
+            auto it{ std::find_if(m_Functions.begin(), m_Functions.end(), [&func](const auto& f)
+                {
+                    return f.target_type() == func.target_type();
+                }) };
+
+            if (it != m_Functions.end())
+            {
+                m_Functions.erase(it);
+            }
+        }
+
         void Invoke(Args... args) const
         {
             for (const auto& func : m_Functions)
@@ -36,14 +49,12 @@ namespace dae
         m_Functions.clear();
     }
 
-    template<typename Signature>
-    class ObservableType;
 
-    template<typename T, typename... Args>
-    class ObservableType<T(Args...)>
+    template<typename T>
+    class ObservableType
     {
     public:
-        using OnValueChangedDelegate = Delegate<T(T)>;
+        using OnValueChangedDelegate = Delegate<void(T)>;
         ObservableType(T value = T{})
             : m_Value{ value }
             , m_pOnValueChangedDelegate{ std::make_unique<OnValueChangedDelegate>() }

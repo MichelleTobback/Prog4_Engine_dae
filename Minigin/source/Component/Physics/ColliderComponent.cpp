@@ -1,6 +1,7 @@
 #include "ColliderComponent.h"
 #include "Core/GeometryUtils.h"
 #include "Scene/GameObject.h"
+#include "Component/Physics/RigidBody2DComponent.h"
 
 #include "Core/BitFlag.h"
 
@@ -48,7 +49,7 @@ bool dae::ColliderComponent::IsTrigger() const
 
 bool dae::ColliderComponent::IsOverlapping() const
 {
-	return BitFlag::IsSet(GetFlags(), CollisionFlags::Overlapped);
+	return BitFlag::IsSet(m_Flags, CollisionFlags::Overlapped);
 }
 
 void dae::ColliderComponent::SetRigidBody(RigidBody2DComponent* pRigidBody)
@@ -70,10 +71,6 @@ bool dae::BoxCollider2DComponent::HandleCollision(ColliderComponent* pOther, con
 	{
 	case ColliderType::Box:
 	{
-		//auto& otherPos{ pBox->GetOwner()->GetTransform().GetWorldPosition() };
-		//glm::vec4 otherQuad{ otherPos.x, otherPos.y, pBox->GetShape()->GetSize().x, pBox->GetShape()->GetSize().y};
-		//auto collisionResult{ GeometryUtils::AABBQuadIntersection(quad, otherQuad)};
-
 		auto pBox{ dynamic_cast<BoxCollider2DComponent*>(pOther) };
 		if (!pBox || !pBox->GetShape())
 			return false;
@@ -86,8 +83,9 @@ bool dae::BoxCollider2DComponent::HandleCollision(ColliderComponent* pOther, con
 		result.normal = { collisionResult.intersectionNormal, 0.f };
 		result.depth = collisionResult.depth;
 		result.pointOfImpact = pos - result.normal * result.depth;
-		result.pObject = GetOwner();
-		result.pOtherObject = pOther->GetOwner();
+		result.pCollider = this;
+		result.pOther = pOther->GetOwner();
+		result.pOtherCollider = pOther;
 	}
 		break;
 
@@ -98,15 +96,40 @@ bool dae::BoxCollider2DComponent::HandleCollision(ColliderComponent* pOther, con
 	return result.succes;
 }
 
+bool dae::BoxCollider2DComponent::DoRaycast(const GeometryUtils::Ray& ray, CollisionHit& result, CollisionLayer ignoreLayers)
+{
+	if (!m_pShape || BitFlag::IsSet(ignoreLayers, GetCollisionLayer()))
+		return false;
+
+	std::vector<glm::vec2> quadVerts(m_pShape->GetVertexCount());
+	m_pShape->GetVerticesWorldPosition(quadVerts);
+
+	GeometryUtils::IntersectionResult collisionResult{};
+	result.succes = GeometryUtils::RayPolygonIntersection(ray, quadVerts, collisionResult);
+	if (result.succes && GetRigidBody())
+	{
+		result.normal = { collisionResult.intersectionNormal, 0.f };
+		result.depth = collisionResult.depth;
+		result.pointOfImpact = { collisionResult.intersectionPoint, 1.f };
+		result.pCollider = nullptr;
+		result.pOther = GetRigidBody()->GetOwner();
+		result.pOtherCollider = this;
+	}
+	else
+		result.succes = false;
+
+	return result.succes;
+}
+
 void dae::BoxCollider2DComponent::SetShape(QuadComponent* pQuad)
 {
 	m_pShape = pQuad;
 
-//#ifdef _DEBUG
-//	if (!m_pDebugRenderer)
-//		m_pDebugRenderer = GetOwner()->GetScene()->Instantiate(0u, GetOwner())->AddComponent<QuadRendererComponent>();
-//	m_pDebugRenderer->SetQuad(pQuad);
-//#endif
+#ifdef _DEBUG
+	if (!m_pDebugRenderer)
+		m_pDebugRenderer = GetOwner()->GetScene()->Instantiate(0u, GetOwner())->AddComponent<QuadRendererComponent>();
+	m_pDebugRenderer->SetQuad(pQuad);
+#endif
 }
 
 bool dae::CircleColliderComponent::HandleCollision(ColliderComponent* pOther, const glm::vec3& fixedVel, CollisionHit& result)
@@ -133,9 +156,10 @@ bool dae::CircleColliderComponent::HandleCollision(ColliderComponent* pOther, co
 		{
 			result.normal = { collisionResult.intersectionNormal, 0.f };
 			result.depth = collisionResult.depth;
-			result.pointOfImpact = glm::vec3{ pos, 1.f } - result.normal * result.depth;
-			result.pObject = GetOwner();
-			result.pOtherObject = pOther->GetOwner();
+			result.pointOfImpact = glm::vec3{ pos, 1.f } - result.normal * m_pShape->GetRadius();
+			result.pCollider = this;
+			result.pOther = pOther->GetOwner();
+			result.pOtherCollider = pOther;
 		}
 	}
 	break;
@@ -144,6 +168,11 @@ bool dae::CircleColliderComponent::HandleCollision(ColliderComponent* pOther, co
 		break;
 	}
 
+	return false;
+}
+
+bool dae::CircleColliderComponent::DoRaycast(const GeometryUtils::Ray& , CollisionHit& , CollisionLayer )
+{
 	return false;
 }
 

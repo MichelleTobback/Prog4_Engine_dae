@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Minigin", "Minigin\Minigin.vcxproj", "{41B0EC47-D48C-4B0F-951B-D98595FFAE0A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TronBattleTanks", "TronBattleTanks\TronBattleTanks\TronBattleTanks.vcxproj", "{18D68322-DC90-4875-A50D-192FBB2203FD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BurgerTime", "BurgerTime\BurgerTime.vcxproj", "{2630A27B-BB0C-40F8-8A30-2033BC6DBA2C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{41B0EC47-D48C-4B0F-951B-D98595FFAE0A} = {41B0EC47-D48C-4B0F-951B-D98595FFAE0A}
 	EndProjectSection
@@ -26,14 +26,14 @@ Global
 		{41B0EC47-D48C-4B0F-951B-D98595FFAE0A}.Release|x64.Build.0 = Release|x64
 		{41B0EC47-D48C-4B0F-951B-D98595FFAE0A}.Release|x86.ActiveCfg = Release|Win32
 		{41B0EC47-D48C-4B0F-951B-D98595FFAE0A}.Release|x86.Build.0 = Release|Win32
-		{18D68322-DC90-4875-A50D-192FBB2203FD}.Debug|x64.ActiveCfg = Debug|x64
-		{18D68322-DC90-4875-A50D-192FBB2203FD}.Debug|x64.Build.0 = Debug|x64
-		{18D68322-DC90-4875-A50D-192FBB2203FD}.Debug|x86.ActiveCfg = Debug|Win32
-		{18D68322-DC90-4875-A50D-192FBB2203FD}.Debug|x86.Build.0 = Debug|Win32
-		{18D68322-DC90-4875-A50D-192FBB2203FD}.Release|x64.ActiveCfg = Release|x64
-		{18D68322-DC90-4875-A50D-192FBB2203FD}.Release|x64.Build.0 = Release|x64
-		{18D68322-DC90-4875-A50D-192FBB2203FD}.Release|x86.ActiveCfg = Release|Win32
-		{18D68322-DC90-4875-A50D-192FBB2203FD}.Release|x86.Build.0 = Release|Win32
+		{2630A27B-BB0C-40F8-8A30-2033BC6DBA2C}.Debug|x64.ActiveCfg = Debug|x64
+		{2630A27B-BB0C-40F8-8A30-2033BC6DBA2C}.Debug|x64.Build.0 = Debug|x64
+		{2630A27B-BB0C-40F8-8A30-2033BC6DBA2C}.Debug|x86.ActiveCfg = Debug|Win32
+		{2630A27B-BB0C-40F8-8A30-2033BC6DBA2C}.Debug|x86.Build.0 = Debug|Win32
+		{2630A27B-BB0C-40F8-8A30-2033BC6DBA2C}.Release|x64.ActiveCfg = Release|x64
+		{2630A27B-BB0C-40F8-8A30-2033BC6DBA2C}.Release|x64.Build.0 = Release|x64
+		{2630A27B-BB0C-40F8-8A30-2033BC6DBA2C}.Release|x86.ActiveCfg = Release|Win32
+		{2630A27B-BB0C-40F8-8A30-2033BC6DBA2C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

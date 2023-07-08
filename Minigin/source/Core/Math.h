@@ -38,6 +38,11 @@ namespace dae
 			return angle;
 		}
 
+		inline static float Cross(const glm::vec2& left, const glm::vec2& right)
+		{
+			return left.x * right.y - left.y * right.x;
+		}
+
 	private:
 		Math() = default;
 	};

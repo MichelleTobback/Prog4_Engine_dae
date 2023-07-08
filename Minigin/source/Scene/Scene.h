@@ -21,6 +21,8 @@ namespace dae
 		GameObject* Instantiate(GameObject* pParent = nullptr, const glm::vec3& pos = {});
 		GameObject* Instantiate(UUID uuid, GameObject* pParent = nullptr, const glm::vec3& pos = {});
 
+		void Awake();
+		void Sleep();
 		void Update();
 		void FixedUpdate();
 		void LateUpdate();
@@ -28,8 +30,10 @@ namespace dae
 
 		inline const GameObjectContainer& GetObjects() const { return m_Objects; }
 		GameObject* GetGameObject(UUID uuid);
+		std::vector<GameObject*> GetGameObjectWithTag(const std::string& tag);
 
 		PhysicsScene& GetPhysics() { return *m_pPhysics; }
+		void DestroyGameObject(GameObject* pObject);
 
 		~Scene();
 		Scene(const Scene& other) = delete;

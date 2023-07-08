@@ -10,6 +10,7 @@
 #include "Managers/ServiceLocator.h"
 #include "Platform/SDL/SdlSoundSystem.h"
 #include "Platform/SDL/SdlWindow.h"
+#include "State/GameState/GameState.h"
 
 #if _DEBUG
 	#include "Audio/LoggingSoundSystem.h"
@@ -39,6 +40,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& window{ ServiceLocator::GetWindow() };
 	window.Init();
 	Renderer::GetInstance().Init(window);
+	auto& gameState{ GameState::GetInstance() };
 
 #if _DEBUG
 	ServiceLocator::RegisterSoundSystem(std::make_unique<LoggingSoundSystem>(std::make_unique<SdlSoundSystem>()));
@@ -52,17 +54,18 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = Input::GetInstance();
 
-	// todo: this update loop could use some work.
 	dae::Time& time{ Time::GetInstance() };
 	float lag{};
 	bool doContinue = true;
 	time.Start();
+	gameState.Start();
 	while (doContinue)
 	{
 		time.Update();
 		doContinue = input.ProcessInput();
 		input.HandleInput();
 		sceneManager.Update();
+		gameState.Update();
 
 		lag += time.GetDeltaTime();
 
@@ -78,4 +81,5 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 		time.Wait();
 	}
+	gameState.Shutdown();
 }

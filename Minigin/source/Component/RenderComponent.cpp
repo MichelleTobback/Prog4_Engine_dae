@@ -15,18 +15,17 @@
 dae::RenderComponent::RenderComponent(GameObject* pOwner)
 	: Component(pOwner)
 {
-	Renderer::GetInstance().m_pRenderComponents.push_back(this);
-}
-
-dae::RenderComponent::~RenderComponent()
-{
-	auto& renderComponents{ Renderer::GetInstance().m_pRenderComponents };
-	renderComponents.erase(std::remove(renderComponents.begin(), renderComponents.end(), this), renderComponents.end());
-}
-
-void dae::RenderComponent::Render() const
-{
 	
+}
+
+void dae::RenderComponent::Awake()
+{
+	Renderer::GetInstance().AddComponent(this);
+}
+
+void dae::RenderComponent::Sleep()
+{
+	Renderer::GetInstance().RemoveComponent(this);
 }
 
 //=================================================
@@ -51,8 +50,21 @@ dae::TextureRenderComponent::TextureRenderComponent(GameObject* pOwner, TextureC
 	m_pTransformComponent = pOwner->GetComponent<TransformComponent>();
 }
 
+void dae::TextureRenderComponent::Awake()
+{
+	RenderComponent::Awake();
+}
+
+void dae::TextureRenderComponent::Sleep()
+{
+	RenderComponent::Sleep();
+}
+
 void dae::TextureRenderComponent::Render() const
 {
+	if (!m_pTextureComponent->GetTexture())
+		return;
+
 	glm::vec3 pos{ m_pTransformComponent->GetWorldPosition() };
 	const glm::vec2& size{ m_pTextureComponent->GetSize() };
 	const auto& pTexture{ m_pTextureComponent->GetTexture() };
@@ -78,7 +90,12 @@ dae::SpriteRenderComponent::SpriteRenderComponent(GameObject* pOwner, SpriteComp
 
 void dae::SpriteRenderComponent::Awake()
 {
-	
+	RenderComponent::Awake();
+}
+
+void dae::SpriteRenderComponent::Sleep()
+{
+	RenderComponent::Sleep();
 }
 
 void dae::SpriteRenderComponent::Render() const
@@ -101,7 +118,12 @@ void dae::SpriteRenderComponent::Render() const
 
 void dae::QuadRendererComponent::Awake()
 {
-	
+	RenderComponent::Awake();
+}
+
+void dae::QuadRendererComponent::Sleep()
+{
+	RenderComponent::Sleep();
 }
 
 dae::QuadRendererComponent::QuadRendererComponent(GameObject* pOwner)
