@@ -63,6 +63,7 @@ GameObject* dae::Scene::Instantiate(UUID uuid, GameObject* pParent, const glm::v
 	if (pParent)
 		pGameObject->AttachToGameObject(pParent);
 	pGameObject->GetTransform().SetLocalPosition(pos);
+	pGameObject->SetActive(true);
 	return pGameObject;
 }
 

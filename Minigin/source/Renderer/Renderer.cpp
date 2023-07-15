@@ -84,7 +84,6 @@ void dae::Renderer::Render()
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame(m_pWindow);
 	ImGui::NewFrame();
-	//SceneManager::GetInstance().OnImGuiRender();
 
 	if (m_ShowDemo)
 		ImGui::ShowDemoWindow(&m_ShowDemo);

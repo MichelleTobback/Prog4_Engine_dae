@@ -33,9 +33,7 @@ namespace dae
 		bool succes{};
 	};
 
-#ifdef _DEBUG
 	class QuadRendererComponent;
-#endif
 	class RigidBody2DComponent;
 	class ColliderComponent : public Component
 	{

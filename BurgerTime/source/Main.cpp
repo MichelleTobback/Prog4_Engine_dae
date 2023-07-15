@@ -9,17 +9,22 @@
 
 #include "Core/Minigin.h"
 #include "State/GameState/GameState.h"
+#include "Prefabs.h"
 #include <iostream>
 
 #include "Scene/Scene.h"
 #include "Managers/SceneManager.h"
+#include "Editor/Editor.h"
 
 void load()
 {
 	auto& sceneManager{ dae::SceneManager::GetInstance() };
-	sceneManager.CreateScene("Level1");
-	//dae::Editor editor{};
-	//editor.Init();
+	//auto& scene{ sceneManager.CreateScene("Level1") };
+	auto& scene{ sceneManager.LoadScene("Scenes/BurgerTimeLevel1.scene")};
+	//dae::Prefabs::CreateTestLevel(&scene);
+	dae::Prefabs::CreatePeterPepper(&scene);
+	dae::Editor editor{};
+	editor.Init();
 }
 
 int main(int, char* []) 

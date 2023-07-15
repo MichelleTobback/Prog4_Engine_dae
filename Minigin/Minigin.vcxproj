@@ -218,6 +218,7 @@
     <ClInclude Include="source\Audio\AudioClip.h" />
     <ClInclude Include="source\Audio\LoggingSoundSystem.h" />
     <ClInclude Include="source\Component\CircleComponent.h" />
+    <ClInclude Include="source\Component\Physics\CharacterController2D.h" />
     <ClInclude Include="source\Component\Physics\ColliderComponent.h" />
     <ClInclude Include="source\Component\QuadComponent.h" />
     <ClInclude Include="source\Component\Physics\RigidBody2DComponent.h" />
@@ -285,6 +286,7 @@
     <ClCompile Include="source\Audio\AudioClip.cpp" />
     <ClCompile Include="source\Audio\LoggingSoundSystem.cpp" />
     <ClCompile Include="source\Component\CircleComponent.cpp" />
+    <ClCompile Include="source\Component\Physics\CharacterController2D.cpp" />
     <ClCompile Include="source\Component\Physics\ColliderComponent.cpp" />
     <ClCompile Include="source\Component\QuadComponent.cpp" />
     <ClCompile Include="source\Component\Physics\RigidBody2DComponent.cpp" />

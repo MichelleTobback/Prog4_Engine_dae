@@ -150,7 +150,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Components\PlayerController.cpp" />
+    <ClCompile Include="source\Editor\BurgerTimeLevelPanel.cpp" />
+    <ClCompile Include="source\Editor\Editor.cpp" />
+    <ClCompile Include="source\Editor\SceneGraphPanel.cpp" />
     <ClCompile Include="source\Main.cpp" />
+    <ClCompile Include="source\Prefabs.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\Components\PlayerController.h" />
+    <ClInclude Include="source\Editor\BurgerTimeLevelPanel.h" />
+    <ClInclude Include="source\Editor\Editor.h" />
+    <ClInclude Include="source\Editor\SceneGraphPanel.h" />
+    <ClInclude Include="source\Prefabs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
