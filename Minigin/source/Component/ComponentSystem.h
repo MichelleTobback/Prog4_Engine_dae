@@ -65,7 +65,7 @@ namespace dae
 			if (!HasComponent<T>())
 				return false;
 
-			m_Components.erase(Component::GetName<T>());
+			m_ComponentsToRemove.push(Component::GetName<T>());
 			return true;
 		}
 
@@ -81,6 +81,6 @@ namespace dae
 		ComponentMap m_Components;
 
 		std::queue<Component*> m_pComponentsToAwake{};
-
+		std::queue<std::string> m_ComponentsToRemove{};
 	};
 }

@@ -150,6 +150,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Components\BurgerIngredient.cpp" />
+    <ClCompile Include="source\Components\BurgerPlate.cpp" />
+    <ClCompile Include="source\Components\BurgerTimeMovementController.cpp" />
     <ClCompile Include="source\Components\PlayerController.cpp" />
     <ClCompile Include="source\Editor\BurgerTimeLevelPanel.cpp" />
     <ClCompile Include="source\Editor\Editor.cpp" />
@@ -158,6 +161,9 @@
     <ClCompile Include="source\Prefabs.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Components\BurgerIngredient.h" />
+    <ClInclude Include="source\Components\BurgerPlate.h" />
+    <ClInclude Include="source\Components\BurgerTimeMovementController.h" />
     <ClInclude Include="source\Components\PlayerController.h" />
     <ClInclude Include="source\Editor\BurgerTimeLevelPanel.h" />
     <ClInclude Include="source\Editor\Editor.h" />

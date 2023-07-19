@@ -8,7 +8,7 @@ namespace dae
 {
 	enum class CollisionLayer
 	{
-		None = 0, One = 1, Two = 2, Three = 4, Four = 8, Five = 16
+		None = 0, One = 1, Two = 2, Three = 4, Four = 8, Five = 16, Six = 32, Seven = 64
 	};
 
 	enum class CollisionFlags

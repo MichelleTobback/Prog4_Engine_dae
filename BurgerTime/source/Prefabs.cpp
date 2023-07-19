@@ -1,9 +1,39 @@
 #include "Prefabs.h"
 #include "Component/Physics/CharacterController2D.h"
 #include "Components/PlayerController.h"
+#include "Components/BurgerTimeMovementController.h"
+#include "Components/BurgerPlate.h"
 
 #include "Component/SpriteAtlasComponent.h"
 #include "Component/RenderComponent.h"
+
+dae::GameObject* dae::Prefabs::CreateBurgerPlate(Scene* pScene, RigidBody2DComponent* pRigidBody)
+{
+    GameObject* pObject{ pScene->Instantiate(pRigidBody->GetOwner()) };
+    const glm::vec2 size{38.f, 38.f};
+    BoxCollider2DComponent* pCollider{ pObject->AddComponent<BoxCollider2DComponent>() };
+    pCollider->SetShape(pObject->AddComponent<QuadComponent>(size));
+    pCollider->SetCollisionLayer(PLATE_COLLISION_LAYER);
+    pCollider->SetCollisionIgnoreLayer(PLAYER_COLLISION_LAYER, true);
+    pCollider->SetCollisionIgnoreLayer(LADDER_COLLISION_LAYER, true);
+    pCollider->SetTrigger(true);
+    pRigidBody->AddCollider(pCollider);
+    pObject->AddComponent<BurgerPlate>(pRigidBody);
+    return pObject;
+}
+
+dae::GameObject* dae::Prefabs::CreateBurgerIngredient(Scene* pScene, BurgerIngredient::IngredientType type)
+{
+    GameObject* pObject{ pScene->Instantiate() };
+    RigidBody2DComponent* pRigidBody{ pObject->AddComponent<RigidBody2DComponent>() };
+    TextureComponent* pTextureComponent{ pObject->AddComponent<TextureComponent>() };
+    pTextureComponent->SetTexture("Textures/BurgerTimeCharacters.png");
+    SpriteAtlasComponent* pSpriteAtlas{ pObject->AddComponent<SpriteAtlasComponent>(pTextureComponent)};
+
+    pObject->AddComponent<BurgerIngredient>(type, pSpriteAtlas, pRigidBody);
+
+    return pObject;
+}
 
 dae::GameObject* dae::Prefabs::CreatePeterPepper(Scene* pScene)
 {
@@ -20,7 +50,8 @@ dae::GameObject* dae::Prefabs::CreatePeterPepper(Scene* pScene)
     pCollider->SetTrigger(true);
     pCharacterController->SetCollider(pCollider);
 
-    pObject->AddComponent<PlayerController>(pCharacterController);
+    BurgerTimeMovementController* pMovement{ pObject->AddComponent<BurgerTimeMovementController>(pCharacterController, PLAYER_COLLISION_LAYER) };
+    pObject->AddComponent<PlayerController>(pMovement);
 
     //sprites
     TextureComponent* pTexture{ pObject->AddComponent<TextureComponent>() };
@@ -36,7 +67,7 @@ dae::GameObject* dae::Prefabs::CreatePeterPepper(Scene* pScene)
     //}
 
     uint32_t spritedID{ pSpriteAtlas->AddSprite(0.f, 0.f, tileSize, tileSize) };
-    pObject->AddComponent<SpriteRenderComponent>(pSpriteAtlas->GetSprite(spritedID));
+    pObject->AddComponent<SpriteRenderComponent>(pSpriteAtlas->GetSprite(spritedID))->SetLayer(3);
 
     return pObject;
 }

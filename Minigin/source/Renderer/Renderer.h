@@ -8,6 +8,7 @@
 
 namespace dae
 {
+	class CameraComponent;
 	class RenderComponent;
 	class ImGuiComponent;
 	class Texture2D;
@@ -41,6 +42,9 @@ namespace dae
 		const SDL_Color& GetBackgroundColor() const { return m_clearColor; }
 		void SetBackgroundColor(const SDL_Color& color) { m_clearColor = color; }
 
+		void SetActiveCamera(CameraComponent* pCamera);
+		CameraComponent* GetActiveCamera() const;
+
 	private:
 		struct RenderComponentComparator
 		{
@@ -52,6 +56,8 @@ namespace dae
 		std::vector<ImGuiComponent*> m_pImGuiComponents{};
 		std::priority_queue<RenderComponent*, std::vector<RenderComponent*>, RenderComponentComparator> m_pRenderComponentQueue;
 		std::queue<RenderComponent*> m_pComponentsToRemove{};
+		CameraComponent* m_pActiveCamera{ nullptr };
+		glm::vec2 m_CameraScale{ 1.f, 1.f };
 		friend class RenderComponent;
 		friend class ImGuiComponent;
 	};

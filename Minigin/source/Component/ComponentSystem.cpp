@@ -31,6 +31,11 @@ void dae::ComponentSystem::Update()
 		m_pComponentsToAwake.front()->Awake();
 		m_pComponentsToAwake.pop();
 	}
+	while (!m_ComponentsToRemove.empty())
+	{
+		m_Components.erase(m_ComponentsToRemove.front());
+		m_ComponentsToRemove.pop();
+	}
 
 	for (auto& component : m_Components)
 	{

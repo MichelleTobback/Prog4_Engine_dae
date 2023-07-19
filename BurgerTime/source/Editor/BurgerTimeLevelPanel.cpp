@@ -45,6 +45,11 @@ void dae::BurgerTimeLevelPanel::OnImGuiRender()
 		pNewGameObject->AddComponent<TagComponent>("Ladder");
 	}
 
+	if (ImGui::Button("Add Plate"))
+	{
+		pNewGameObject = Prefabs::CreateBurgerPlate(GetScene(), m_pLevelRigid);
+	}
+
 	if (pNewGameObject)
 	{
 		m_pSceneGraphPanel->SelectGameObject(pNewGameObject);

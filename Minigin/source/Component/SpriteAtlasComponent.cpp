@@ -25,6 +25,14 @@ void dae::SpriteAtlasComponent::SetTexture(TextureComponent* pTexture)
 
 uint32_t dae::SpriteAtlasComponent::AddSprite(const glm::vec4& src)
 {
+	for (int i{}; i < m_pSprites.size(); ++i)
+	{
+		const float epsilon{ 0.1f };
+		if (glm::length2(src - m_pSprites[i]->GetSource()) < epsilon)
+		{
+			return i;
+		}
+	}
 	auto pSprite{ GetOwner()->GetScene()->Instantiate(GetOwner(), {src.x, src.y, 0.f}) };
 	auto pSpriteComponent{ pSprite->AddComponent<SpriteComponent>(m_pTexture, src) };
 	
@@ -39,6 +47,7 @@ uint32_t dae::SpriteAtlasComponent::AddSprite(float srcX, float srcY, float srcW
 uint32_t dae::SpriteAtlasComponent::AddSprite(SpriteComponent* pSprite)
 {
 	uint32_t index{ static_cast<uint32_t>(m_pSprites.size()) };
+
 	m_pSprites.push_back(pSprite);
 	return index;
 }

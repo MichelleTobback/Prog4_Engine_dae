@@ -126,10 +126,10 @@ void dae::BoxCollider2DComponent::SetShape(QuadComponent* pQuad)
 	m_pShape = pQuad;
 
 #ifdef _DEBUG
-	//if (!m_pDebugRenderer)
-	//	m_pDebugRenderer = GetOwner()->GetScene()->Instantiate(0u, GetOwner())->AddComponent<QuadRendererComponent>();
-	//m_pDebugRenderer->SetQuad(pQuad);
-	//m_pDebugRenderer->SetLayer(2);
+	if (!m_pDebugRenderer)
+		m_pDebugRenderer = GetOwner()->GetScene()->Instantiate(0u, GetOwner())->AddComponent<QuadRendererComponent>();
+	m_pDebugRenderer->SetQuad(pQuad);
+	m_pDebugRenderer->SetLayer(2);
 #endif
 }
 

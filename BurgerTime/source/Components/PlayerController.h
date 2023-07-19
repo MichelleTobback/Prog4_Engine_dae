@@ -1,6 +1,6 @@
 #pragma once
 #include "Component/Component.h"
-#include "Component/Physics/CharacterController2D.h"
+#include "BurgerTimeMovementController.h"
 
 #include "Core/Math.h"
 
@@ -11,7 +11,7 @@ namespace dae
 	class PlayerController : public Component
 	{
 	public:
-		PlayerController(GameObject* pOwner, CharacterController2D* pCharactarerController, int controllerIndex = -1);
+		PlayerController(GameObject* pOwner, BurgerTimeMovementController* pCharactarerController, int controllerIndex = -1);
 		virtual ~PlayerController() override = default;
 
 		PlayerController(const PlayerController& other) = delete;
@@ -24,14 +24,9 @@ namespace dae
 
 	private:
 		void OnDeath();
-		void Move(const glm::vec2& dir);
-		void OnOverlap(const CollisionHit& hit);
-		void OnEndOverlap(const CollisionHit& hit);
 
-		BoxCollider2DComponent* m_pLadderCollider{ nullptr };
-		CharacterController2D* m_pCharacterController;
+		BurgerTimeMovementController* m_pCharacterController;
 		int m_ControllerIndex;
-		bool m_Reset{ false }, m_CanMoveVertical{false};
-		float m_VerticalOffset{ 2.f };
+		bool m_Reset{ false };
 	};
 }
