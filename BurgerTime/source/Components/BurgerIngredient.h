@@ -7,8 +7,7 @@
 
 namespace dae
 {
-	constexpr CollisionLayer INGREDIENT_COLLISION_LAYER = CollisionLayer::Four;
-
+	class BTGameMode;
 	class AudioClip;
 	class RigidBody2DComponent;
 	class SpriteAtlasComponent;
@@ -20,7 +19,7 @@ namespace dae
 			TopBun = 0, BottomBun = 1, Cheese = 2, Patty = 3, Tomato = 4, Lettuce = 5
 		};
 
-		BurgerIngredient(GameObject* pOwner, IngredientType type, SpriteAtlasComponent* pSpriteAtlas, RigidBody2DComponent* pRigidBody);
+		BurgerIngredient(GameObject* pOwner, IngredientType type, SpriteAtlasComponent* pSpriteAtlas, RigidBody2DComponent* pRigidBody, uint32_t reward);
 
 		virtual void Awake() override;
 
@@ -36,15 +35,17 @@ namespace dae
 		void SetAllTilesTriggered();
 
 	private:
-		void CacheCurrentYPos();
+		void OnBeginOverlap(const CollisionHit& hit);
+		void OnEndOverlap(const CollisionHit& hit);
 
 		IngredientType m_Type;
 		RigidBody2DComponent* m_pRigidBody;
 		const float m_TileSize{ 8.f };
 		const int m_Length{ 4 }; //in tiles
 		int m_WalkedOnTilesFlags{ 0 }, m_AllFlags{0};
-		float m_CurrentYPos{};
 		bool m_OnPlate{ false };
+		uint32_t m_Reward;
+		BTGameMode* m_pCurrentGameMode{ nullptr };
 
 		static std::unique_ptr<AudioClip> m_pOverlapSound;
 		static std::unique_ptr<AudioClip> m_pFallSound;

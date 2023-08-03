@@ -1,5 +1,6 @@
 #include "Mouse.h"
 #include <SDL.h>
+#include "Core/BitFlag.h"
 
 namespace dae
 {
@@ -9,6 +10,8 @@ namespace dae
         void Update();
         bool IsButtonDown(MouseButton button) const;
         bool IsButtonUp(MouseButton button) const;
+        bool IsButtonDownLastFrame(MouseButton button) const;
+        bool IsButtonUpLastFrame(MouseButton button) const;
         bool MovedThisFrame() const;
         glm::vec2 GetMousePos() const;
         glm::vec2 GetMouseDeltaPos() const;
@@ -16,6 +19,7 @@ namespace dae
     private:
         glm::vec2 m_Pos{}, m_DeltaPos{};
         MouseFlags m_Flags{ MouseFlags::None };
+        MouseFlags m_PrevFlags{ MouseFlags::None };
 
         bool IsFlagSet(MouseFlags flag) const;
         void SetFlag(MouseFlags flag, bool set);
@@ -23,6 +27,8 @@ namespace dae
 }
 void dae::Mouse::MouseImpl::Update()
 {
+    m_PrevFlags = m_Flags;
+
     int x{}, y{};
     Uint32 mouseState{ SDL_GetMouseState(&x, &y) };
     glm::vec2 mousePos{ static_cast<float>(x), static_cast<float>(y) };
@@ -52,23 +58,23 @@ void dae::Mouse::MouseImpl::Update()
 }
 bool dae::Mouse::MouseImpl::IsButtonDown(MouseButton button) const
 {
-    switch (button)
-    {
-    case MouseButton::Left:
-        return IsFlagSet(MouseFlags::LeftButtonDown);
-        break;
-    case MouseButton::Middle:
-        return IsFlagSet(MouseFlags::MiddleButtonDown);
-        break;
-    case MouseButton::Right:
-        return IsFlagSet(MouseFlags::RightButtonDown);
-        break;
-    }
-    return false;
+    MouseFlags buttonDownFlag{Mouse::GetButtonDownFlag(button)};
+    return buttonDownFlag != MouseFlags::None && IsFlagSet(buttonDownFlag);
 }
 bool dae::Mouse::MouseImpl::IsButtonUp(MouseButton button) const
 {
     return !IsButtonDown(button);
+}
+
+bool dae::Mouse::MouseImpl::IsButtonDownLastFrame(MouseButton button) const
+{
+    MouseFlags buttonDownFlag{ Mouse::GetButtonDownFlag(button) };
+    return buttonDownFlag != MouseFlags::None && BitFlag::IsSet(m_PrevFlags, buttonDownFlag);
+}
+
+bool dae::Mouse::MouseImpl::IsButtonUpLastFrame(MouseButton button) const
+{
+    return !IsButtonDownLastFrame(button);
 }
 
 bool dae::Mouse::MouseImpl::MovedThisFrame() const
@@ -84,6 +90,23 @@ glm::vec2 dae::Mouse::MouseImpl::GetMousePos() const
 glm::vec2 dae::Mouse::MouseImpl::GetMouseDeltaPos() const
 {
     return m_DeltaPos;
+}
+
+dae::Mouse::MouseFlags dae::Mouse::GetButtonDownFlag(MouseButton button)
+{
+    switch (button)
+    {
+    case MouseButton::Left:
+        return MouseFlags::LeftButtonDown;
+        break;
+    case MouseButton::Middle:
+        return MouseFlags::MiddleButtonDown;
+        break;
+    case MouseButton::Right:
+        return MouseFlags::RightButtonDown;
+        break;
+    }
+    return MouseFlags::None;
 }
 
 bool dae::Mouse::MouseImpl::IsFlagSet(MouseFlags flag) const
@@ -120,6 +143,16 @@ bool dae::Mouse::IsButtonDown(MouseButton button) const
 bool dae::Mouse::IsButtonUp(MouseButton button) const
 {
     return m_pImpl->IsButtonUp(button);
+}
+
+bool dae::Mouse::IsButtonPressed(MouseButton button) const
+{
+    return IsButtonDown(button) && m_pImpl->IsButtonUpLastFrame(button);
+}
+
+bool dae::Mouse::IsButtonReleased(MouseButton button) const
+{
+    return IsButtonUp(button) && m_pImpl->IsButtonDownLastFrame(button);
 }
 
 bool dae::Mouse::MovedThisFrame() const

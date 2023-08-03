@@ -12,9 +12,6 @@ dae::BurgerTimeMovementController::BurgerTimeMovementController(GameObject* pOwn
 	m_pLadderCollider->SetShape(m_pLadderCollider->GetOwner()->AddComponent<QuadComponent>(glm::vec2{ 4.f, tileSize * 0.3f }));
 	m_pLadderCollider->SetCollisionLayer(layer);
 	pCharactarerController->GetRigidBody()->AddCollider(m_pLadderCollider);
-
-	m_pCharacterController->GetRigidBody()->GetOnBeginOverlap() += std::bind(&BurgerTimeMovementController::OnOverlap, this, std::placeholders::_1);
-	m_pCharacterController->GetRigidBody()->GetOnEndOverlap() += std::bind(&BurgerTimeMovementController::OnEndOverlap, this, std::placeholders::_1);
 }
 
 dae::CharacterController2D& dae::BurgerTimeMovementController::GetCharacterController() const
@@ -47,21 +44,5 @@ void dae::BurgerTimeMovementController::Move(const glm::vec2& dir)
 		(moveVertical && m_CanMoveVertical))
 	{
 		m_pCharacterController->Move(dir);
-	}
-}
-
-void dae::BurgerTimeMovementController::OnOverlap(const CollisionHit& hit)
-{
-	if (hit.pOtherCollider->GetCollisionLayer() == LADDER_COLLISION_LAYER)
-	{
-		m_CanMoveVertical = true;
-	}
-}
-
-void dae::BurgerTimeMovementController::OnEndOverlap(const CollisionHit& hit)
-{
-	if (hit.pOtherCollider->GetCollisionLayer() == LADDER_COLLISION_LAYER)
-	{
-		m_CanMoveVertical = false;
 	}
 }

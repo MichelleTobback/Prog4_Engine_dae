@@ -29,6 +29,23 @@ std::vector<GameObject*> dae::Scene::GetGameObjectWithTag(const std::string& tag
 	return tags;
 }
 
+std::vector<GameObject*> dae::Scene::GetGameObjectsAtPos(const glm::vec3& pos, float epsilon, bool onlyRoot)
+{
+	std::vector<GameObject*> pObjects;
+	const float epsilonSqrt{ epsilon * epsilon };
+	for (auto& pObject : m_Objects)
+	{
+		if (onlyRoot && !pObject.second->IsRoot())
+			continue;
+		const glm::vec3 currentPos{pObject.second->GetTransform().GetWorldPosition()};
+		const float distanceSqrt{ glm::distance2(pos, currentPos) };
+
+		if (distanceSqrt < epsilonSqrt)
+			pObjects.push_back(pObject.second.get());
+	}
+	return pObjects;
+}
+
 void dae::Scene::DestroyGameObject(GameObject* pObject)
 {
 	pObject->SetActive(false);

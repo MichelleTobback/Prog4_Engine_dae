@@ -6,7 +6,7 @@ namespace dae
 	class State
 	{
 	public:
-		using StatePtr = std::shared_ptr<State>;
+		using StatePtr = State*;
 		virtual ~State() = default;
 
 		virtual void OnEnter() = 0;

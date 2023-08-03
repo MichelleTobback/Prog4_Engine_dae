@@ -2,9 +2,9 @@
 
 
 dae::GameState::GameState()
-	: m_pEntryGameMode{std::make_shared<GameMode>()}
+	: m_pEntryGameMode{std::make_shared<DefaultGameMode>()}
 {
-	m_pGameModeFSM = std::make_unique<StateMachine>(nullptr, m_pEntryGameMode);
+	m_pGameModeFSM = std::make_unique<StateMachine>(nullptr, m_pEntryGameMode.get());
 }
 
 void dae::GameState::Start()
@@ -27,22 +27,22 @@ void dae::GameState::Shutdown()
 	m_Running = false;
 }
 
-void dae::GameState::SetGameMode(std::shared_ptr<GameMode>&& pGameState)
+void dae::GameState::SetGameMode(std::shared_ptr<GameMode>&& pGameMode)
 {
-	if (!pGameState)
+	if (!pGameMode)
 		return;
 
 	if (m_Running)
 	{
 		m_pGameModeFSM->Sleep();
-		m_pEntryGameMode = std::move(pGameState);
-		m_pGameModeFSM = std::make_unique<StateMachine>(nullptr, m_pEntryGameMode);
+		m_pEntryGameMode = std::move(pGameMode);
+		m_pGameModeFSM = std::make_unique<StateMachine>(nullptr, m_pEntryGameMode.get());
 		m_pGameModeFSM->Awake();
 	}
 	else
 	{
-		m_pEntryGameMode = std::move(pGameState);
-		m_pGameModeFSM = std::make_unique<StateMachine>(nullptr, m_pEntryGameMode);
+		m_pEntryGameMode = std::move(pGameMode);
+		m_pGameModeFSM = std::make_unique<StateMachine>(nullptr, m_pEntryGameMode.get());
 	}
 }
 

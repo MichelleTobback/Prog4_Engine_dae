@@ -31,6 +31,7 @@ namespace dae
 		inline const GameObjectContainer& GetObjects() const { return m_Objects; }
 		GameObject* GetGameObject(UUID uuid);
 		std::vector<GameObject*> GetGameObjectWithTag(const std::string& tag);
+		std::vector<GameObject*> GetGameObjectsAtPos(const glm::vec3& pos, float epsilon = 1.f, bool onlyRoot = true);
 
 		PhysicsScene& GetPhysics() { return *m_pPhysics; }
 		void DestroyGameObject(GameObject* pObject);

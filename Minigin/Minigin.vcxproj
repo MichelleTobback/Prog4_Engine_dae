@@ -224,6 +224,7 @@
     <ClInclude Include="source\Component\QuadComponent.h" />
     <ClInclude Include="source\Component\Physics\RigidBody2DComponent.h" />
     <ClInclude Include="source\Component\SerializableComponents.h" />
+    <ClInclude Include="source\Component\SpriteAnimatorComponent.h" />
     <ClInclude Include="source\Component\SpriteAtlasComponent.h" />
     <ClInclude Include="source\Component\SpriteComponent.h" />
     <ClInclude Include="source\Component\TagComponent.h" />
@@ -271,7 +272,6 @@
     <ClInclude Include="source\Component\TransformComponent.h" />
     <ClInclude Include="source\Scene\SceneSerializer.h" />
     <ClInclude Include="source\Scene\Serializable.h" />
-    <ClInclude Include="source\State\GameState\GameMode.h" />
     <ClInclude Include="source\State\State.h" />
     <ClInclude Include="source\State\StateMachine.h" />
   </ItemGroup>
@@ -293,6 +293,7 @@
     <ClCompile Include="source\Component\QuadComponent.cpp" />
     <ClCompile Include="source\Component\Physics\RigidBody2DComponent.cpp" />
     <ClCompile Include="source\Component\SerializableComponents.cpp" />
+    <ClCompile Include="source\Component\SpriteAnimatorComponent.cpp" />
     <ClCompile Include="source\Component\SpriteAtlasComponent.cpp" />
     <ClCompile Include="source\Component\SpriteComponent.cpp" />
     <ClCompile Include="source\Component\TagComponent.cpp" />

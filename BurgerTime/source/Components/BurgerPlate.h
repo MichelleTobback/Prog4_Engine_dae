@@ -5,18 +5,20 @@
 
 namespace dae
 {
-	constexpr CollisionLayer PLATE_COLLISION_LAYER = CollisionLayer::Five;
-
 	class BurgerPlate final : public Component
 	{
 	public:
 		BurgerPlate(GameObject* pOwner);
 		BurgerPlate(GameObject* pOwner, RigidBody2DComponent* pRigidBody);
 
+		virtual void Awake();
+
 		void SetRigidBody(RigidBody2DComponent* pRigidBody);
 
 	private:
 		void OnOverlap(const CollisionHit& hit);
+
+		ColliderComponent* m_pCollider{ nullptr };
 	};
 
 	class PlateComponentSerializer final : public Serializable

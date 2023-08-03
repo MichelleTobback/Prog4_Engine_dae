@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -150,25 +150,52 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\AI\Pathfinding\AStar.cpp" />
+    <ClCompile Include="source\Components\BTTileGridComponent.cpp" />
     <ClCompile Include="source\Components\BurgerIngredient.cpp" />
     <ClCompile Include="source\Components\BurgerPlate.cpp" />
     <ClCompile Include="source\Components\BurgerTimeMovementController.cpp" />
+    <ClCompile Include="source\Components\CharacterInfo.cpp" />
+    <ClCompile Include="source\Components\EnemyComponent.cpp" />
+    <ClCompile Include="source\Components\HealthComponent.cpp" />
+    <ClCompile Include="source\Components\NodeComponent.cpp" />
+    <ClCompile Include="source\Components\ObjectSpawner.cpp" />
+    <ClCompile Include="source\Components\PlayerAnimationController.cpp" />
     <ClCompile Include="source\Components\PlayerController.cpp" />
     <ClCompile Include="source\Editor\BurgerTimeLevelPanel.cpp" />
     <ClCompile Include="source\Editor\Editor.cpp" />
     <ClCompile Include="source\Editor\SceneGraphPanel.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\Prefabs.cpp" />
+    <ClCompile Include="source\States\CharacterState.cpp" />
+    <ClCompile Include="source\States\Enemy\EnemyClimbLadderState.cpp" />
+    <ClCompile Include="source\States\Enemy\EnemyGoToPlayerState.cpp" />
+    <ClCompile Include="source\States\GameModes\BTGameMode.cpp" />
+    <ClCompile Include="source\States\GameModes\BTSinglePlayerGameMode.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\AI\Pathfinding\AStar.h" />
+    <ClInclude Include="source\Components\BTTileGridComponent.h" />
     <ClInclude Include="source\Components\BurgerIngredient.h" />
     <ClInclude Include="source\Components\BurgerPlate.h" />
+    <ClInclude Include="source\BurgerTime.h" />
     <ClInclude Include="source\Components\BurgerTimeMovementController.h" />
+    <ClInclude Include="source\Components\CharacterInfo.h" />
+    <ClInclude Include="source\Components\EnemyComponent.h" />
+    <ClInclude Include="source\Components\HealthComponent.h" />
+    <ClInclude Include="source\Components\NodeComponent.h" />
+    <ClInclude Include="source\Components\ObjectSpawner.h" />
+    <ClInclude Include="source\Components\PlayerAnimationController.h" />
     <ClInclude Include="source\Components\PlayerController.h" />
     <ClInclude Include="source\Editor\BurgerTimeLevelPanel.h" />
     <ClInclude Include="source\Editor\Editor.h" />
     <ClInclude Include="source\Editor\SceneGraphPanel.h" />
     <ClInclude Include="source\Prefabs.h" />
+    <ClInclude Include="source\States\CharacterState.h" />
+    <ClInclude Include="source\States\Enemy\EnemyClimbLadderState.h" />
+    <ClInclude Include="source\States\Enemy\EnemyGoToPlayerState.h" />
+    <ClInclude Include="source\States\GameModes\BTGameMode.h" />
+    <ClInclude Include="source\States\GameModes\BTSinglePlayerGameMode.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,6 +4,8 @@
 #include "Component/CircleComponent.h"
 #include "Core/GeometryUtils.h"
 
+#include <unordered_map>
+
 namespace dae
 {
 	enum class CollisionLayer
@@ -38,8 +40,7 @@ namespace dae
 	class ColliderComponent : public Component
 	{
 	public:
-		ColliderComponent(GameObject* pOwner, ColliderType type) 
-			: Component(pOwner), m_Type{ type }, m_Flags{ CollisionFlags::None } {}
+		ColliderComponent(GameObject* pOwner, ColliderType type);
 		virtual ~ColliderComponent() override = default;
 
 		ColliderComponent(const ColliderComponent& other) = delete;
@@ -60,7 +61,9 @@ namespace dae
 		RigidBody2DComponent* GetRigidBody() const;
 		void SetTrigger(bool set);
 		bool IsTrigger() const;
-		bool IsOverlapping() const;
+		bool IsOverlapping(GameObject* pObject) const;
+		bool IsOverlapping(RigidBody2DComponent* pBody) const;
+		bool IsOverlapping(ColliderComponent* pOther) const;
 
 		CollisionFlags GetFlags() const { return m_Flags; }
 
@@ -73,6 +76,8 @@ namespace dae
 		ColliderType m_Type;
 		CollisionLayer m_CollisionLayer{ CollisionLayer::One };
 		CollisionLayer m_CollisionIgnoreLayer{ CollisionLayer::None };
+
+		std::unordered_map<UUID, std::vector<ColliderComponent*>> m_pOverlappingBodies;
 
 		RigidBody2DComponent* m_pRigidBody{ nullptr };
 	};

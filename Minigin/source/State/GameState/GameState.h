@@ -1,12 +1,12 @@
 #pragma once
 #include "Core/Singleton.h"
 #include "State/StateMachine.h"
-#include "GameMode.h"
 
 #include <memory>
 
 namespace dae
 {
+	using GameMode = State;
 	class GameState final : public Singleton<GameState>
 	{
 	public:
@@ -16,7 +16,7 @@ namespace dae
 		void Update();
 		void Shutdown();
 
-		void SetGameMode(std::shared_ptr<GameMode>&& pGameState);
+		void SetGameMode(std::shared_ptr<GameMode>&& pGameMode);
 		GameMode& GetGameMode() const;
 
 	protected:
@@ -29,13 +29,17 @@ namespace dae
 		bool m_Running{ false };
 	};
 
-	class DefaultGameState final : public State
+	class DefaultGameMode final : public GameMode
 	{
 	public:
-		DefaultGameState() = default;
-		~DefaultGameState() = default;
+		DefaultGameMode() = default;
+		virtual ~DefaultGameMode() override = default;
 
-	protected:
+		DefaultGameMode(const DefaultGameMode& other) = delete;
+		DefaultGameMode(DefaultGameMode&& other) = delete;
+		DefaultGameMode& operator=(const DefaultGameMode& other) = delete;
+		DefaultGameMode& operator=(DefaultGameMode&& other) = delete;
+
 		virtual void OnEnter() override {}
 		virtual StatePtr OnUpdate() override { return nullptr; }
 		virtual void OnExit() override {}

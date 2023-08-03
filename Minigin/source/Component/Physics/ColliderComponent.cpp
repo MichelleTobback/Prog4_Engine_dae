@@ -12,6 +12,11 @@
 	#include "Scene/Scene.h"
 #endif
 
+dae::ColliderComponent::ColliderComponent(GameObject* pOwner, ColliderType type)
+	: Component(pOwner), m_Type{ type }, m_Flags{ CollisionFlags::None }
+{
+}
+
 void dae::ColliderComponent::SetCollisionLayer(CollisionLayer layer)
 {
 	m_CollisionLayer = layer;
@@ -47,14 +52,62 @@ bool dae::ColliderComponent::IsTrigger() const
 	return BitFlag::IsSet(GetFlags(), CollisionFlags::IsTrigger);
 }
 
-bool dae::ColliderComponent::IsOverlapping() const
+bool dae::ColliderComponent::IsOverlapping(GameObject* pObject) const
 {
-	return BitFlag::IsSet(m_Flags, CollisionFlags::Overlapped);
+	return m_pOverlappingBodies.find(pObject->GetUUID()) != m_pOverlappingBodies.end();
 }
+
+bool dae::ColliderComponent::IsOverlapping(RigidBody2DComponent* pBody) const
+{
+	return IsOverlapping(pBody->GetOwner());
+}
+
+bool dae::ColliderComponent::IsOverlapping(ColliderComponent* pOther) const
+{
+	const auto& pColliders{ m_pOverlappingBodies.find(pOther->GetRigidBody()->GetUUID())};
+
+	if (pColliders == m_pOverlappingBodies.end())
+		return false;
+
+	for (auto pCollider : pColliders->second)
+	{
+		if (pCollider && pCollider == pOther)
+			return true;
+	}
+	return false;
+}
+
+//bool dae::ColliderComponent::IsOverlapping() const
+//{
+//	return BitFlag::IsSet(m_Flags, CollisionFlags::Overlapped);
+//}
 
 void dae::ColliderComponent::SetRigidBody(RigidBody2DComponent* pRigidBody)
 {
 	m_pRigidBody = pRigidBody;
+
+	m_pRigidBody->GetOnBeginOverlap() += [this](const CollisionHit& hit)
+	{
+		if (hit.pCollider == this && !IsOverlapping(hit.pOtherCollider))
+		{
+			UUID uuid{ hit.pOtherCollider->GetRigidBody()->GetUUID() };
+			m_pOverlappingBodies[uuid].push_back(hit.pOtherCollider);
+		}
+	};
+	m_pRigidBody->GetOnEndOverlap() += [this](const CollisionHit& hit)
+	{
+		if (hit.pCollider == this)
+		{
+			UUID uuid{ hit.pOtherCollider->GetRigidBody()->GetUUID() };
+
+			m_pOverlappingBodies[uuid].erase(
+				std::remove(m_pOverlappingBodies[uuid].begin(), m_pOverlappingBodies[uuid].end(), hit.pOtherCollider),
+				m_pOverlappingBodies[uuid].end());
+
+			if (m_pOverlappingBodies[uuid].empty())
+				m_pOverlappingBodies.erase(uuid);
+		}
+	};
 }
 
 bool dae::BoxCollider2DComponent::HandleCollision(ColliderComponent* pOther, const glm::vec3& fixedVel, CollisionHit& result)
@@ -129,7 +182,7 @@ void dae::BoxCollider2DComponent::SetShape(QuadComponent* pQuad)
 	if (!m_pDebugRenderer)
 		m_pDebugRenderer = GetOwner()->GetScene()->Instantiate(0u, GetOwner())->AddComponent<QuadRendererComponent>();
 	m_pDebugRenderer->SetQuad(pQuad);
-	m_pDebugRenderer->SetLayer(2);
+	m_pDebugRenderer->SetLayer(5);
 #endif
 }
 

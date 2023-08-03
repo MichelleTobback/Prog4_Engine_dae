@@ -1,6 +1,7 @@
 #include "BurgerPlate.h"
 #include "Scene/GameObject.h"
 #include "BurgerIngredient.h"
+#include "BurgerTime.h"
 
 dae::BurgerPlate::BurgerPlate(GameObject* pOwner)
 	: Component(pOwner)
@@ -13,6 +14,11 @@ dae::BurgerPlate::BurgerPlate(GameObject* pOwner, RigidBody2DComponent* pRigidBo
 	SetRigidBody(pRigidBody);
 }
 
+void dae::BurgerPlate::Awake()
+{
+	m_pCollider = GetOwner()->GetComponent<BoxCollider2DComponent>();
+}
+
 void dae::BurgerPlate::SetRigidBody(RigidBody2DComponent* pRigidBody)
 {
 	pRigidBody->GetOnBeginOverlap() += std::bind(&BurgerPlate::OnOverlap, this, std::placeholders::_1);
@@ -20,7 +26,8 @@ void dae::BurgerPlate::SetRigidBody(RigidBody2DComponent* pRigidBody)
 
 void dae::BurgerPlate::OnOverlap(const CollisionHit& hit)
 {
-	if (hit.pOtherCollider->GetCollisionLayer() == INGREDIENT_COLLISION_LAYER)
+	if (hit.pCollider == m_pCollider &&
+		hit.pOtherCollider->GetCollisionLayer() == BurgerTime::INGREDIENT_COLLISION_LAYER)
 	{
 		BurgerIngredient* pIngredient{ BurgerIngredient::GetFromCollider(hit.pOtherCollider) };
 		pIngredient->PlateEnter();

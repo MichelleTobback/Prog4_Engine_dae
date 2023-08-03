@@ -46,6 +46,12 @@ namespace dae
 		bool IsHovered() const;
 		bool IsSelected() const;
 
+		void Select();
+		void Deselect();
+
+		QuadRendererComponent* GetQuadRenderer() const { return m_pQuadRenderer; }
+		SpriteRenderComponent* GetSpriteRenderer() const { return m_pSpriteRenderer; }
+
 		ButtonDelegate& GetOnPressedDelegate() { return *m_pOnPressedDelegate; }
 		ButtonDelegate& GetOnReleasedDelegate() { return *m_pOnReleasedDelegate; }
 		ButtonDelegate& GetOnHoveredDelegate() { return *m_pOnHoveredDelegate; }
@@ -70,5 +76,6 @@ namespace dae
 		void OnMouseMoved(const glm::vec2& deltaMouse);
 		void OnMouseEnter();
 		void OnMouseExit();
+		void SetLayoutActive(UIButtonFlag state);
 	};
 }

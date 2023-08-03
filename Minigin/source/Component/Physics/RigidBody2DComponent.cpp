@@ -37,15 +37,15 @@ void dae::RigidBody2DComponent::Update()
 
 void dae::RigidBody2DComponent::FixedUpdate()
 {
-    if (IsStatic())
-        return;
-
     float elapsed{ Time::GetInstance().GetFixedTimeStep() };
 
-    glm::vec2 acceleration{ m_Force / m_Mass };
-    m_Velocity += glm::vec3{ acceleration * elapsed, 0.f };
-    glm::vec3 deltaVel{ m_Velocity * elapsed };
-    GetTransform().Translate(deltaVel);
+    if (!IsStatic())
+    {
+        glm::vec2 acceleration{ m_Force / m_Mass };
+        m_Velocity += glm::vec3{ acceleration * elapsed, 0.f };
+        glm::vec3 deltaVel{ m_Velocity * elapsed };
+        GetTransform().Translate(deltaVel);
+    }
     m_Force = {};
 
     glm::vec3 fixedVelocity{ m_Velocity * elapsed };
@@ -54,54 +54,57 @@ void dae::RigidBody2DComponent::FixedUpdate()
     RigidBody2DComponent* pCollidingBody{ nullptr };
     for (auto pCollider : m_pColliders)
     {
-        if (!pCollider)
+        if (!pCollider || (IsStatic() && !pCollider->IsTrigger()))
             continue;
 
-        physics.ForEachRigidBodyWithBreak([&, this](RigidBody2DComponent* pRigidBody)->bool
+        physics.ForEachRigidBody([&, this](RigidBody2DComponent* pRigidBody)->void
             {
                 if (pRigidBody == this)
-                    return true;
+                    return;
 
                 auto& otherColliders{ pRigidBody->GetColliders() };
                 for (const auto& pOther : otherColliders)
                 {
-                    if (!pOther)
+                    const bool blockCollision{ !pOther->IsTrigger() && !pCollider->IsTrigger() };
+                    const bool bothTrigger{ pOther->IsTrigger() && pCollider->IsTrigger() };
+                    const bool alreadyBlocked{ pCollidingBody != nullptr };
+                    const bool ignore{ !pOther 
+                        || BitFlag::IsSet(pCollider->GetCollisionIgnoreLayer(), pOther->GetCollisionLayer())
+                        || BitFlag::IsSet(pOther->GetCollisionIgnoreLayer(), pCollider->GetCollisionLayer()) };
+                    if ((blockCollision && alreadyBlocked) || ignore || bothTrigger)
                         continue;
 
                     CollisionHit currentResult{};
                     pCollider->HandleCollision(pOther, fixedVelocity, currentResult);
 
-                    if (pOther->IsTrigger() || pCollider->IsTrigger())
+                    if (!blockCollision)
                     {
-                        if (!pOther->IsOverlapping() && currentResult.succes)
+                        CollisionHit otherHit{ currentResult };
+                        otherHit.pOther = GetOwner();
+                        std::swap(otherHit.pCollider, otherHit.pOtherCollider);
+                        //if (pCollider->IsTrigger())
+                        //    std::swap(currentResult, otherHit);
+
+                        if (!pCollider->IsOverlapping(pOther) && currentResult.succes)
                         {
                             // Begin overlap
                             m_pOnBeginOverlap->Invoke(currentResult);
-                            currentResult.pOther = GetOwner();
-                            std::swap(currentResult.pCollider, currentResult.pOtherCollider);
-                            pRigidBody->GetOnBeginOverlap().Invoke(currentResult);
-                            BitFlag::Set(pOther->m_Flags, CollisionFlags::Overlapped, true);
-                            //BitFlag::Set(pCollider->m_Flags, CollisionFlags::Overlapped, true);
+                            pRigidBody->GetOnBeginOverlap().Invoke(otherHit);
                         }
-                        else if (pOther->IsOverlapping() && !currentResult.succes)
+                        else if (pCollider->IsOverlapping(pOther) && !currentResult.succes)
                         {
                             // End overlap
                             m_pOnEndOverlap->Invoke(currentResult);
-                            currentResult.pOther = GetOwner();
-                            std::swap(currentResult.pCollider, currentResult.pOtherCollider);
-                            pRigidBody->GetOnEndOverlap().Invoke(currentResult);
-                            BitFlag::Set(pOther->m_Flags, CollisionFlags::Overlapped, false);
-                            //BitFlag::Set(pCollider->m_Flags, CollisionFlags::Overlapped, false);
+                            pRigidBody->GetOnEndOverlap().Invoke(otherHit);
                         }
                     }
                     else if (currentResult.succes)
                     {
                         result = currentResult;
                         pCollidingBody = pRigidBody;
-                        return false; // Stop iterating over colliders
                     }
                 }
-                return true;
+                return;
             });
     }
 

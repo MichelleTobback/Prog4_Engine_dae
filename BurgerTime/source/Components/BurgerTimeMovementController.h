@@ -22,8 +22,6 @@ namespace dae
 		void Move(const glm::vec2& dir);
 
 	private:
-		void OnOverlap(const CollisionHit& hit);
-		void OnEndOverlap(const CollisionHit& hit);
 
 		BoxCollider2DComponent* m_pLadderCollider{ nullptr };
 		CharacterController2D* m_pCharacterController;

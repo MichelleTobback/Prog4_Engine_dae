@@ -190,9 +190,18 @@ void dae::Input::HandleMouseActionCommand(InputActionCommand& action)
 	}
 	break;
 
+	case dae::Mouse::MouseButtonState::Pressed:
+	{
+		if (m_pMouse->IsButtonPressed(action.Mouse.button))
+		{
+			action.Action.Execute();
+		}
+	}
+	break;
+
 	case dae::Mouse::MouseButtonState::Released:
 	{
-		if (m_pMouse->IsButtonUp(action.Mouse.button))
+		if (m_pMouse->IsButtonReleased(action.Mouse.button))
 		{
 			action.Action.Execute();
 		}

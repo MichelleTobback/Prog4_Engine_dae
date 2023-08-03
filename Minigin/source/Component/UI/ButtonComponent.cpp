@@ -4,6 +4,10 @@
 #include "Input/Input.h"
 #include "Core/Math.h"
 
+#include "Renderer/Renderer.h"
+#include "Managers/ServiceLocator.h"
+#include "Component/CameraComponent.h"
+
 dae::ButtonComponent::ButtonComponent(GameObject* pOwner, const glm::vec2& size)
 	: Component(pOwner)
 {
@@ -21,7 +25,7 @@ void dae::ButtonComponent::Awake()
 	Input::InputActionCommand actionCommand{ ActionCommand::Create(this, &ButtonComponent::OnPressed) };
 	BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::MouseButton, true);
 	actionCommand.Mouse.button = Mouse::MouseButton::Left;
-	actionCommand.Mouse.state = Mouse::MouseButtonState::Down;
+	actionCommand.Mouse.state = Mouse::MouseButtonState::Pressed;
 	Input::GetInstance().AddActionCommand(actionCommand);
 
 	actionCommand = ActionCommand::Create(this, &ButtonComponent::OnReleased);
@@ -127,29 +131,70 @@ bool dae::ButtonComponent::IsFlagSet(UIButtonFlag flag) const
 	return (static_cast<int>(m_Flags) & static_cast<int>(flag));
 }
 
+void dae::ButtonComponent::Select()
+{
+	BitFlag::Set(m_Flags, UIButtonFlag::Selected, true);
+	SetLayoutActive(UIButtonFlag::Selected);
+
+	if (m_pOnPressedDelegate)
+		m_pOnPressedDelegate->Invoke();
+}
+
+void dae::ButtonComponent::Deselect()
+{
+	BitFlag::Set(m_Flags, UIButtonFlag::Selected, false);
+	SetLayoutActive(UIButtonFlag::DefaultState);
+
+	if (m_pOnReleasedDelegate)
+		m_pOnReleasedDelegate->Invoke();
+}
+
 void dae::ButtonComponent::OnPressed()
 {
-	if (BitFlag::IsSet(m_Flags, UIButtonFlag::Hovered) && m_pOnPressedDelegate)
+	if (BitFlag::IsSet(m_Flags, UIButtonFlag::Hovered))
 	{
-		m_pOnPressedDelegate->Invoke();
+		bool toggle{ BitFlag::IsSet(m_Flags, UIButtonFlag::Toggle) };
+		bool selected{ BitFlag::IsSet(m_Flags, UIButtonFlag::Selected) };
+
+		if (!toggle || toggle && !selected)
+		{
+			Select();
+		}
+		else if (toggle && selected)
+		{
+			Deselect();
+		}
 	}
 }
 
 void dae::ButtonComponent::OnReleased()
 {
-	if (m_pOnReleasedDelegate)
+	if (BitFlag::IsSet(m_Flags, UIButtonFlag::Hovered) && 
+		!BitFlag::IsSet(m_Flags, UIButtonFlag::Toggle))
 	{
-		m_pOnReleasedDelegate->Invoke();
+		Deselect();
 	}
 }
 
 void dae::ButtonComponent::OnMouseMoved(const glm::vec2&)
 {
+	CameraComponent* pCamera{ Renderer::GetInstance().GetActiveCamera() };
+	glm::vec2 camScale{ 1.f, 1.f };
+	glm::vec3 camPos{};
+	if (pCamera)
+	{
+		auto& window{ ServiceLocator::GetWindow() };
+		const auto& camSize{ pCamera->GetSize() };
+		camScale.x = window.GetWidth() / camSize.x;
+		camScale.y = window.GetHeight() / camSize.y;
+		camPos = pCamera->GetTransform().GetWorldPosition();
+	}
+
 	glm::vec2 mousePos{ Input::GetInstance().GetMouse()->GetMousePos() };
-	const glm::vec2& size{ m_pQuad->GetSize() };
-	glm::vec3 worldPos{ GetOwner()->GetTransform().GetWorldPosition() };
-	worldPos.x -= size.x * 0.5f;
-	worldPos.y -= size.y * 0.5f;
+	const glm::vec2& size{ m_pQuad->GetSize() * camScale };
+	glm::vec3 worldPos{ GetOwner()->GetTransform().GetWorldPosition() * glm::vec3{ camScale.x, camScale.y, 1.f } + camPos };
+	//worldPos.x -= size.x * 0.5f;
+	//worldPos.y -= size.y * 0.5f;
 	bool isHovered{ Math::isPointInsideRect(mousePos, {worldPos.x, worldPos.y}, size)};
 
 	if (isHovered && !BitFlag::IsSet(m_Flags, UIButtonFlag::Hovered))
@@ -167,22 +212,28 @@ void dae::ButtonComponent::OnMouseMoved(const glm::vec2&)
 
 void dae::ButtonComponent::OnMouseEnter()
 {
-	if (m_HoveredLayout.pSprite != nullptr)
-	{
-		m_pSpriteRenderer->SetSpriteComponent(m_HoveredLayout.pSprite);
-	}
-
-	m_pQuad->SetColor(m_HoveredLayout.color);
+	SetLayoutActive(UIButtonFlag::Hovered);
 
 	m_pOnHoveredDelegate->Invoke();
 }
 
 void dae::ButtonComponent::OnMouseExit()
 {
-	if (m_DefaultLayout.pSprite != nullptr)
+	bool toggle{ BitFlag::IsSet(m_Flags, UIButtonFlag::Toggle) };
+	bool selected{ BitFlag::IsSet(m_Flags, UIButtonFlag::Selected) };
+	if (!toggle || toggle && !selected)
+		SetLayoutActive(UIButtonFlag::DefaultState);
+	else if (toggle && selected)
+		SetLayoutActive(UIButtonFlag::Selected);
+}
+
+void dae::ButtonComponent::SetLayoutActive(UIButtonFlag state)
+{
+	const UIButtonLayout& layout{ GetLayout(state) };
+	if (layout.pSprite != nullptr)
 	{
-		m_pSpriteRenderer->SetSpriteComponent(m_DefaultLayout.pSprite);
+		m_pSpriteRenderer->SetSpriteComponent(layout.pSprite);
 	}
 
-	m_pQuad->SetColor(m_DefaultLayout.color);
+	m_pQuad->SetColor(layout.color);
 }

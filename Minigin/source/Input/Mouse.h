@@ -30,10 +30,14 @@ namespace dae
 
 		virtual bool IsButtonDown(MouseButton button) const;
 		virtual bool IsButtonUp(MouseButton button) const;
+		virtual bool IsButtonPressed(MouseButton button) const;
+		virtual bool IsButtonReleased(MouseButton button) const;
 		virtual bool MovedThisFrame() const;
 
 		virtual glm::vec2 GetMousePos() const;
 		virtual glm::vec2 GetMouseDeltaPos() const;
+
+		static MouseFlags GetButtonDownFlag(MouseButton button);
 
 	private:
 		class MouseImpl;

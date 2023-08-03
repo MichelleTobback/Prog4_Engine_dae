@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <functional>
+#include <memory>
 
 namespace dae
 {
@@ -86,6 +87,18 @@ namespace dae
         {
             m_Value = right;
             m_pOnValueChangedDelegate->Invoke(m_Value);
+        }
+        T& operator--()
+        {
+            --m_Value;
+            m_pOnValueChangedDelegate->Invoke(m_Value);
+            return m_Value;
+        }
+        T& operator++()
+        {
+            ++m_Value;
+            m_pOnValueChangedDelegate->Invoke(m_Value);
+            return m_Value;
         }
 
         const T& operator()() const { return m_Value; }
