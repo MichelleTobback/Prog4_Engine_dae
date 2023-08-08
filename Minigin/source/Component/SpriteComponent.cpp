@@ -49,3 +49,19 @@ void dae::SpriteComponent::SetSource(float srcX, float srcY, float srcWidth, flo
 {
 	SetSource({ srcX, srcY, srcWidth, srcHeight });
 }
+
+void dae::SpriteComponent::Flip(bool horizontal, bool vertical)
+{
+	m_Flip.first = horizontal;
+	m_Flip.second = vertical;
+}
+
+bool dae::SpriteComponent::FlipHorizontal() const
+{
+	return m_Flip.first;
+}
+
+bool dae::SpriteComponent::FlipVertical() const
+{
+	return m_Flip.second;
+}

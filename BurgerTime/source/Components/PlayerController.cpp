@@ -6,7 +6,10 @@
 #include "State/GameState/GameState.h"
 #include "States/GameModes/BTGameMode.h"
 
+#include "Components/CharacterAnimationController.h"
 #include "HealthComponent.h"
+
+#include "Prefabs.h"
 
 dae::PlayerController::PlayerController(GameObject* pOwner, CharacterController2D* pCharactarerController, int controllerIndex)
 	: Component{ pOwner }
@@ -64,13 +67,16 @@ dae::PlayerController::PlayerController(GameObject* pOwner, CharacterController2
 
 void dae::PlayerController::Awake()
 {
-	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode());
-	if (m_pCurrentGameMode)
-		m_Peppers = m_pCurrentGameMode->GetPlayerMaxPeppers();
+	Reset();
 
 	HealthComponent* pHealth{ GetOwner()->GetComponent<HealthComponent>() };
 	pHealth->GetOnDeath() += std::bind(&PlayerController::OnDeath, this);
 	pHealth->GetOnHealthChanged() += std::bind(&PlayerController::OnHit, this, std::placeholders::_1);
+
+	CharacterAnimationController* pAnimController{ GetOwner()->GetComponent<CharacterAnimationController>() };
+	pAnimController->GetClip(CharacterAnimationController::CharacterAnim::Die).GetAnimEvent(5) += std::bind(&BTGameMode::OnPlayerDeath, m_pCurrentGameMode);
+
+
 }
 
 void dae::PlayerController::LateUpdate()
@@ -78,11 +84,26 @@ void dae::PlayerController::LateUpdate()
 	
 }
 
+void dae::PlayerController::Reset()
+{
+	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode());
+	if (m_pCurrentGameMode)
+		m_Peppers = m_pCurrentGameMode->GetPlayerMaxPeppers();
+}
+
 void dae::PlayerController::ThrowPepper()
 {
 	if (m_Peppers() > 0)
 	{
 		--m_Peppers;
+
+		RigidBody2DComponent* pPepper{ Prefabs::CreatePepper(GetScene())->GetComponent<RigidBody2DComponent>() };
+		const glm::vec2& direction{ m_pCharacterController->GetDirection() };
+		const float throwForce{16.f};
+		const glm::vec3 force{ direction.x * throwForce, direction.y * throwForce, 0.f };
+		const glm::vec3 spawnPos{ GetTransform().GetWorldPosition() + force };
+		pPepper->GetTransform().SetLocalPosition(spawnPos);
+		pPepper->SetVelociy(force);
 	}
 }
 
@@ -90,8 +111,6 @@ void dae::PlayerController::OnHit(uint32_t health)
 {
 	if (m_pCurrentGameMode)
 	{
-		m_pCurrentGameMode->RespawnAllActiveObjects();
-
 		if (health < m_pCurrentGameMode->GetPlayerMaxLifes() && health > 0)
 			m_pDamageSound->Play();
 	}

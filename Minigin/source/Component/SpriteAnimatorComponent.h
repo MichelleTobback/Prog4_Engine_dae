@@ -3,6 +3,9 @@
 
 #include "Component/RenderComponent.h"
 #include "SpriteComponent.h"
+
+#include "Core/Delegate.h"
+
 #include <memory>
 
 namespace dae
@@ -12,15 +15,26 @@ namespace dae
 		SpriteComponent* pSprite{ nullptr };
 		float duration{ 0.12f };
 	};
+
+	using SpriteAnimationEvent = std::pair<size_t, Delegate<void()>>; //first = frame, second = delagate
 	struct SpriteAnimClip
 	{
-		std::vector<SpriteAnimFrame> m_Frames{};
+		std::vector<SpriteAnimFrame> frames{};
+		std::vector<SpriteAnimationEvent> events;
 		float speed{1.f};
+		std::unique_ptr<Delegate<void()>> pOnClipEndDelegate;
+
+		SpriteAnimClip();
+		SpriteAnimClip(const std::vector<SpriteAnimFrame>& _frames, float _speed = 1.f);
+		SpriteAnimationEvent& AddAnimEvent(size_t frame);
+		Delegate<void()>& GetAnimEvent(size_t frame);
+		Delegate<void()>& GetOnClipEndDelegate() { return *pOnClipEndDelegate; }
 	};
 
 	class SpriteAnimatorComponent final : public Component
 	{
 	public:
+		SpriteAnimatorComponent(GameObject* pOwner, SpriteRenderComponent* pRenderer);
 		SpriteAnimatorComponent(GameObject* pOwner);
 		virtual ~SpriteAnimatorComponent() = default;
 
@@ -40,9 +54,13 @@ namespace dae
 		void PlayFromStart();
 		void Pause();
 
+		size_t GetCurrentFrame() const { return m_CurrentFrame; }
+
 		void SetPlayBackspeed(float speed);
 		float GetPlaybackSpeed() const;
 		const SpriteAnimClip& GetCurrentClip() const;
+		SpriteAnimClip& GetClip(size_t id);
+		void SetClip(size_t id);
 
 	private:
 		SpriteRenderComponent* m_pRenderer{ nullptr };

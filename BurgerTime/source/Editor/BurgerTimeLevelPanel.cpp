@@ -2,6 +2,7 @@
 #include "Scene/Scene.h"
 #include "SceneGraphPanel.h"
 #include "Component/Physics/ColliderComponent.h"
+#include "Managers/SceneManager.h"
 
 #include "Component/UI/ButtonComponent.h"
 #include "Components/BurgerPlate.h"
@@ -281,6 +282,6 @@ void dae::BurgerTimeLevelPanel::SpawnAll()
 	BTGameMode* pGameMode{ reinterpret_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode()) };
 	if (pGameMode)
 	{
-		pGameMode->RespawnAll();
+		pGameMode->OnPlayerDeath();
 	}
 }

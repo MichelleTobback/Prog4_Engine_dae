@@ -41,7 +41,7 @@ namespace dae
 		DefaultGameMode& operator=(DefaultGameMode&& other) = delete;
 
 		virtual void OnEnter() override {}
-		virtual StatePtr OnUpdate() override { return nullptr; }
+		virtual StatePtr OnUpdate() override { return this; }
 		virtual void OnExit() override {}
 	};
 }

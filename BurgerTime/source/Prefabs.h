@@ -21,6 +21,7 @@ namespace dae
 		static GameObject* CreateSinglePlayerHUD(GameObject* pLevelObject, GameObject* pPlayer);
 
 		//Scene
+		static GameObject* CreatePepper(Scene* pScene);
 		static GameObject* CreateEnemy(GameObject* pObject);
 		static GameObject* CreateMrHotDog(Scene* pScene);
 		static GameObject* CreateBurgerPlate(Scene* pScene, RigidBody2DComponent* pRigidBody);

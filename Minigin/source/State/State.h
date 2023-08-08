@@ -1,8 +1,10 @@
 #pragma once
 #include <memory>
+#include "Core/Memory/Allocator.h"
 
 namespace dae
 {
+	using StateAllocator = LinkedListAllocator;
 	class State
 	{
 	public:

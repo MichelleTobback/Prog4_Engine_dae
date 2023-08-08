@@ -3,6 +3,7 @@
 #include "Managers/SceneManager.h"
 #include "Renderer/Texture2D.h"
 #include "Core/Window.h"
+#include "Core/BitFlag.h"
 
 #include "Component/RenderComponent.h"
 #include "Platform/ImGui/ImGuiComponent.h"
@@ -183,6 +184,32 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, fl
 	SDL_Point offset{ dst.x + static_cast<int>(srcWidth * 0.5f), dst.y + static_cast<int>(srcHeight * 0.5f) };
 
 	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst, rotation, NULL, SDL_FLIP_NONE);
+}
+
+void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, float srcX, float srcY, float srcWidth, float srcHeight, float rotation, bool flipHorizontal, bool flipVertical) const
+{
+	SDL_Rect dst{};
+	glm::vec3 camPos{ m_pActiveCamera->GetTransform().GetWorldPosition() };
+	dst.x = static_cast<int>(x * m_CameraScale.x + camPos.x);
+	dst.y = static_cast<int>(y * m_CameraScale.y + camPos.y);
+	dst.w = static_cast<int>(srcWidth * m_CameraScale.x);
+	dst.h = static_cast<int>(srcHeight * m_CameraScale.y);
+
+	SDL_Rect src{};
+	src.x = static_cast<int>(srcX);
+	src.y = static_cast<int>(srcY);
+	src.w = static_cast<int>(srcWidth);
+	src.h = static_cast<int>(srcHeight);
+
+	SDL_Point offset{ dst.x + static_cast<int>(srcWidth * 0.5f), dst.y + static_cast<int>(srcHeight * 0.5f) };
+
+	SDL_RendererFlip flip{ SDL_RendererFlip::SDL_FLIP_NONE };
+	if (flipHorizontal)
+		BitFlag::Set(flip, SDL_RendererFlip::SDL_FLIP_HORIZONTAL, true);
+	if (flipVertical)
+		BitFlag::Set(flip, SDL_RendererFlip::SDL_FLIP_VERTICAL, true);
+
+	SDL_RenderCopyEx(GetSDLRenderer(), texture.GetSDLTexture(), &src, &dst, rotation, NULL, flip);
 }
 
 //====================================================================================

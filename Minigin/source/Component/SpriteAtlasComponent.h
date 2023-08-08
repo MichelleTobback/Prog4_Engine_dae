@@ -23,9 +23,9 @@ namespace dae
 
 		void SetTexture(TextureComponent* pTexture);
 		//return index
-		uint32_t AddSprite(const glm::vec4& src);
+		uint32_t AddSprite(const glm::vec4& src, bool flipHorizontal = false, bool flipVertical = false);
 		//return index
-		uint32_t AddSprite(float srcX = 0.f, float srcY = 0.f, float srcWidth = 0.f, float srcHeight = 0.f);
+		uint32_t AddSprite(float srcX = 0.f, float srcY = 0.f, float srcWidth = 0.f, float srcHeight = 0.f, bool flipHorizontal = false, bool flipVertical = false);
 		uint32_t AddSprite(SpriteComponent* pSprite);
 
 		inline SpriteComponent* GetSprite(uint32_t id) const { return m_pSprites[id]; }

@@ -23,25 +23,28 @@ void dae::SpriteAtlasComponent::SetTexture(TextureComponent* pTexture)
 	}
 }
 
-uint32_t dae::SpriteAtlasComponent::AddSprite(const glm::vec4& src)
+uint32_t dae::SpriteAtlasComponent::AddSprite(const glm::vec4& src, bool flipHorizontal, bool flipVertical)
 {
 	for (int i{}; i < m_pSprites.size(); ++i)
 	{
 		const float epsilon{ 0.1f };
-		if (glm::length2(src - m_pSprites[i]->GetSource()) < epsilon)
+		if (glm::length2(src - m_pSprites[i]->GetSource()) < epsilon 
+			&& flipHorizontal == m_pSprites[i]->FlipHorizontal()
+			&& flipVertical == m_pSprites[i]->FlipVertical())
 		{
 			return i;
 		}
 	}
 	auto pSprite{ GetOwner()->GetScene()->Instantiate(GetOwner(), {src.x, src.y, 0.f}) };
 	auto pSpriteComponent{ pSprite->AddComponent<SpriteComponent>(m_pTexture, src) };
+	pSpriteComponent->Flip(flipHorizontal, flipVertical);
 	
 	return AddSprite(pSpriteComponent);
 }
 
-uint32_t dae::SpriteAtlasComponent::AddSprite(float srcX, float srcY, float srcWidth, float srcHeight)
+uint32_t dae::SpriteAtlasComponent::AddSprite(float srcX, float srcY, float srcWidth, float srcHeight, bool flipHorizontal, bool flipVertical)
 {
-	return AddSprite({srcX, srcY, srcWidth, srcHeight});
+	return AddSprite({srcX, srcY, srcWidth, srcHeight}, flipHorizontal, flipVertical);
 }
 
 uint32_t dae::SpriteAtlasComponent::AddSprite(SpriteComponent* pSprite)

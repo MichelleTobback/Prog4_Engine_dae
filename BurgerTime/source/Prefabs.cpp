@@ -4,9 +4,11 @@
 #include "Components/BurgerTimeMovementController.h"
 #include "Components/BurgerPlate.h"
 #include "Components/EnemyComponent.h"
-#include "States/Enemy/EnemyGoToPlayerState.h"
-#include "States/Enemy/EnemyClimbLadderState.h"
+#include "States/SpriteAnim/CharacterAnimStates.h"
 #include "Components/HealthComponent.h"
+#include "Components/CharacterAnimationController.h"
+#include "Components/SnapToGridComponent.h"
+#include "Components/PepperComponent.h"
 
 #include "BurgerTime.h"
 #include "Component/SpriteAnimatorComponent.h"
@@ -90,16 +92,42 @@ dae::GameObject* dae::Prefabs::CreateSinglePlayerHUD(GameObject* pLevelObject, G
     return pObject;
 }
 
+dae::GameObject* dae::Prefabs::CreatePepper(Scene* pScene)
+{
+    GameObject* pObject{ pScene->Instantiate(0u, nullptr) };
+
+    TextureComponent* pTexture{ pObject->AddComponent<TextureComponent>() };
+    pTexture->SetTexture("Textures/BurgerTimeCharacters.png");
+    SpriteAtlasComponent* pSpriteAtlas{ pObject->AddComponent<SpriteAtlasComponent>(pTexture) };
+    SpriteRenderComponent* pRenderer{ pObject->AddComponent<SpriteRenderComponent>() };
+    pRenderer->SetLayer(3);
+    SpriteAnimatorComponent* pAnimator{ pObject->AddComponent<SpriteAnimatorComponent>(pRenderer) };
+
+    RigidBody2DComponent* pRigidBody{ pObject->AddComponent<RigidBody2DComponent>() };
+    const glm::vec2 size{ 16.f, 16.f };
+    BoxCollider2DComponent* pCollider{ pObject->AddComponent<BoxCollider2DComponent>() };
+    pCollider->SetShape(pObject->AddComponent<QuadComponent>(size));
+    pCollider->SetCollisionLayer(BurgerTime::PEPPER_COLLISION_LAYER);
+    pCollider->SetCollisionIgnoreLayer(BurgerTime::PLAYER_COLLISION_LAYER, true);
+    pCollider->SetCollisionIgnoreLayer(BurgerTime::LEVEL_COLLISION_LAYER, true);
+    pCollider->SetCollisionIgnoreLayer(BurgerTime::PLATE_COLLISION_LAYER, true);
+    pCollider->SetCollisionIgnoreLayer(BurgerTime::INGREDIENT_COLLISION_LAYER, true);
+    pCollider->SetTrigger(true);
+    pRigidBody->AddCollider(pCollider);
+
+    pObject->AddComponent<PepperComponent>(pAnimator, pSpriteAtlas, pRigidBody);
+
+    return pObject;
+}
+
 dae::GameObject* dae::Prefabs::CreateEnemy(GameObject* pObject)
 {
     const float tileSize{ 8.f };
 
-    CharacterInfoComponent* pInfo{ pObject->GetComponent<CharacterInfoComponent>() };
-    pInfo->Get().pStates.push_back(std::make_unique<EnemyGoToPlayerState>(pInfo));
-    pInfo->Get().pStates.push_back(std::make_unique<EnemyClimbLadderState>(pInfo));
-    pObject->AddComponent<StateMachine>(pInfo->Get().pStates[0].get());
     const uint32_t reward{ 100 };
-    pObject->AddComponent<EnemyComponent>(reward);
+    CharacterInfoComponent* pCharacter{ pObject->GetComponent<CharacterInfoComponent>() };
+    EnemyComponent* pEnemyComponent{ pObject->AddComponent<EnemyComponent>(pCharacter, reward) };
+    pObject->AddComponent<StateMachine>(pEnemyComponent->GetStates().pGoToPlayerState.get());
 
     RigidBody2DComponent* pRigidBody{ pObject->GetComponent<RigidBody2DComponent>() };
     auto& pColliders{ pRigidBody->GetColliders() };
@@ -128,7 +156,7 @@ dae::GameObject* dae::Prefabs::CreateMrHotDog(Scene* pScene)
     const float tileSize{ 8.f };
 
     CharacterController2D::CharacterController2DDesc controllerDesc{};
-    controllerDesc.movementSpeed = 25.f;
+    controllerDesc.movementSpeed = 16.f;
     CharacterController2D* pCharacterController{ pObject->AddComponent<CharacterController2D>(controllerDesc) };
     pCharacterController->SetRigidBody(pObject->AddComponent<RigidBody2DComponent>());
     BoxCollider2DComponent* pCollider{ pObject->AddComponent<BoxCollider2DComponent>() };
@@ -137,29 +165,45 @@ dae::GameObject* dae::Prefabs::CreateMrHotDog(Scene* pScene)
     pCharacterController->SetCollider(pCollider);
 
     //sprites
-    const float spriteSize{ tileSize * 2.f };
     TextureComponent* pTexture{ pObject->AddComponent<TextureComponent>() };
     pTexture->SetTexture("Textures/BurgerTimeCharacters.png");
     SpriteAtlasComponent* pSpriteAtlas{ pObject->AddComponent<SpriteAtlasComponent>(pTexture) };
     GameObject* pSpriteObject{ pObject->GetScene()->Instantiate(pObject, glm::vec3{0.f, -tileSize, 0.f}) };
     SpriteRenderComponent* pRenderer{ pSpriteObject->AddComponent<SpriteRenderComponent>() };
     pRenderer->SetLayer(3);
-    std::vector<SpriteAnimFrame> walkFrames{};
-    const int cols{ 2 };
-    for (int y{}; y < cols; ++y)
-    {
-        uint32_t spritedID{ pSpriteAtlas->AddSprite(y * spriteSize, 2.f * spriteSize, spriteSize, spriteSize) };
-        walkFrames.push_back(SpriteAnimFrame{ pSpriteAtlas->GetSprite(spritedID) });
-    }
 
-    SpriteAnimatorComponent* pAnimator{ pObject->AddComponent<SpriteAnimatorComponent>() };
-    pAnimator->SetRendererComponent(pRenderer);
-    pAnimator->AddAnimClip(walkFrames, 1.f);
-    pAnimator->PlayClip(0);
+    SpriteAnimatorComponent* pAnimator{ pObject->AddComponent<SpriteAnimatorComponent>(pRenderer) };
+    CharacterAnimationController* pAnimController{ pObject->AddComponent<CharacterAnimationController>(pAnimator) };
 
-    pObject->AddComponent<HealthComponent>(1);
+    pAnimController->AddState<WalkDownAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::WalkDown,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 0, 2, 2, 1 }));
 
-    pObject->AddComponent<CharacterInfoComponent>();
+    pAnimController->AddState<WalkLeftAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::WalkLeft,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 2, 2, 2, 1 }));
+
+    pAnimController->AddState<WalkRightAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::WalkRight,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 2, 2, 2, 1 }));
+
+    pAnimController->AddState<WalkUpAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::WalkUp,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 4, 2, 2, 1 }));
+
+    pAnimController->AddState<DieAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::Die,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 0, 3, 4, 1 }));
+    pAnimController->GetClip(dae::CharacterAnimationController::CharacterAnim::Die).speed *= 0.87f;
+
+    pAnimController->AddState<StunnedAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::Stunned,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 4, 3, 2, 1 }));
+
+    HealthComponent* pHealth{ pObject->AddComponent<HealthComponent>(1) };
+    pObject->AddComponent<SnapToGridComponent>(pCharacterController->GetRigidBody());
+
+    pObject->AddComponent<CharacterInfoComponent>(pHealth, pCharacterController, pAnimController);
     return pObject;
 }
 
@@ -224,25 +268,34 @@ dae::GameObject* dae::Prefabs::CreatePeterPepper(Scene* pScene)
     GameObject* pSpriteObject{ pObject->GetScene()->Instantiate(pObject, glm::vec3{0.f, -tileSize, 0.f}) };
     SpriteRenderComponent* pRenderer{pSpriteObject->AddComponent<SpriteRenderComponent>(pSpriteAtlas->GetSprite(spritedID))};
     pRenderer->SetLayer(3);
-    std::vector<SpriteAnimFrame> walkFrames{};
-    const int cols{ 3 };
-    for (int y{}; y < cols; ++y)
-    {
-        spritedID = pSpriteAtlas->AddSprite(y * spriteSize, 0.f, spriteSize, spriteSize);
-        walkFrames.push_back(SpriteAnimFrame{ pSpriteAtlas->GetSprite(spritedID) });
-        //for (int x{}; x < rows; ++x)
-        //{
-        //
-        //}
-    }
 
-    SpriteAnimatorComponent* pAnimator{ pObject->AddComponent<SpriteAnimatorComponent>() };
-    pAnimator->SetRendererComponent(pRenderer);
-    pAnimator->AddAnimClip(walkFrames, 1.f);
-    pAnimator->PlayClip(0);
+    HealthComponent* pHealth{ pObject->AddComponent<HealthComponent>(3) };
+    SpriteAnimatorComponent* pAnimator{ pObject->AddComponent<SpriteAnimatorComponent>(pRenderer) };
+    CharacterAnimationController* pAnimController{ pObject->AddComponent<CharacterAnimationController>(pAnimator) };
 
-    pObject->AddComponent<HealthComponent>(3);
-    pObject->AddComponent<CharacterInfoComponent>();
+    pAnimController->AddState<WalkDownAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::WalkDown,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 0, 0, 3, 1 }));
+
+    pAnimController->AddState<WalkLeftAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::WalkLeft,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 3, 0, 3, 1 }));
+
+    pAnimController->AddState<WalkRightAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::WalkRight,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 3, 0, 3, 1 }, true));
+
+    pAnimController->AddState<WalkUpAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::WalkUp,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 6, 0, 3, 1 }));
+
+    pAnimController->AddState<DieAnimState>(
+        dae::CharacterAnimationController::CharacterAnim::Die,
+        dae::BurgerTime::CreateAnimClip(pSpriteAtlas, pAnimator, { 3, 1, 6, 1 }));
+    pAnimController->GetClip(dae::CharacterAnimationController::CharacterAnim::Die).speed *= 0.87f;
+
+    pObject->AddComponent<CharacterInfoComponent>(pHealth, pCharacterController, pAnimController);
+    pObject->AddComponent<SnapToGridComponent>(pCharacterController->GetRigidBody());
 
     pObject->AddTag("Player");
 

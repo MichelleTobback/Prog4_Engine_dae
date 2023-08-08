@@ -1,5 +1,5 @@
 #pragma once
-#include "States/CharacterState.h"
+#include "States/Enemy/EnemyState.h"
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -7,10 +7,11 @@
 namespace dae
 {
 	class NodeComponent;
-	class EnemyGoToPlayerState final : public CharacterState
+	class CharacterInfoComponent;
+	class EnemyGoToPlayerState final : public EnemyState
 	{
 	public:
-		EnemyGoToPlayerState(CharacterInfoComponent* pCharacterInfo);
+		EnemyGoToPlayerState(EnemyComponent* pEnemy);
 		virtual ~EnemyGoToPlayerState() = default;
 
 		virtual void OnEnter() override;

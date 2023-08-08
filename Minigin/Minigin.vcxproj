@@ -234,6 +234,7 @@
     <ClInclude Include="source\Core\BitFlag.h" />
     <ClInclude Include="source\Core\Command.h" />
     <ClInclude Include="source\Core\Delegate.h" />
+    <ClInclude Include="source\Core\Memory\Allocator.h" />
     <ClInclude Include="source\State\GameState\GameState.h" />
     <ClInclude Include="source\Core\GeometryUtils.h" />
     <ClInclude Include="source\Core\Math.h" />
@@ -301,6 +302,7 @@
     <ClCompile Include="source\Component\UUIDComponent.cpp" />
     <ClCompile Include="source\Core\BinaryReader.cpp" />
     <ClCompile Include="source\Core\Command.cpp" />
+    <ClCompile Include="source\Core\Memory\Allocator.cpp" />
     <ClCompile Include="source\State\GameState\GameState.cpp" />
     <ClCompile Include="source\Core\GeometryUtils.cpp" />
     <ClCompile Include="source\Core\Random.cpp" />

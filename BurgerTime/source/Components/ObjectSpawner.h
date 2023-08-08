@@ -2,8 +2,10 @@
 #include "Component/Component.h"
 #include "Scene/Serializable.h"
 
+#include <memory>
 #include <unordered_map>
 #include <functional>
+#include "Core/Delegate.h"
 
 namespace dae
 {
@@ -22,8 +24,8 @@ namespace dae
 		GameObject* Spawn();
 		bool IsRegistered() const;
 		uint32_t GetSpawnID() const;
-
 		GameObject* GetInstance();
+		Delegate<void(GameObject*)>& GetOnObjectSpawnedDelegate() { return *m_pOnObjectSpawned; }
 
 		static void Register(uint32_t id, const SpawnFunc& fn);
 
@@ -32,6 +34,7 @@ namespace dae
 		uint32_t m_Id;
 
 		static std::unordered_map<uint32_t, SpawnFunc> s_SpawnFuncMap;
+		std::unique_ptr<Delegate<void(GameObject*)>> m_pOnObjectSpawned;
 	};
 
 	//===============================//

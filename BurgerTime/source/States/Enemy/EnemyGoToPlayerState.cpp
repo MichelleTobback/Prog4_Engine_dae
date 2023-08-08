@@ -4,18 +4,19 @@
 #include "States/CharacterState.h"
 #include "States/Enemy/EnemyClimbLadderState.h"
 #include "Components/CharacterInfo.h"
+#include "Components/EnemyComponent.h"
 #include "Core/Random.h"
 
 #include <glm/gtx/norm.hpp>
 
-dae::EnemyGoToPlayerState::EnemyGoToPlayerState(CharacterInfoComponent* pCharacterInfo)
-    : CharacterState(pCharacterInfo)
+dae::EnemyGoToPlayerState::EnemyGoToPlayerState(EnemyComponent* pEnemy)
+    : EnemyState(pEnemy)
 {
 }
 
 void dae::EnemyGoToPlayerState::OnEnter()
 {
-    auto players{ GetCharacter()->pController->GetScene()->GetGameObjectWithTag("Player") };
+    auto players{ GetEnemy()->GetScene()->GetGameObjectWithTag("Player")};
     if (players.size() > 0)
     {
         SetPlayer(players[0]->GetComponent<CharacterInfoComponent>());
@@ -28,7 +29,14 @@ dae::State::StatePtr dae::EnemyGoToPlayerState::OnUpdate()
     if (m_pPath.size() == 0)
         return this;
 
-    const glm::vec3& pos{ GetCharacter()->pController->GetTransform().GetWorldPosition() };
+    if (GetEnemy()->GetCharacter()->Get().pHealth->GetValue() == 0)
+        return GetEnemy()->GetStates().pDieState.get();
+    if (GetEnemy()->GetOverlappedBurger() && GetEnemy()->GetOverlappedBurger()->GetVelocity().y > 0.1f)
+        return GetEnemy()->GetStates().pFallState.get();
+    if (GetEnemy()->GetOverlappedPlayer())
+        return GetEnemy()->GetStates().pAttackState.get();
+
+    const glm::vec3& pos{ GetEnemy()->GetCharacter()->Get().pController->GetTransform().GetWorldPosition() };
 
     //if (IsOnLadder() && (m_NextNodeIndex - 1) > 0)
     //{
@@ -52,7 +60,7 @@ dae::State::StatePtr dae::EnemyGoToPlayerState::OnUpdate()
 
         glm::vec2 direction{ nodePos.x - pos.x, nodePos.y - pos.y };
         glm::normalize(direction);
-        GetCharacter()->pController->Move(direction);
+        GetEnemy()->GetCharacter()->Get().pController->Move(direction);
 
         const float distanceSqrt{ glm::distance2(pos, nodePos) };
         const float epsilonSqrt{ 8.f };
@@ -62,7 +70,7 @@ dae::State::StatePtr dae::EnemyGoToPlayerState::OnUpdate()
             ++m_NextNodeIndex;
         }
     }
-    if (m_NextNodeIndex == m_pPath.size())
+    if (m_NextNodeIndex % 5 == 0 || m_NextNodeIndex == m_pPath.size())
     {
         CalculatePath();
     }
@@ -71,7 +79,7 @@ dae::State::StatePtr dae::EnemyGoToPlayerState::OnUpdate()
 
 void dae::EnemyGoToPlayerState::OnExit()
 {
-
+    
 }
 
 void dae::EnemyGoToPlayerState::SetPlayer(CharacterInfoComponent* pPlayer)
@@ -82,7 +90,7 @@ void dae::EnemyGoToPlayerState::SetPlayer(CharacterInfoComponent* pPlayer)
 dae::NodeComponent* dae::EnemyGoToPlayerState::GetNode(const glm::vec3& pos)
 {
     const float tileSize{ 8.f };
-    auto pObjects{ GetCharacter()->pController->GetScene()->GetGameObjectsAtPos(pos, tileSize * 0.5f, false) };
+    auto pObjects{ GetEnemy()->GetCharacter()->Get().pController->GetScene()->GetGameObjectsAtPos(pos, tileSize * 0.5f, false) };
     for (auto& pObject : pObjects)
     {
         if (pObject->HasComponent<NodeComponent>())
@@ -93,7 +101,7 @@ dae::NodeComponent* dae::EnemyGoToPlayerState::GetNode(const glm::vec3& pos)
 
 void dae::EnemyGoToPlayerState::CalculatePath()
 {
-    NodeComponent* pStart{ GetNode(GetCharacter()->pController->GetTransform().GetWorldPosition()) };
+    NodeComponent* pStart{ GetNode(GetEnemy()->GetCharacter()->Get().pController->GetTransform().GetWorldPosition()) };
     NodeComponent* pEnd{ m_pPlayer ? GetNode(m_pPlayer->GetTransform().GetWorldPosition()) : nullptr};
 
     if (pStart && pEnd)

@@ -17,6 +17,11 @@ void dae::BTSinglePlayerGameMode::OnExit()
 
 }
 
+void dae::BTSinglePlayerGameMode::StartRound()
+{
+    RespawnAllActiveObjects();
+}
+
 dae::GameObject* dae::BTSinglePlayerGameMode::CreateHUD()
 {
     Scene* pScene{ SceneManager::GetInstance().GetCurrent() };

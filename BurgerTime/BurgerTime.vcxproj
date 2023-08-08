@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\AI\Pathfinding\AStar.cpp" />
+    <ClCompile Include="source\BurgerTime.cpp" />
     <ClCompile Include="source\Components\BTTileGridComponent.cpp" />
     <ClCompile Include="source\Components\BurgerIngredient.cpp" />
     <ClCompile Include="source\Components\BurgerPlate.cpp" />
@@ -160,18 +161,27 @@
     <ClCompile Include="source\Components\HealthComponent.cpp" />
     <ClCompile Include="source\Components\NodeComponent.cpp" />
     <ClCompile Include="source\Components\ObjectSpawner.cpp" />
-    <ClCompile Include="source\Components\PlayerAnimationController.cpp" />
+    <ClCompile Include="source\Components\CharacterAnimationController.cpp" />
+    <ClCompile Include="source\Components\PepperComponent.cpp" />
     <ClCompile Include="source\Components\PlayerController.cpp" />
+    <ClCompile Include="source\Components\SnapToGridComponent.cpp" />
     <ClCompile Include="source\Editor\BurgerTimeLevelPanel.cpp" />
     <ClCompile Include="source\Editor\Editor.cpp" />
     <ClCompile Include="source\Editor\SceneGraphPanel.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\Prefabs.cpp" />
     <ClCompile Include="source\States\CharacterState.cpp" />
+    <ClCompile Include="source\States\Enemy\EnemyAttackState.cpp" />
     <ClCompile Include="source\States\Enemy\EnemyClimbLadderState.cpp" />
+    <ClCompile Include="source\States\Enemy\EnemyDieState.cpp" />
+    <ClCompile Include="source\States\Enemy\EnemyFallState.cpp" />
     <ClCompile Include="source\States\Enemy\EnemyGoToPlayerState.cpp" />
+    <ClCompile Include="source\States\Enemy\EnemyState.cpp" />
+    <ClCompile Include="source\States\Enemy\EnemyStunnedState.cpp" />
     <ClCompile Include="source\States\GameModes\BTGameMode.cpp" />
     <ClCompile Include="source\States\GameModes\BTSinglePlayerGameMode.cpp" />
+    <ClCompile Include="source\States\SpriteAnim\CharacterAnimStates.cpp" />
+    <ClCompile Include="source\States\SpriteAnim\SpriteAnimState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\AI\Pathfinding\AStar.h" />
@@ -185,17 +195,26 @@
     <ClInclude Include="source\Components\HealthComponent.h" />
     <ClInclude Include="source\Components\NodeComponent.h" />
     <ClInclude Include="source\Components\ObjectSpawner.h" />
-    <ClInclude Include="source\Components\PlayerAnimationController.h" />
+    <ClInclude Include="source\Components\CharacterAnimationController.h" />
+    <ClInclude Include="source\Components\PepperComponent.h" />
     <ClInclude Include="source\Components\PlayerController.h" />
+    <ClInclude Include="source\Components\SnapToGridComponent.h" />
     <ClInclude Include="source\Editor\BurgerTimeLevelPanel.h" />
     <ClInclude Include="source\Editor\Editor.h" />
     <ClInclude Include="source\Editor\SceneGraphPanel.h" />
     <ClInclude Include="source\Prefabs.h" />
     <ClInclude Include="source\States\CharacterState.h" />
+    <ClInclude Include="source\States\Enemy\EnemyAttackState.h" />
     <ClInclude Include="source\States\Enemy\EnemyClimbLadderState.h" />
+    <ClInclude Include="source\States\Enemy\EnemyDieState.h" />
+    <ClInclude Include="source\States\Enemy\EnemyFallState.h" />
     <ClInclude Include="source\States\Enemy\EnemyGoToPlayerState.h" />
+    <ClInclude Include="source\States\Enemy\EnemyState.h" />
+    <ClInclude Include="source\States\Enemy\EnemyStunnedState.h" />
     <ClInclude Include="source\States\GameModes\BTGameMode.h" />
     <ClInclude Include="source\States\GameModes\BTSinglePlayerGameMode.h" />
+    <ClInclude Include="source\States\SpriteAnim\CharacterAnimStates.h" />
+    <ClInclude Include="source\States\SpriteAnim\SpriteAnimState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,27 +4,28 @@
 std::unordered_map<uint32_t, dae::SpawnFunc> dae::ObjectSpawner::s_SpawnFuncMap;
 
 dae::ObjectSpawner::ObjectSpawner(GameObject* pOwner, uint32_t spawnId)
-	: Component(pOwner), m_Id{spawnId}
+	: Component(pOwner), m_Id{spawnId}, m_pOnObjectSpawned{std::make_unique<Delegate<void(GameObject*)>>()}
 {
 	m_Id = m_Id;
+	assert(IsRegistered() && "spawn id is not registered");
+
+	m_pObjectInstance = s_SpawnFuncMap[m_Id](GetScene());
+	m_pObjectInstance->GetTransform().SetLocalPosition(GetTransform().GetWorldPosition());
+	m_pObjectInstance->GetOnDestroyed() += [this](GameObject*)
+	{
+		m_pObjectInstance = nullptr;
+	};
+	m_pObjectInstance->SetActive(false);
 }
 
 dae::GameObject* dae::ObjectSpawner::Spawn()
 {
-	if (!m_pObjectInstance && IsRegistered())
-	{
-		m_pObjectInstance = s_SpawnFuncMap[m_Id](GetScene());
-		m_pObjectInstance->GetOnDestroyed() += [this](GameObject*)
-		{
-			m_pObjectInstance = nullptr;
-		};
-	}
 	if (m_pObjectInstance)
 	{
-		m_pObjectInstance->GetTransform().SetLocalPosition(GetTransform().GetWorldPosition());
-
 		if (!m_pObjectInstance->IsActive())
 			m_pObjectInstance->SetActive(true);
+		m_pObjectInstance->GetTransform().SetLocalPosition(GetTransform().GetWorldPosition());
+		m_pOnObjectSpawned->Invoke(m_pObjectInstance);
 	}
 
 	return m_pObjectInstance;

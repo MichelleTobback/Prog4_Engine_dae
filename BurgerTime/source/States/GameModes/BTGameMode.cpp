@@ -3,7 +3,8 @@
 #include "Scene/Scene.h"
 #include "Components/ObjectSpawner.h"
 #include "Components/HealthComponent.h"
-
+#include "Components/PlayerController.h"
+#include "Components/CharacterInfo.h"
 #include "BurgerTime.h"
 
 void dae::BTGameMode::OnSceneLoaded()
@@ -12,9 +13,14 @@ void dae::BTGameMode::OnSceneLoaded()
 
 	m_pGrid->GetOnGridMappedDelegate() += [this]()
 	{
-		SpawnPlayer();
+		RespawnAll();
 		m_pHUD = CreateHUD();
 	};
+}
+
+void dae::BTGameMode::OnPlayerDeath()
+{
+	StartRound();
 }
 
 void dae::BTGameMode::CreateGrid()
@@ -52,17 +58,30 @@ void dae::BTGameMode::RespawnAll()
 	m_pGrid->ForEachSpawner([](BTTile& tile)
 		{
 			tile.pSpawner->Spawn();
-			HealthComponent* pHealth{ tile.pSpawner->GetInstance()->GetComponent<HealthComponent>() };
-			if (pHealth)
-				pHealth->Heal();
 		});
 }
 
-void dae::BTGameMode::SpawnPlayer()
+void dae::BTGameMode::SpawnAllPlayers()
 {
 	m_pGrid->ForEachSpawner([](BTTile& tile)
 		{
 			if (tile.pSpawner->GetSpawnID() == static_cast<uint32_t>(BurgerTime::SpawnID::Player))
+			{
 				tile.pSpawner->Spawn();
+			}
+		});
+}
+
+void dae::BTGameMode::SpawnPlayer(size_t index)
+{
+	size_t i{};
+	m_pGrid->ForEachSpawner([=, &i](BTTile& tile)
+		{
+			if (tile.pSpawner->GetSpawnID() == static_cast<uint32_t>(BurgerTime::SpawnID::Player))
+			{
+				if ((i + 1) == index)
+					tile.pSpawner->Spawn();
+				++i;
+			}
 		});
 }

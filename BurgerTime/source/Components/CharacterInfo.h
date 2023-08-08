@@ -1,8 +1,8 @@
 #pragma once
 #include "Component/Component.h"
 #include "Component/Physics/CharacterController2D.h"
-#include "Component/SpriteAnimatorComponent.h"
 #include "Components/HealthComponent.h"
+#include "Components/CharacterAnimationController.h"
 
 #include "States/CharacterState.h"
 
@@ -12,17 +12,15 @@ namespace dae
 {
 	struct CharacterInfo
 	{
+		HealthComponent* pHealth{ nullptr };
 		CharacterController2D* pController{ nullptr };
-		SpriteAnimatorComponent* pAnimator{ nullptr };
-		HealthComponent* pHealth{nullptr};
-
-		std::vector<std::unique_ptr<CharacterState>> pStates;
+		CharacterAnimationController* pAnimator{ nullptr };
 	};
 
 	class CharacterInfoComponent final : public Component
 	{
 	public:
-		CharacterInfoComponent(GameObject* pOwner);
+		CharacterInfoComponent(GameObject* pOwner, HealthComponent* pHealth, CharacterController2D* pController, CharacterAnimationController* pAnimator);
 		virtual ~CharacterInfoComponent() = default;
 
 		CharacterInfoComponent(const CharacterInfoComponent& other) = delete;

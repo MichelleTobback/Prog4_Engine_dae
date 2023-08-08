@@ -30,8 +30,13 @@ namespace dae
 		inline const glm::vec4& GetSource() const { return m_Source; }
 		inline const TextureComponent* GetTexture() const { return m_pTexture; }
 
+		void Flip(bool horizontal, bool vertical);
+		bool FlipHorizontal() const;
+		bool FlipVertical() const;
+
 	private:
 		TextureComponent* m_pTexture{ nullptr };
 		glm::vec4 m_Source{};
+		std::pair<bool, bool> m_Flip{}; //first = horizontal, second = vertical
 	};
 }

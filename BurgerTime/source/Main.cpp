@@ -53,24 +53,24 @@ void load()
 
 	//dae::Prefabs::CreateTestLevel(&scene);
 	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{24.f, 40.f, 0.f});
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 24.f, 72.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 24.f, 120.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 24.f, 152.f, 0.f });
-	//
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{ 64.f, 8.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 64.f, 88.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 64.f, 120.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 64.f, 152.f, 0.f });
-	//
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{ 112.f, 8.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 112.f, 40.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 112.f, 88.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 112.f, 152.f, 0.f });
-	//
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{ 160.f, 8.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 160.f, 40.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 160.f, 72.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 160.f, 104.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 24.f, 72.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 24.f, 120.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 24.f, 152.f, 0.f });
+	
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{ 64.f, 8.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 64.f, 88.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 64.f, 120.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 64.f, 152.f, 0.f });
+	
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{ 112.f, 8.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 112.f, 40.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 112.f, 88.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 112.f, 152.f, 0.f });
+	
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{ 160.f, 8.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 160.f, 40.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 160.f, 72.f, 0.f });
+	dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 160.f, 104.f, 0.f });
 
 	
 

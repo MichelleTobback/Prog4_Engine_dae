@@ -1,4 +1,5 @@
 #include "PhysicsSystem.h"
+#include "Core/BitFlag.h"
 
 #include <algorithm>
 
@@ -43,7 +44,8 @@ bool dae::PhysicsScene::Raycast(const GeometryUtils::Ray& ray, CollisionHit& out
 			const auto& colliders{ pRigidBody->GetColliders() };
 			for (const auto& pCollider : colliders)
 			{
-				if (pCollider->DoRaycast(ray, result, collisionIngore))
+				if (!BitFlag::IsSet(collisionIngore, pCollider->GetCollisionLayer()) &&
+					pCollider->DoRaycast(ray, result, collisionIngore))
 				{
 					if (result.depth < outHit.depth)
 						outHit = result;

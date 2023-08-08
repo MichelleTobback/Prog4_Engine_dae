@@ -26,6 +26,8 @@ namespace dae
 
 		ObservableType<uint32_t>& GetPeppers() { return m_Peppers; }
 
+		void Reset();
+
 	private:
 		void ThrowPepper();
 		void OnHit(uint32_t health);
@@ -35,7 +37,7 @@ namespace dae
 		int m_ControllerIndex;
 		bool m_Reset{ false };
 
-		ObservableType<uint32_t> m_Peppers{5};
+		ObservableType<uint32_t> m_Peppers{};
 
 		BTGameMode* m_pCurrentGameMode{nullptr};
 		std::unique_ptr<AudioClip> m_pDamageSound;

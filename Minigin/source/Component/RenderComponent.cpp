@@ -20,12 +20,20 @@ dae::RenderComponent::RenderComponent(GameObject* pOwner)
 
 void dae::RenderComponent::Awake()
 {
-	Renderer::GetInstance().AddComponent(this);
+	if (!m_Rendering)
+	{
+		Renderer::GetInstance().AddComponent(this);
+		m_Rendering = true;
+	}
 }
 
 void dae::RenderComponent::Sleep()
 {
-	Renderer::GetInstance().RemoveComponent(this);
+	if (m_Rendering)
+	{
+		Renderer::GetInstance().RemoveComponent(this);
+		m_Rendering = false;
+	}
 }
 
 //=================================================
@@ -108,7 +116,13 @@ void dae::SpriteRenderComponent::Render() const
 
 		float worldRotation{ m_pTransformComponent->GetWorldRotationAngle() };
 
-		Renderer::GetInstance().RenderTexture(*pTexture, pos.x, pos.y, src.x, src.y, src.z, src.w, worldRotation);
+		Renderer::GetInstance().RenderTexture(
+			*pTexture, 
+			pos.x, pos.y, 
+			src.x, src.y, src.z, src.w, 
+			worldRotation, 
+			m_pSpriteComponent->FlipHorizontal(), 
+			m_pSpriteComponent->FlipVertical());
 	}
 }
 

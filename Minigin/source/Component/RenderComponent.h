@@ -30,6 +30,7 @@ namespace dae
 
 	private:
 		size_t m_Layer{ 0 };
+		bool m_Rendering{ false };
 	};
 
 	class TextureComponent;

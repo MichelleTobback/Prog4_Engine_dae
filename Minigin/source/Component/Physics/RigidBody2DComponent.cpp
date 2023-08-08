@@ -54,7 +54,7 @@ void dae::RigidBody2DComponent::FixedUpdate()
     RigidBody2DComponent* pCollidingBody{ nullptr };
     for (auto pCollider : m_pColliders)
     {
-        if (!pCollider || (IsStatic() && !pCollider->IsTrigger()))
+        if (!pCollider || (IsStatic() && !pCollider->IsTrigger()) || pCollider->GetCollisionLayer() == CollisionLayer::None)
             continue;
 
         physics.ForEachRigidBody([&, this](RigidBody2DComponent* pRigidBody)->void
@@ -68,10 +68,11 @@ void dae::RigidBody2DComponent::FixedUpdate()
                     const bool blockCollision{ !pOther->IsTrigger() && !pCollider->IsTrigger() };
                     const bool bothTrigger{ pOther->IsTrigger() && pCollider->IsTrigger() };
                     const bool alreadyBlocked{ pCollidingBody != nullptr };
+                    const bool noCollisionLayer{ pOther->GetCollisionLayer() == CollisionLayer::None };
                     const bool ignore{ !pOther 
                         || BitFlag::IsSet(pCollider->GetCollisionIgnoreLayer(), pOther->GetCollisionLayer())
                         || BitFlag::IsSet(pOther->GetCollisionIgnoreLayer(), pCollider->GetCollisionLayer()) };
-                    if ((blockCollision && alreadyBlocked) || ignore || bothTrigger)
+                    if ((blockCollision && alreadyBlocked) || ignore || bothTrigger || noCollisionLayer)
                         continue;
 
                     CollisionHit currentResult{};
@@ -133,7 +134,8 @@ void dae::RigidBody2DComponent::FixedUpdate()
         const glm::vec2 force{ j * result.normal };
 
         m_Velocity -= glm::vec3{ force * GetMassInverse(), 0.f };
-        pCollidingBody->SetVelociy(pCollidingBody->GetVelocity() + glm::vec3{ force * pCollidingBody->GetMassInverse(), 0.f });
+        const glm::vec3 otherVelocity{ pCollidingBody->GetVelocity() + glm::vec3{ force * pCollidingBody->GetMassInverse(), 0.f } };
+        pCollidingBody->SetVelociy(otherVelocity);
     }
 }
 

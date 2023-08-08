@@ -19,6 +19,7 @@ namespace dae
 		virtual void OnExit() override;
 
 	protected:
+		virtual void StartRound() override;
 		virtual GameObject* CreateHUD() override;
 	};
 }
