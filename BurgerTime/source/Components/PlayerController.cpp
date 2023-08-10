@@ -70,13 +70,11 @@ void dae::PlayerController::Awake()
 	Reset();
 
 	HealthComponent* pHealth{ GetOwner()->GetComponent<HealthComponent>() };
-	pHealth->GetOnDeath() += std::bind(&PlayerController::OnDeath, this);
 	pHealth->GetOnHealthChanged() += std::bind(&PlayerController::OnHit, this, std::placeholders::_1);
 
 	CharacterAnimationController* pAnimController{ GetOwner()->GetComponent<CharacterAnimationController>() };
-	pAnimController->GetClip(CharacterAnimationController::CharacterAnim::Die).GetAnimEvent(5) += std::bind(&BTGameMode::OnPlayerDeath, m_pCurrentGameMode);
-
-
+	//pAnimController->GetClip(CharacterAnimationController::CharacterAnim::Die).GetOnClipEndDelegate() += std::bind(&PlayerController::OnDeath, this);
+	pAnimController->GetClip(CharacterAnimationController::CharacterAnim::Die).GetAnimEvent(4) += std::bind(&PlayerController::OnDeath, this);
 }
 
 void dae::PlayerController::LateUpdate()
@@ -118,5 +116,9 @@ void dae::PlayerController::OnHit(uint32_t health)
 
 void dae::PlayerController::OnDeath()
 {
-	
+	HealthComponent* pHealth{ GetOwner()->GetComponent<HealthComponent>() };
+	if (pHealth->GetValue() > 0)
+		m_pCurrentGameMode->OnPlayerLostLife();
+	else
+		m_pCurrentGameMode->OnPlayerDeath();
 }

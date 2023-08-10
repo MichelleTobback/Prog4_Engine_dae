@@ -17,6 +17,7 @@ void dae::SceneManager::FixedUpdate()
 void dae::SceneManager::LateUpdate()
 {
 	m_ActiveScene->LateUpdate();
+	HandleObjectsLifeTime();
 }
 
 void dae::SceneManager::HandleObjectsLifeTime()
@@ -39,21 +40,28 @@ void dae::SceneManager::HandleObjectsLifeTime()
 			m_pOnSceneLoaded->Invoke(m_ActiveScene.get(), m_CurrentSceneIndex);
 			m_pOnSceneLoaded->Clear();
 		}
+		if (m_fnOnSceneLoaded)
+		{
+			m_fnOnSceneLoaded(*m_ActiveScene);
+			m_fnOnSceneLoaded = nullptr;
+		}
 	}
 }
 
-dae::Scene& dae::SceneManager::CreateScene(const std::string& name)
+dae::Scene& dae::SceneManager::CreateScene(const std::string& name, bool openOnLoad)
 {
 	const auto& scene = std::shared_ptr<Scene>(new Scene(name));
 	m_scenes.push_back(scene);
 
 	if (!m_ActiveScene)
 		m_ActiveScene = m_scenes.back();
+	if (openOnLoad)
+		m_NextScene = (m_scenes.size() - 1);
 
 	return *scene;
 }
 
-dae::Scene& dae::SceneManager::LoadSceneByIndex(size_t index)
+dae::Scene& dae::SceneManager::OpenSceneByIndex(size_t index)
 {
 	assert(index < m_scenes.size() && "no valid scene index");
 
@@ -61,22 +69,38 @@ dae::Scene& dae::SceneManager::LoadSceneByIndex(size_t index)
 	return *m_scenes[index];
 }
 
-dae::Scene& dae::SceneManager::LoadScene(const std::filesystem::path& file)
+dae::Scene& dae::SceneManager::OpenSceneByIndex(size_t index, const std::function<void(Scene& scene)>& fnOnLoaded)
 {
+	m_fnOnSceneLoaded = fnOnLoaded;
+	return OpenSceneByIndex(index);
+}
+
+size_t dae::SceneManager::LoadScene(const std::filesystem::path& file, bool openOnLoad)
+{
+	assert(file.extension().string()._Equal(".scene") && "Scene file must have .scene extension");
+
 	const std::string name{ file.filename().stem().string()};
-	Scene& scene{ CreateScene(name) };
 
-	if (file.extension().string()._Equal(".scene"))
+	for (size_t i{}; i < m_scenes.size(); ++i)
 	{
-		static SceneSerializer deserializer{};
-		deserializer.Deserialize(&scene, file);
-	}
-	else
-	{
-		std::cout << "scene could not be loaded from location " << file.string() << "!\nMake sure file has extention .scene\n";
+		if (m_scenes[i]->GetName()._Equal(name))
+		{
+			if (openOnLoad)
+			{
+				m_NextScene = i;
+				m_fnOnSceneLoaded = nullptr;
+			}
+
+			return i;
+		}
 	}
 
-	return scene;
+	Scene& scene{ CreateScene(name, openOnLoad) };
+
+	static SceneSerializer deserializer{};
+	deserializer.Deserialize(&scene, file);
+
+	return (m_scenes.size() - 1);
 }
 
 void dae::SceneManager::SaveScene(Scene& scene, const std::filesystem::path& file)
@@ -99,6 +123,7 @@ dae::SceneManager::SceneManager()
 	, m_pOnSceneUnloaded{ std::make_unique<SceneDelegate>() }
 {
 	SceneSerializer::RegisterEngineComponents(*m_pComponentFactory);
+	CreateScene("empty", true);
 }
 
 dae::SceneDelegate& dae::SceneManager::GetOnSceneLoaded()

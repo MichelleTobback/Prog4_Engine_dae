@@ -13,6 +13,7 @@ namespace dae
 	class ActionCommand final : public Command
 	{
 	public:
+		explicit ActionCommand(const std::function<void()>& fnAction);
 		virtual ~ActionCommand() override = default;
 
 		virtual void Execute() override;
@@ -25,8 +26,6 @@ namespace dae
 
 	private:
 		std::function<void()> m_FnAction;
-
-		explicit ActionCommand(const std::function<void()>& fnAction);
 	};
 
 	template <typename T>

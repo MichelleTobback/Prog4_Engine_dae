@@ -6,7 +6,7 @@ namespace dae
 	class BTSinglePlayerGameMode final : public BTGameMode
 	{
 	public:
-		BTSinglePlayerGameMode() = default;
+		BTSinglePlayerGameMode(size_t level = 0);
 		virtual ~BTSinglePlayerGameMode() = default;
 
 		BTSinglePlayerGameMode(const BTSinglePlayerGameMode& other) = delete;

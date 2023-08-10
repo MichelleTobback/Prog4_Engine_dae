@@ -165,6 +165,7 @@
     <ClCompile Include="source\Components\PepperComponent.cpp" />
     <ClCompile Include="source\Components\PlayerController.cpp" />
     <ClCompile Include="source\Components\SnapToGridComponent.cpp" />
+    <ClCompile Include="source\Editor\BTEditorGameMode.cpp" />
     <ClCompile Include="source\Editor\BurgerTimeLevelPanel.cpp" />
     <ClCompile Include="source\Editor\Editor.cpp" />
     <ClCompile Include="source\Editor\SceneGraphPanel.cpp" />
@@ -180,6 +181,10 @@
     <ClCompile Include="source\States\Enemy\EnemyStunnedState.cpp" />
     <ClCompile Include="source\States\GameModes\BTGameMode.cpp" />
     <ClCompile Include="source\States\GameModes\BTSinglePlayerGameMode.cpp" />
+    <ClCompile Include="source\States\GameModes\MainMenuGameMode.cpp" />
+    <ClCompile Include="source\States\Ingredients\IngredientFallState.cpp" />
+    <ClCompile Include="source\States\Ingredients\IngredientIdleState.cpp" />
+    <ClCompile Include="source\States\Ingredients\IngredientInPlateState.cpp" />
     <ClCompile Include="source\States\SpriteAnim\CharacterAnimStates.cpp" />
     <ClCompile Include="source\States\SpriteAnim\SpriteAnimState.cpp" />
   </ItemGroup>
@@ -199,6 +204,7 @@
     <ClInclude Include="source\Components\PepperComponent.h" />
     <ClInclude Include="source\Components\PlayerController.h" />
     <ClInclude Include="source\Components\SnapToGridComponent.h" />
+    <ClInclude Include="source\Editor\BTEditorGameMode.h" />
     <ClInclude Include="source\Editor\BurgerTimeLevelPanel.h" />
     <ClInclude Include="source\Editor\Editor.h" />
     <ClInclude Include="source\Editor\SceneGraphPanel.h" />
@@ -213,6 +219,12 @@
     <ClInclude Include="source\States\Enemy\EnemyStunnedState.h" />
     <ClInclude Include="source\States\GameModes\BTGameMode.h" />
     <ClInclude Include="source\States\GameModes\BTSinglePlayerGameMode.h" />
+    <ClInclude Include="source\States\GameModes\MainMenuGameMode.h" />
+    <ClInclude Include="source\States\Ingredients\IngredientFallState.h" />
+    <ClInclude Include="source\States\Ingredients\IngredientIdleState.h" />
+    <ClInclude Include="source\States\Ingredients\IngredientInPlateState.h" />
+    <ClInclude Include="source\States\Ingredients\IngredientState.h" />
+    <ClInclude Include="source\States\Menu\MainMenuState.h" />
     <ClInclude Include="source\States\SpriteAnim\CharacterAnimStates.h" />
     <ClInclude Include="source\States\SpriteAnim\SpriteAnimState.h" />
   </ItemGroup>

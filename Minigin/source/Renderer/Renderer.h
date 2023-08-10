@@ -47,6 +47,7 @@ namespace dae
 		CameraComponent* GetActiveCamera() const;
 
 	private:
+		glm::vec3 GetCameraPos() const;
 		struct RenderComponentComparator
 		{
 			bool operator()(const RenderComponent* a, const RenderComponent* b) const;

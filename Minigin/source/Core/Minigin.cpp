@@ -77,7 +77,6 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 		sceneManager.LateUpdate();
 		renderer.Render();
-		sceneManager.HandleObjectsLifeTime();
 
 		time.Wait();
 	}

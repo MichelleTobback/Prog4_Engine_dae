@@ -28,6 +28,14 @@ void dae::BurgerTimeLevelPanel::Awake()
 		{
 			m_pLevelRoot = GetScene()->Instantiate();
 			m_pLevelRoot->AddTag("Lvl");
+
+			const int levelIdx{ std::stoi(std::string(&GetScene()->GetName().back())) - 1};
+			const float width{ 208.f }, height{ 200.f }, spacing{ 8.f };
+			GameObject* pObject{ GetScene()->Instantiate(m_pLevelRoot, glm::vec3{spacing, 0.f, 0.f}) };
+			TextureComponent* pTexture{ pObject->AddComponent<TextureComponent>() };
+			pTexture->SetTexture("Textures/BurgerTimeStages.png");
+			SpriteComponent* pSprite{ pObject->AddComponent<SpriteComponent>(pTexture, (width + spacing) * (levelIdx % 3), 2.f * (height + spacing) * (levelIdx / 3), width, height)};
+			pObject->AddComponent<SpriteRenderComponent>(pSprite);
 		}
 		else
 			m_pLevelRoot = lvlObjts[0];
@@ -71,7 +79,7 @@ void dae::BurgerTimeLevelPanel::OnImGuiRender()
 	//}
 
 	ImGui::Separator();
-	ImGui::Text("Spawners");
+	ImGui::Text("character Spawners");
 
 	if (m_Mode == EditMode::Select && ImGui::Button("Add Player Spawner"))
 	{
@@ -81,6 +89,34 @@ void dae::BurgerTimeLevelPanel::OnImGuiRender()
 	{
 		pNewGameObject = AddSpawner(dae::BurgerTime::SpawnID::MrHotDog);
 	}
+	ImGui::Separator();
+	ImGui::Text("ingredient Spawners");
+
+	if (m_Mode == EditMode::Select && ImGui::Button("Add TopBun Spawner"))
+	{
+		pNewGameObject = AddSpawner(dae::BurgerTime::SpawnID::TopBun);
+	}
+	if (m_Mode == EditMode::Select && ImGui::Button("Add BottomBun Spawner"))
+	{
+		pNewGameObject = AddSpawner(dae::BurgerTime::SpawnID::BottomBun);
+	}
+	if (m_Mode == EditMode::Select && ImGui::Button("Add Lettuce Spawner"))
+	{
+		pNewGameObject = AddSpawner(dae::BurgerTime::SpawnID::Lettuce);
+	}
+	if (m_Mode == EditMode::Select && ImGui::Button("Add Patty Spawner"))
+	{
+		pNewGameObject = AddSpawner(dae::BurgerTime::SpawnID::Patty);
+	}
+	if (m_Mode == EditMode::Select && ImGui::Button("Add Cheese Spawner"))
+	{
+		pNewGameObject = AddSpawner(dae::BurgerTime::SpawnID::Cheese);
+	}
+	if (m_Mode == EditMode::Select && ImGui::Button("Add Tomato Spawner"))
+	{
+		pNewGameObject = AddSpawner(dae::BurgerTime::SpawnID::Tomato);
+	}
+
 	if (m_Mode == EditMode::Select && ImGui::Button("Spawn All"))
 	{
 		SpawnAll();
@@ -265,7 +301,7 @@ void dae::BurgerTimeLevelPanel::CreateGrid()
 
 dae::GameObject* dae::BurgerTimeLevelPanel::AddSpawner(BurgerTime::SpawnID id)
 {
-	if (!m_SelectedTiles.begin()->second)
+	if (!m_SelectedTiles.begin()->second->pObject)
 	{
 		m_SelectedTiles.begin()->second->pObject = GetScene()->Instantiate(m_pLevelRoot, m_SelectedTiles.begin()->second->pos);
 	}
@@ -279,9 +315,9 @@ dae::GameObject* dae::BurgerTimeLevelPanel::AddSpawner(BurgerTime::SpawnID id)
 
 void dae::BurgerTimeLevelPanel::SpawnAll()
 {
-	BTGameMode* pGameMode{ reinterpret_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode()) };
+	BTGameMode* pGameMode{ dynamic_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode()) };
 	if (pGameMode)
 	{
-		pGameMode->OnPlayerDeath();
+		pGameMode->OnPlayerLostLife();
 	}
 }

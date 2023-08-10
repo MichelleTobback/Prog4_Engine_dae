@@ -21,13 +21,25 @@ namespace dae
 		enum class SpawnID
 		{
 			Player = 0,
-			MrHotDog = 1
+			MrHotDog = 1, MrEgg = 2, MrPickle = 3,
+			TopBun, BottomBun, Lettuce, Tomato, Patty, Cheese
+		};
+
+		enum class LevelID
+		{
+			Menu,
+			Level1, Level2, Level3
 		};
 
 		// * rect.x, rect.y = spritestart pos
 		// * rect.z, rect.w = num cols, num rows
 		// * spriteSize	= pixel width/height of sprite
 		static size_t CreateAnimClip(SpriteAtlasComponent* pAtlas, SpriteAnimatorComponent* pAnimator, const glm::u32vec4& rect, bool flip = false, float spriteSize = SPRITE_SIZE, float speed = 1.f);
+		static bool IsIngredient(SpawnID id);
+
+		static void CreateDebugInput();
+		static void OpenMenu();
+		static void OpenLevel();
 
 	private:
 		BurgerTime() = default;

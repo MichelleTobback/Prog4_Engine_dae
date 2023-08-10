@@ -98,19 +98,27 @@ void Scene::RemoveAll()
 
 void dae::Scene::Awake()
 {
-	for (auto& [uuid, pGameObject] : m_Objects)
+	if (!m_Running)
 	{
-		if (pGameObject->IsRoot())
-			pGameObject->SetActive(true);
+		for (auto& [uuid, pGameObject] : m_Objects)
+		{
+			if (pGameObject->IsRoot())
+				pGameObject->SetActive(true);
+		}
+		m_Running = true;
 	}
 }
 
 void dae::Scene::Sleep()
 {
-	for (auto& [uuid, pGameObject] : m_Objects)
+	if (m_Running)
 	{
-		if (pGameObject->IsRoot())
-			pGameObject->SetActive(false);
+		for (auto& [uuid, pGameObject] : m_Objects)
+		{
+			if (pGameObject->IsRoot())
+				pGameObject->SetActive(false);
+		}
+		m_Running = false;
 	}
 }
 

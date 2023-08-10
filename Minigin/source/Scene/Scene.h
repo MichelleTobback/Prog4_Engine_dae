@@ -14,7 +14,7 @@ namespace dae
 
 	class Scene final
 	{
-		friend Scene& SceneManager::CreateScene(const std::string& name);
+		friend Scene& SceneManager::CreateScene(const std::string& name, bool openOnLoad);
 	public:
 		GameObject* Add(std::shared_ptr<GameObject> object);
 
@@ -36,6 +36,8 @@ namespace dae
 		PhysicsScene& GetPhysics() { return *m_pPhysics; }
 		void DestroyGameObject(GameObject* pObject);
 
+		const std::string& GetName() const { return m_Name; }
+
 		~Scene();
 		Scene(const Scene& other) = delete;
 		Scene(Scene&& other) = delete;
@@ -55,6 +57,7 @@ namespace dae
 		std::stack<UUID> m_ObjectsPendingDestroy{};
 
 		std::unique_ptr<PhysicsScene> m_pPhysics;
+		bool m_Running{false};
 
 		static unsigned int m_IdCounter; 
 	};

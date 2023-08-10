@@ -26,6 +26,7 @@ namespace dae
 		friend class Singleton<GameState>;
 		std::unique_ptr<StateMachine> m_pGameModeFSM{nullptr};
 		std::shared_ptr<GameMode> m_pEntryGameMode;
+		std::shared_ptr<GameMode> m_pNextGameMode;
 		bool m_Running{ false };
 	};
 

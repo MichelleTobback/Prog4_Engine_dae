@@ -2,9 +2,14 @@
 #include "Prefabs.h"
 #include "Managers/SceneManager.h"
 
+dae::BTSinglePlayerGameMode::BTSinglePlayerGameMode(size_t level)
+    : BTGameMode(level)
+{
+}
+
 void dae::BTSinglePlayerGameMode::OnEnter()
 {
-    OnSceneLoaded();
+    BTGameMode::OnEnter();
 }
 
 dae::State::StatePtr dae::BTSinglePlayerGameMode::OnUpdate()
@@ -14,12 +19,12 @@ dae::State::StatePtr dae::BTSinglePlayerGameMode::OnUpdate()
 
 void dae::BTSinglePlayerGameMode::OnExit()
 {
-
+    BTGameMode::OnExit();
 }
 
 void dae::BTSinglePlayerGameMode::StartRound()
 {
-    RespawnAllActiveObjects();
+    RespawnAllActiveCharacters();
 }
 
 dae::GameObject* dae::BTSinglePlayerGameMode::CreateHUD()

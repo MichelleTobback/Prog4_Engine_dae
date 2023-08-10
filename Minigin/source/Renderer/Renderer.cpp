@@ -134,7 +134,7 @@ void dae::Renderer::Destroy()
 void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
 {
 	SDL_Rect dst{};
-	glm::vec3 camPos{ m_pActiveCamera->GetTransform().GetWorldPosition() };
+	glm::vec3 camPos{ GetCameraPos() };
 	dst.x = static_cast<int>(x * m_CameraScale.x + camPos.x);
 	dst.y = static_cast<int>(y * m_CameraScale.y + camPos.y);
 	SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
@@ -146,7 +146,7 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
 {
 	SDL_Rect dst{};
-	glm::vec3 camPos{ m_pActiveCamera->GetTransform().GetWorldPosition() };
+	glm::vec3 camPos{ GetCameraPos() };
 	dst.x = static_cast<int>(x * m_CameraScale.x + camPos.x);
 	dst.y = static_cast<int>(y * m_CameraScale.y + camPos.y);
 	dst.w = static_cast<int>(width * m_CameraScale.x);
@@ -157,7 +157,7 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, float width, float height, float rotation) const
 {
 	SDL_Rect dst{};
-	glm::vec3 camPos{ m_pActiveCamera->GetTransform().GetWorldPosition() };
+	glm::vec3 camPos{ GetCameraPos() };
 	dst.x = static_cast<int>(x * m_CameraScale.x + camPos.x);
 	dst.y = static_cast<int>(y * m_CameraScale.y + camPos.y);
 	dst.w = static_cast<int>(width * m_CameraScale.x);
@@ -169,7 +169,7 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, fl
 void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, float srcX, float srcY, float srcWidth, float srcHeight, float rotation) const
 {
 	SDL_Rect dst{};
-	glm::vec3 camPos{ m_pActiveCamera->GetTransform().GetWorldPosition() };
+	glm::vec3 camPos{ GetCameraPos() };
 	dst.x = static_cast<int>(x * m_CameraScale.x + camPos.x);
 	dst.y = static_cast<int>(y * m_CameraScale.y + camPos.y);
 	dst.w = static_cast<int>(srcWidth * m_CameraScale.x);
@@ -189,7 +189,7 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, fl
 void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, float srcX, float srcY, float srcWidth, float srcHeight, float rotation, bool flipHorizontal, bool flipVertical) const
 {
 	SDL_Rect dst{};
-	glm::vec3 camPos{ m_pActiveCamera->GetTransform().GetWorldPosition() };
+	glm::vec3 camPos{ GetCameraPos() };
 	dst.x = static_cast<int>(x * m_CameraScale.x + camPos.x);
 	dst.y = static_cast<int>(y * m_CameraScale.y + camPos.y);
 	dst.w = static_cast<int>(srcWidth * m_CameraScale.x);
@@ -225,7 +225,7 @@ void dae::Renderer::RenderQuad(float x, float y, float width, float height, cons
 	colorSdl.a = static_cast<Uint8>(color.a * 255);
 	SDL_SetRenderDrawColor(m_renderer, colorSdl.r, colorSdl.g, colorSdl.b, colorSdl.a);
 
-	glm::vec3 camPos{ m_pActiveCamera->GetTransform().GetWorldPosition() };
+	glm::vec3 camPos{ GetCameraPos() };
 	int xI{ static_cast<int>(x * m_CameraScale.x + camPos.x) };
 	int yI{ static_cast<int>(y * m_CameraScale.y + camPos.y) };
 	int widthI{ static_cast<int>(width * m_CameraScale.x) };
@@ -244,7 +244,7 @@ void dae::Renderer::RenderSolidQuad(float x, float y, float width, float height,
 	colorSdl.a = static_cast<Uint8>(color.a * 255);
 	SDL_SetRenderDrawColor(m_renderer, colorSdl.r, colorSdl.g, colorSdl.b, colorSdl.a);
 
-	glm::vec3 camPos{ m_pActiveCamera->GetTransform().GetWorldPosition() };
+	glm::vec3 camPos{ GetCameraPos() };
 	int xI{ static_cast<int>(x * m_CameraScale.x + camPos.x) };
 	int yI{ static_cast<int>(y * m_CameraScale.y + camPos.y) };
 	int widthI{ static_cast<int>(width * m_CameraScale.x) };
@@ -279,6 +279,13 @@ void dae::Renderer::SetActiveCamera(CameraComponent* pCamera)
 dae::CameraComponent* dae::Renderer::GetActiveCamera() const
 {
 	return m_pActiveCamera;
+}
+
+glm::vec3 dae::Renderer::GetCameraPos() const
+{
+	if (m_pActiveCamera)
+		return m_pActiveCamera->GetTransform().GetWorldPosition();
+	return glm::vec3();
 }
 
 bool dae::Renderer::RenderComponentComparator::operator()(const RenderComponent* a, const RenderComponent* b) const

@@ -4,6 +4,7 @@
 
 namespace dae
 {
+	class BTTileGridComponent;
 	class BTGameMode;
 	class SnapToGridComponent final : public Component
 	{
@@ -15,6 +16,6 @@ namespace dae
 
 	private:
 		RigidBody2DComponent* m_pRigidBody{ nullptr };
-		BTGameMode* m_pCurrentGameMode{ nullptr };
+		BTTileGridComponent* m_pGrid{ nullptr };
 	};
 }

@@ -9,19 +9,23 @@ namespace dae
 	class BTGameMode : public GameMode
 	{
 	public:
+		BTGameMode(size_t level);
 		virtual ~BTGameMode() = default;
 
-		virtual void OnEnter() = 0;
-		virtual StatePtr OnUpdate() = 0;
-		virtual void OnExit() = 0;
+		virtual void OnEnter() override;
+		virtual StatePtr OnUpdate() override = 0;
+		virtual void OnExit() override;
 
-		void OnSceneLoaded();
+		void OnSceneLoaded(Scene*, size_t index);
+		void OnPlayerLostLife();
 		void OnPlayerDeath();
+		void AddIngredient();
 
 		BTTileGridComponent& GetGrid() { return *m_pGrid; }
 		GameObject* GetLevelRoot() { return m_pLevelRoot; }
 
 		void RespawnAllActiveObjects();
+		void RespawnAllActiveCharacters();
 		void RespawnAll();
 		void SpawnAllPlayers();
 		void SpawnPlayer(size_t index);
@@ -37,6 +41,8 @@ namespace dae
 		virtual GameObject* CreateHUD() { return nullptr; };
 		void SetMaxPlayerLifes(uint32_t lifes) { m_PlayerMaxLifes = lifes; }
 		void SetMaxPlayerPeppers(uint32_t peppers) { m_PlayerMaxPeppers = peppers; }
+		void LoadLevels();
+		void OpenNextLevel();
 
 	private:
 		void CreateGrid();
@@ -46,7 +52,11 @@ namespace dae
 		BTTileGridComponent* m_pGrid{nullptr};
 		uint32_t m_PlayerMaxLifes{ 3 };
 		uint32_t m_PlayerMaxPeppers{ 5 };
-		ObservableType<uint32_t> m_Score{};
+		uint32_t m_Ingredients{};
+		uint32_t m_MaxIngredients{};
+		static ObservableType<uint32_t> m_Score;
 		std::vector<PlayerController*> m_pPlayers;
+		std::vector<size_t> m_ScenesIndices;
+		size_t m_CurrentLevel{};
 	};
 }

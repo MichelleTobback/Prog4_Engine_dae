@@ -92,6 +92,14 @@ dae::GameObject* dae::Prefabs::CreateSinglePlayerHUD(GameObject* pLevelObject, G
     return pObject;
 }
 
+dae::GameObject* dae::Prefabs::CreateTextObject(Scene* pScene, const std::string& text, std::shared_ptr<Font> pFont, const glm::vec4& color)
+{
+    GameObject* pObject{ pScene->Instantiate() };
+    pObject->AddComponent<dae::TextureRenderComponent>(pObject->AddComponent<dae::TextureComponent>());
+    pObject->AddComponent<TextComponent>(text, pFont, color);
+    return pObject;
+}
+
 dae::GameObject* dae::Prefabs::CreatePepper(Scene* pScene)
 {
     GameObject* pObject{ pScene->Instantiate(0u, nullptr) };

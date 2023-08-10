@@ -19,6 +19,7 @@ namespace dae
 		static GameObject* CreateScoreHUD(GameObject* pHudObject, ObservableType<uint32_t>& value, const std::string& text, const glm::vec4& color);
 		static GameObject* CreatePlayerLifesHUD(SpriteAtlasComponent* pSpriteAtlas, HealthComponent* pPlayerHealth);
 		static GameObject* CreateSinglePlayerHUD(GameObject* pLevelObject, GameObject* pPlayer);
+		static GameObject* CreateTextObject(Scene* pScene, const std::string& text, std::shared_ptr<Font> pFont, const glm::vec4& color);
 
 		//Scene
 		static GameObject* CreatePepper(Scene* pScene);

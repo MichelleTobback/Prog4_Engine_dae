@@ -7,6 +7,11 @@
 #include "State/GameState/GameState.h"
 #include "States/GameModes/BTGameMode.h"
 
+#include "States/Ingredients/IngredientFallState.h"
+#include "States/Ingredients/IngredientIdleState.h"
+#include "States/Ingredients/IngredientInPlateState.h"
+#include "State/StateMachine.h"
+
 #include "BurgerTime.h"
 
 std::unique_ptr<dae::AudioClip> dae::BurgerIngredient::m_pOverlapSound{ nullptr };
@@ -25,7 +30,7 @@ dae::BurgerIngredient::BurgerIngredient(GameObject* pOwner, IngredientType type,
 	for (int i{}; i < m_Length; ++i)
 		m_AllFlags |= (1 << (i + 1));
 
-	GameObject* pColliderObj{ GetScene()->Instantiate(0u, GetOwner()) };
+	GameObject* pColliderObj{ GetScene()->Instantiate(0u, GetOwner())};
 	QuadComponent* pQuad{ pColliderObj->AddComponent<QuadComponent>(glm::vec2{ m_TileSize * 4.f, m_TileSize }) };
 	BoxCollider2DComponent* pCollider{ pColliderObj->AddComponent<BoxCollider2DComponent>() };
 	pCollider->SetCollisionIgnoreLayer(BurgerTime::PLAYER_COLLISION_LAYER, true);
@@ -46,6 +51,7 @@ dae::BurgerIngredient::BurgerIngredient(GameObject* pOwner, IngredientType type,
 		BoxCollider2DComponent*  pTileCollider = pTileColliderObj->AddComponent<BoxCollider2DComponent>();
 		pTileCollider->SetCollisionLayer(BurgerTime::INGREDIENT_COLLISION_LAYER);
 		pTileCollider->SetCollisionIgnoreLayer(BurgerTime::ENEMY_COLLISION_LAYER, true);
+		pTileCollider->SetCollisionIgnoreLayer(BurgerTime::LEVEL_COLLISION_LAYER, true);
 		pTileCollider->SetShape(pTileColliderObj->AddComponent<QuadComponent>(glm::vec2{ m_TileSize * 0.5f, m_TileSize }));
 		pTileCollider->SetTrigger(true);
 		pRigidBody->AddCollider(pTileCollider);
@@ -53,6 +59,11 @@ dae::BurgerIngredient::BurgerIngredient(GameObject* pOwner, IngredientType type,
 
 	pRigidBody->GetOnBeginOverlap() += std::bind(&BurgerIngredient::OnBeginOverlap, this, std::placeholders::_1);
 	pRigidBody->GetOnEndOverlap() += std::bind(&BurgerIngredient::OnEndOverlap, this, std::placeholders::_1);
+
+	m_pStates.pInPlate = std::make_unique<IngredientInPlateState>(this);
+	m_pStates.pIdle = std::make_unique<IngredientIdleState>(this);
+	m_pStates.pFall = std::make_unique<IngredientFallState>(this);
+	m_pStateMachine = GetOwner()->AddComponent<StateMachine>(m_pStates.pIdle.get());
 }
 
 void dae::BurgerIngredient::Fall()
@@ -81,6 +92,11 @@ dae::BurgerIngredient* dae::BurgerIngredient::GetFromCollider(ColliderComponent*
 	return pGameObject->GetComponent<BurgerIngredient>();
 }
 
+void dae::BurgerIngredient::AddReward()
+{
+	++m_Reward;
+}
+
 int dae::BurgerIngredient::GetWalkedFlags() const
 {
 	return m_WalkedOnTilesFlags;
@@ -94,73 +110,76 @@ void dae::BurgerIngredient::SetWalkedFlags(int flags)
 void dae::BurgerIngredient::Awake()
 {
 	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode());
+	m_pStateMachine->SetState(m_pStates.pIdle.get());
+	m_OnPlate = false;
 }
 
 void dae::BurgerIngredient::PlateEnter()
 {
 	m_OnPlate = true;
+	m_pCurrentGameMode->AddIngredient();
 }
 
 void dae::BurgerIngredient::OnBeginOverlap(const CollisionHit& hit)
 {
-	if (m_OnPlate)
-		return;
+	IngredientState* pState{ dynamic_cast<IngredientState*>(&m_pStateMachine->GetCurrent()) };
+	if (pState)
+		pState->OnBeginOverlap(hit);
 
-	int i{};
-	const auto& colliders{ m_pRigidBody->GetColliders() };
-	const int numColliders{ static_cast<int>(colliders.size()) };
-	for (int index{ 1 }; index <= numColliders; ++index)
-	{
-		const bool isValidCollider{ index < numColliders };
-		if (isValidCollider && hit.pCollider == colliders[index])
-		{
-			i = index;
-			break;
-		}
-		else if (!isValidCollider)
-			return;
-	}
-
-	int tileFlag{ 1 << i };
-	const bool alreadyTriggered{ static_cast<bool>(m_WalkedOnTilesFlags & tileFlag) };
-	const bool isFirstTrigger{ i == 1 };
-	const CollisionLayer collidingLayer{ hit.pOtherCollider->GetCollisionLayer() };
-	TransformComponent& transform{ hit.pCollider->GetOwner()->GetTransform() };
-	const glm::vec3 pos{ transform.GetLocalPosition() };
-	ColliderComponent* pCollider{ m_pRigidBody->GetCollider(0) };
-
-	if (!alreadyTriggered && collidingLayer == BurgerTime::PLAYER_COLLISION_LAYER)
-	{
-		transform.SetLocalPosition(glm::vec3{ pos.x, 2.f, pos.z });
-		m_WalkedOnTilesFlags |= tileFlag;
-
-		if (m_WalkedOnTilesFlags == m_AllFlags)
-		{
-			pCollider->SetTrigger(true);
-			Fall();
-		}
-		else
-			m_pOverlapSound->Play();
-	}
-	else if (isFirstTrigger && collidingLayer == BurgerTime::INGREDIENT_COLLISION_LAYER
-		&& pos.y < hit.pOther->GetTransform().GetWorldPosition().y)
-	{
-		hit.pOtherCollider->SetTrigger(true);
-		BurgerIngredient::GetFromCollider(hit.pOtherCollider)->Fall();
-
-		Reset();
-	}
+	//if (m_OnPlate)
+	//	return;
+	//
+	//int i{};
+	//const auto& colliders{ m_pRigidBody->GetColliders() };
+	//const int numColliders{ static_cast<int>(colliders.size()) };
+	//for (int index{ 1 }; index <= numColliders; ++index)
+	//{
+	//	const bool isValidCollider{ index < numColliders };
+	//	if (isValidCollider && hit.pCollider == colliders[index])
+	//	{
+	//		i = index;
+	//		break;
+	//	}
+	//	else if (!isValidCollider)
+	//		return;
+	//}
+	//
+	//int tileFlag{ 1 << i };
+	//const bool alreadyTriggered{ static_cast<bool>(m_WalkedOnTilesFlags & tileFlag) };
+	//const bool isFirstTrigger{ i == 1 };
+	//const CollisionLayer collidingLayer{ hit.pOtherCollider->GetCollisionLayer() };
+	//TransformComponent& transform{ hit.pCollider->GetOwner()->GetTransform() };
+	//const glm::vec3 pos{ transform.GetLocalPosition() };
+	//ColliderComponent* pCollider{ m_pRigidBody->GetCollider(0) };
+	//
+	//if (!alreadyTriggered && collidingLayer == BurgerTime::PLAYER_COLLISION_LAYER)
+	//{
+	//	transform.SetLocalPosition(glm::vec3{ pos.x, 2.f, pos.z });
+	//	m_WalkedOnTilesFlags |= tileFlag;
+	//
+	//	if (m_WalkedOnTilesFlags == m_AllFlags)
+	//	{
+	//		pCollider->SetTrigger(true);
+	//		Fall();
+	//	}
+	//	else
+	//		m_pOverlapSound->Play();
+	//}
+	//else if (isFirstTrigger && collidingLayer == BurgerTime::INGREDIENT_COLLISION_LAYER
+	//	&& pos.y < hit.pOther->GetTransform().GetWorldPosition().y)
+	//{
+	//	hit.pOtherCollider->SetTrigger(true);
+	//	BurgerIngredient::GetFromCollider(hit.pOtherCollider)->Fall();
+	//
+	//	Reset();
+	//}
 }
 
 void dae::BurgerIngredient::OnEndOverlap(const CollisionHit& hit)
 {
-	ColliderComponent* pCollider{ m_pRigidBody->GetCollider(0) };
-	const CollisionLayer collidingLayer{ hit.pOtherCollider->GetCollisionLayer() };
-	if (collidingLayer == BurgerTime::LEVEL_COLLISION_LAYER)
-	{
-		pCollider->SetTrigger(false);
-		Reset();
-	}
+	IngredientState* pState{ dynamic_cast<IngredientState*>(&m_pStateMachine->GetCurrent()) };
+	if (pState)
+		pState->OnEndOverlap(hit);
 }
 
 void dae::BurgerIngredient::Reset()

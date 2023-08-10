@@ -16,9 +16,10 @@ namespace dae
 	class SceneManager final : public Singleton<SceneManager>
 	{
 	public:
-		Scene& CreateScene(const std::string& name);
-		Scene& LoadSceneByIndex(size_t index);
-		Scene& LoadScene(const std::filesystem::path& file);
+		Scene& CreateScene(const std::string& name, bool openOnLoad);
+		Scene& OpenSceneByIndex(size_t index);
+		Scene& OpenSceneByIndex(size_t index, const std::function<void(Scene& scene)>& fnOnLoaded);
+		size_t LoadScene(const std::filesystem::path& file, bool openOnLoad = false);
 		void SaveScene(Scene& scene, const std::filesystem::path& file);
 
 		void Update();
@@ -27,6 +28,8 @@ namespace dae
 		void HandleObjectsLifeTime();
 
 		Scene* GetCurrent() { return m_scenes[m_CurrentSceneIndex].get(); }
+		size_t GetCount()const { return m_scenes.size(); }
+		size_t GetCurrentIndex()const { return m_CurrentSceneIndex; }
 
 		ComponentFactory* GetComponentFactory();
 		SceneDelegate& GetOnSceneLoaded();
@@ -40,6 +43,7 @@ namespace dae
 		std::unique_ptr<ComponentFactory> m_pComponentFactory;
 		size_t m_CurrentSceneIndex{ 0 };
 		size_t m_NextScene{ 0 };
+		std::function<void(Scene& scene)> m_fnOnSceneLoaded{nullptr};
 		std::unique_ptr<SceneDelegate> m_pOnSceneLoaded;
 		std::unique_ptr<SceneDelegate> m_pOnSceneUnloaded;
 	};
