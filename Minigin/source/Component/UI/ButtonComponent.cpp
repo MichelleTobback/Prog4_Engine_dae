@@ -7,6 +7,7 @@
 #include "Renderer/Renderer.h"
 #include "Managers/ServiceLocator.h"
 #include "Component/CameraComponent.h"
+#include "Component/InputHandlerComponent.h"
 
 dae::ButtonComponent::ButtonComponent(GameObject* pOwner, const glm::vec2& size)
 	: Component(pOwner)
@@ -18,23 +19,48 @@ dae::ButtonComponent::ButtonComponent(GameObject* pOwner, const glm::vec2& size)
 	m_pQuad = GetOwner()->AddComponent<QuadComponent>(size, m_DefaultLayout.color);
 	m_pQuadRenderer = GetOwner()->AddComponent<QuadRendererComponent>(m_pQuad);
 	m_pSpriteRenderer = GetOwner()->AddComponent<SpriteRenderComponent>(m_DefaultLayout.pSprite);
+
+	auto& input{ GetOwner()->AddComponent<InputHandlerComponent>()->GetHandler() };
+	{
+		auto& commandBinding{ input.AddAxisBinding(0) };
+		dae::InputCommand::ICDevices binding{};
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::MouseMoved, true);
+		commandBinding.Add({}, binding);
+		input.BindAxisCommand(0, InputCommand::AxisCommand::Create(this, &ButtonComponent::OnMouseMoved));
+	}
+	{
+		auto& commandBinding{ input.AddActionBinding(1) };
+		dae::InputCommand::ICDevices& binding{ commandBinding.deviceBinding };
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::MouseButton, true);
+		binding.mouse.button = Mouse::MouseButton::Left;
+		binding.mouse.state = Mouse::MouseButtonState::Pressed;
+		input.BindActionCommand(1, ActionCommand::Create(this, &ButtonComponent::OnPressed));
+	}
+	{
+		auto& commandBinding{ input.AddActionBinding(2) };
+		dae::InputCommand::ICDevices& binding{ commandBinding.deviceBinding };
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::MouseButton, true);
+		binding.mouse.button = Mouse::MouseButton::Left;
+		binding.mouse.state = Mouse::MouseButtonState::Released;
+		input.BindActionCommand(2, ActionCommand::Create(this, &ButtonComponent::OnReleased));
+	}
 }
 
 void dae::ButtonComponent::Awake()
 {
-	Input::InputActionCommand actionCommand{ ActionCommand::Create(this, &ButtonComponent::OnPressed) };
-	BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::MouseButton, true);
-	actionCommand.Mouse.button = Mouse::MouseButton::Left;
-	actionCommand.Mouse.state = Mouse::MouseButtonState::Pressed;
-	Input::GetInstance().AddActionCommand(actionCommand);
-
-	actionCommand = ActionCommand::Create(this, &ButtonComponent::OnReleased);
-	actionCommand.Mouse.state = Mouse::MouseButtonState::Released;
-	Input::GetInstance().AddActionCommand(actionCommand);
-
-	Input::InputAxisCommand axisCommand{ ValueCommand<glm::vec2>::Create(&ButtonComponent::OnMouseMoved, this) };
-	BitFlag::Set(axisCommand.flags, Input::InputCommandFlag::MouseMoved, true);
-	Input::GetInstance().AddAxisCommand(axisCommand);
+	//Input::InputActionCommand actionCommand{ ActionCommand::Create(this, &ButtonComponent::OnPressed) };
+	//BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::MouseButton, true);
+	//actionCommand.Mouse.button = Mouse::MouseButton::Left;
+	//actionCommand.Mouse.state = Mouse::MouseButtonState::Pressed;
+	//Input::GetInstance().AddActionCommand(actionCommand);
+	//
+	//actionCommand = ActionCommand::Create(this, &ButtonComponent::OnReleased);
+	//actionCommand.Mouse.state = Mouse::MouseButtonState::Released;
+	//Input::GetInstance().AddActionCommand(actionCommand);
+	//
+	//Input::InputAxisCommand axisCommand{ ValueCommand<glm::vec2>::Create(&ButtonComponent::OnMouseMoved, this) };
+	//BitFlag::Set(axisCommand.flags, Input::InputCommandFlag::MouseMoved, true);
+	//Input::GetInstance().AddAxisCommand(axisCommand);
 }
 
 void dae::ButtonComponent::Update()

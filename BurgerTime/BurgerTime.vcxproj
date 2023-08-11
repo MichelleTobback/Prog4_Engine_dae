@@ -169,6 +169,7 @@
     <ClCompile Include="source\Editor\BurgerTimeLevelPanel.cpp" />
     <ClCompile Include="source\Editor\Editor.cpp" />
     <ClCompile Include="source\Editor\SceneGraphPanel.cpp" />
+    <ClCompile Include="source\HighScoreSerializer.cpp" />
     <ClCompile Include="source\Main.cpp" />
     <ClCompile Include="source\Prefabs.cpp" />
     <ClCompile Include="source\States\CharacterState.cpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="source\States\Ingredients\IngredientFallState.cpp" />
     <ClCompile Include="source\States\Ingredients\IngredientIdleState.cpp" />
     <ClCompile Include="source\States\Ingredients\IngredientInPlateState.cpp" />
+    <ClCompile Include="source\States\Menu\MainMenuState.cpp" />
     <ClCompile Include="source\States\SpriteAnim\CharacterAnimStates.cpp" />
     <ClCompile Include="source\States\SpriteAnim\SpriteAnimState.cpp" />
   </ItemGroup>
@@ -208,6 +210,7 @@
     <ClInclude Include="source\Editor\BurgerTimeLevelPanel.h" />
     <ClInclude Include="source\Editor\Editor.h" />
     <ClInclude Include="source\Editor\SceneGraphPanel.h" />
+    <ClInclude Include="source\HighScoreSerializer.h" />
     <ClInclude Include="source\Prefabs.h" />
     <ClInclude Include="source\States\CharacterState.h" />
     <ClInclude Include="source\States\Enemy\EnemyAttackState.h" />

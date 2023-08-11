@@ -7,6 +7,7 @@
 #include "Managers/SceneManager.h"
 #include "States/GameModes/BTGameMode.h"
 #include "States/GameModes/BTSinglePlayerGameMode.h"
+#include "Core/BitFlag.h"
 
 size_t dae::BurgerTime::CreateAnimClip(SpriteAtlasComponent* pAtlas, SpriteAnimatorComponent* pAnimator, const glm::u32vec4& rect, bool flip, float spriteSize, float speed)
 {
@@ -46,49 +47,31 @@ bool dae::BurgerTime::IsIngredient(SpawnID id)
 
 void dae::BurgerTime::CreateDebugInput()
 {
-    static int current{};
+    auto& input{ Input::GetInstance().GetCommandHandler() };
     {
-        Input::InputActionCommand actionCommand{ ActionCommand([]()
-            {
-                if (current != 0)
-                {
-                    current = 0;
-                    GameState::GetInstance().SetGameMode(std::make_shared<BTSinglePlayerGameMode>(current));
-                }
-            }) };
-        BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
-        actionCommand.Keyboard.Key = Keyboard::KeyCode::Num_1;
-        actionCommand.Keyboard.State = Keyboard::KeyState::Pressed;
-        Input::GetInstance().AddActionCommand(actionCommand);
+        auto& commandBinding{ input.AddValueBinding(static_cast<uint32_t>(InputID::ChangeScene)) };
+        dae::InputCommand::ICDevices binding{ };
+        BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
+        binding.keyboard.Key = Keyboard::KeyCode::Num_1;
+        binding.keyboard.State = Keyboard::KeyState::Pressed;
+        commandBinding.Add(0.f, binding);
+
+        binding.keyboard.Key = Keyboard::KeyCode::Num_2;
+        commandBinding.Add(1.f, binding);
+
+        binding.keyboard.Key = Keyboard::KeyCode::Num_3;
+        commandBinding.Add(2.f, binding);
     }
-    {
-        Input::InputActionCommand actionCommand{ ActionCommand([]()
+    input.BindValueCommand(static_cast<uint32_t>(BurgerTime::InputID::ChangeScene), std::make_shared<InputCommand::ScalarCommand>([](float i)
+        {
+            static int current{-1};
+            int index{ static_cast<int>(i) };
+            if (current != index)
             {
-                if (current != 1)
-                {
-                    current = 1;
-                    GameState::GetInstance().SetGameMode(std::make_shared<BTSinglePlayerGameMode>(current));
-                }
-            }) };
-        BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
-        actionCommand.Keyboard.Key = Keyboard::KeyCode::Num_2;
-        actionCommand.Keyboard.State = Keyboard::KeyState::Pressed;
-        Input::GetInstance().AddActionCommand(actionCommand);
-    }
-    {
-        Input::InputActionCommand actionCommand{ ActionCommand([]()
-            {
-                if (current != 2)
-                {
-                    current = 2;
-                    GameState::GetInstance().SetGameMode(std::make_shared<BTSinglePlayerGameMode>(current));
-                }
-            }) };
-        BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
-        actionCommand.Keyboard.Key = Keyboard::KeyCode::Num_3;
-        actionCommand.Keyboard.State = Keyboard::KeyState::Pressed;
-        Input::GetInstance().AddActionCommand(actionCommand);
-    }
+                current = index;
+                GameState::GetInstance().SetGameMode(std::make_shared<BTSinglePlayerGameMode>(index));
+            }
+        }));
 }
 
 void dae::BurgerTime::OpenMenu()
@@ -97,4 +80,46 @@ void dae::BurgerTime::OpenMenu()
 
 void dae::BurgerTime::OpenLevel()
 {
+}
+
+void dae::BurgerTime::CreateInputBindings()
+{
+    auto& input{ Input::GetInstance().GetCommandHandler() };
+    //Move
+    {
+        auto& commandBinding{ input.AddAxisBinding(static_cast<uint32_t>(InputID::Move)) };
+        dae::InputCommand::ICDevices binding{};
+        BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
+        binding.keyboard.Key = Keyboard::KeyCode::A;
+        binding.keyboard.State = Keyboard::KeyState::Down;
+        BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, true);
+        binding.controller.Button = dae::Controller::ControllerButton::DPadLeft;
+        binding.controller.ButtonState = dae::Controller::ControllerButtonState::Pressed;
+        binding.controller.ControllerID = 0;
+        commandBinding.Add({ -1.f, 0.f }, binding);
+
+        binding.keyboard.Key = Keyboard::KeyCode::D;
+        binding.controller.Button = dae::Controller::ControllerButton::DPadRight;
+        commandBinding.Add({ 1.f, 0.f }, binding);
+
+        binding.keyboard.Key = Keyboard::KeyCode::W;
+        binding.controller.Button = dae::Controller::ControllerButton::DPadUp;
+        commandBinding.Add({ 0.f, -1.f }, binding);
+
+        binding.keyboard.Key = Keyboard::KeyCode::S;
+        binding.controller.Button = dae::Controller::ControllerButton::DPadDown;
+        commandBinding.Add({ 0.f, 1.f }, binding);
+    }   
+    //Throw
+    {
+        auto& commandBinding{ input.AddActionBinding(static_cast<uint32_t>(InputID::Throw)) };
+        dae::InputCommand::ICDevices& binding{ commandBinding.deviceBinding };
+        BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
+        binding.keyboard.Key = Keyboard::KeyCode::P;
+        binding.keyboard.State = Keyboard::KeyState::Pressed;
+        BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, true);
+        binding.controller.Button = dae::Controller::ControllerButton::ButtonA;
+        binding.controller.ButtonState = dae::Controller::ControllerButtonState::Down;
+        binding.controller.ControllerID = 0;
+    }
 }

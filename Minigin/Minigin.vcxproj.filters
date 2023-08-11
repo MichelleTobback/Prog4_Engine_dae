@@ -288,6 +288,12 @@
     <ClInclude Include="source\Core\Memory\Allocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\Input\InputCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Component\InputHandlerComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rdParty\imgui-master\imgui.cpp">
@@ -465,6 +471,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Core\Memory\Allocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Input\InputCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Component\InputHandlerComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

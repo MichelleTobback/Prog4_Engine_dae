@@ -94,7 +94,8 @@ dae::BurgerIngredient* dae::BurgerIngredient::GetFromCollider(ColliderComponent*
 
 void dae::BurgerIngredient::AddReward()
 {
-	++m_Reward;
+	m_pCurrentGameMode->GetScore() += m_Reward;
+	AddBonus();
 }
 
 int dae::BurgerIngredient::GetWalkedFlags() const
@@ -126,53 +127,8 @@ void dae::BurgerIngredient::OnBeginOverlap(const CollisionHit& hit)
 	if (pState)
 		pState->OnBeginOverlap(hit);
 
-	//if (m_OnPlate)
-	//	return;
-	//
-	//int i{};
-	//const auto& colliders{ m_pRigidBody->GetColliders() };
-	//const int numColliders{ static_cast<int>(colliders.size()) };
-	//for (int index{ 1 }; index <= numColliders; ++index)
-	//{
-	//	const bool isValidCollider{ index < numColliders };
-	//	if (isValidCollider && hit.pCollider == colliders[index])
-	//	{
-	//		i = index;
-	//		break;
-	//	}
-	//	else if (!isValidCollider)
-	//		return;
-	//}
-	//
-	//int tileFlag{ 1 << i };
-	//const bool alreadyTriggered{ static_cast<bool>(m_WalkedOnTilesFlags & tileFlag) };
-	//const bool isFirstTrigger{ i == 1 };
-	//const CollisionLayer collidingLayer{ hit.pOtherCollider->GetCollisionLayer() };
-	//TransformComponent& transform{ hit.pCollider->GetOwner()->GetTransform() };
-	//const glm::vec3 pos{ transform.GetLocalPosition() };
-	//ColliderComponent* pCollider{ m_pRigidBody->GetCollider(0) };
-	//
-	//if (!alreadyTriggered && collidingLayer == BurgerTime::PLAYER_COLLISION_LAYER)
-	//{
-	//	transform.SetLocalPosition(glm::vec3{ pos.x, 2.f, pos.z });
-	//	m_WalkedOnTilesFlags |= tileFlag;
-	//
-	//	if (m_WalkedOnTilesFlags == m_AllFlags)
-	//	{
-	//		pCollider->SetTrigger(true);
-	//		Fall();
-	//	}
-	//	else
-	//		m_pOverlapSound->Play();
-	//}
-	//else if (isFirstTrigger && collidingLayer == BurgerTime::INGREDIENT_COLLISION_LAYER
-	//	&& pos.y < hit.pOther->GetTransform().GetWorldPosition().y)
-	//{
-	//	hit.pOtherCollider->SetTrigger(true);
-	//	BurgerIngredient::GetFromCollider(hit.pOtherCollider)->Fall();
-	//
-	//	Reset();
-	//}
+	if (hit.pOtherCollider->GetCollisionLayer() == BurgerTime::ENEMY_COLLISION_LAYER)
+		++m_OverlappedEnemies;
 }
 
 void dae::BurgerIngredient::OnEndOverlap(const CollisionHit& hit)
@@ -180,6 +136,19 @@ void dae::BurgerIngredient::OnEndOverlap(const CollisionHit& hit)
 	IngredientState* pState{ dynamic_cast<IngredientState*>(&m_pStateMachine->GetCurrent()) };
 	if (pState)
 		pState->OnEndOverlap(hit);
+
+	if (hit.pOtherCollider->GetCollisionLayer() == BurgerTime::ENEMY_COLLISION_LAYER)
+		--m_OverlappedEnemies;
+}
+
+void dae::BurgerIngredient::AddBonus()
+{
+	static const uint32_t bonuses[] = { 0, 500, 100, 200, 400, 800, 1600 };
+
+	if (m_OverlappedEnemies >= 1 && m_OverlappedEnemies <= 6)
+	{
+		m_pCurrentGameMode->GetScore() += bonuses[m_OverlappedEnemies];
+	}
 }
 
 void dae::BurgerIngredient::Reset()

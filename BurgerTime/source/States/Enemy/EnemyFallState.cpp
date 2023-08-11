@@ -28,7 +28,7 @@ void dae::EnemyFallState::OnEnter()
 dae::State::StatePtr dae::EnemyFallState::OnUpdate()
 {
     auto pRigidBody{ GetEnemy()->GetOverlappedBurger() };
-    if (pRigidBody->GetVelocity().y < 0.001f)
+    if (!pRigidBody || pRigidBody->GetVelocity().y < 0.001f)
         return GetEnemy()->GetStates().pGoToPlayerState.get();
 
     GetCharacter().pController->Move({ 0.f, 1.f });

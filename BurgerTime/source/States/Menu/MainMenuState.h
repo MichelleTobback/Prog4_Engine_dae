@@ -17,7 +17,5 @@ namespace dae
 		virtual void OnEnter() override;
 		virtual StatePtr OnUpdate() override;
 		virtual void OnExit() override;
-
-	protected:
 	};
 }

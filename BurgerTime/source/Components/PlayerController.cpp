@@ -9,6 +9,8 @@
 #include "Components/CharacterAnimationController.h"
 #include "HealthComponent.h"
 
+#include "Component/InputHandlerComponent.h"
+#include "BurgerTime.h"
 #include "Prefabs.h"
 
 dae::PlayerController::PlayerController(GameObject* pOwner, CharacterController2D* pCharactarerController, int controllerIndex)
@@ -16,51 +18,47 @@ dae::PlayerController::PlayerController(GameObject* pOwner, CharacterController2
 	, m_pCharacterController{ pCharactarerController }
 	, m_ControllerIndex{ controllerIndex }
 {
-	//Movement
+	auto& input{ GetOwner()->AddComponent<InputHandlerComponent>()->GetHandler() };
+	//Move
 	{
-		glm::vec2 dir{ -1.f, 0.f };
-		Input::InputValueCommand<glm::vec2> actionCommand{ ValueCommand<glm::vec2>::Create(&CharacterController2D::Move, m_pCharacterController) };
-		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
-		actionCommand.value = dir;
-		actionCommand.Keyboard.Key = Keyboard::KeyCode::A;
-		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
-		Input::GetInstance().AddAxisCommand(actionCommand);
-	}
-	{
-		glm::vec2 dir{ 1.f, 0.f };
-		Input::InputValueCommand<glm::vec2> actionCommand{ ValueCommand<glm::vec2>::Create(&CharacterController2D::Move, m_pCharacterController) };
-		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
-		actionCommand.value = dir;
-		actionCommand.Keyboard.Key = Keyboard::KeyCode::D;
-		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
-		Input::GetInstance().AddAxisCommand(actionCommand);
-	}
-	{
-		glm::vec2 dir{ 0.f, 1.f };
-		Input::InputValueCommand<glm::vec2> actionCommand{ ValueCommand<glm::vec2>::Create(&CharacterController2D::Move, m_pCharacterController) };
-		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
-		actionCommand.value = dir;
-		actionCommand.Keyboard.Key = Keyboard::KeyCode::S;
-		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
-		Input::GetInstance().AddAxisCommand(actionCommand);
-	}
-	{
-		glm::vec2 dir{ 0.f, -1.f };
-		Input::InputValueCommand<glm::vec2> actionCommand{ ValueCommand<glm::vec2>::Create(&CharacterController2D::Move, m_pCharacterController) };
-		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
-		actionCommand.value = dir;
-		actionCommand.Keyboard.Key = Keyboard::KeyCode::W;
-		actionCommand.Keyboard.State = Keyboard::KeyState::Down;
-		Input::GetInstance().AddAxisCommand(actionCommand);
-	}
+		auto& commandBinding{ input.AddAxisBinding(static_cast<uint32_t>(BurgerTime::InputID::Move)) };
+		dae::InputCommand::ICDevices binding{};
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
+		binding.keyboard.Key = Keyboard::KeyCode::A;
+		binding.keyboard.State = Keyboard::KeyState::Down;
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, true);
+		binding.controller.Button = dae::Controller::ControllerButton::DPadLeft;
+		binding.controller.ButtonState = dae::Controller::ControllerButtonState::Pressed;
+		binding.controller.ControllerID = 0;
+		commandBinding.Add({ -1.f, 0.f }, binding);
 
-	{
-		Input::InputActionCommand actionCommand{ ActionCommand::Create(this, &PlayerController::ThrowPepper) };
-		BitFlag::Set(actionCommand.flags, Input::InputCommandFlag::Keyboard, true);
-		actionCommand.Keyboard.Key = Keyboard::KeyCode::P;
-		actionCommand.Keyboard.State = Keyboard::KeyState::Pressed;
-		Input::GetInstance().AddActionCommand(actionCommand);
+		binding.keyboard.Key = Keyboard::KeyCode::D;
+		binding.controller.Button = dae::Controller::ControllerButton::DPadRight;
+		commandBinding.Add({ 1.f, 0.f }, binding);
+
+		binding.keyboard.Key = Keyboard::KeyCode::W;
+		binding.controller.Button = dae::Controller::ControllerButton::DPadUp;
+		commandBinding.Add({ 0.f, -1.f }, binding);
+
+		binding.keyboard.Key = Keyboard::KeyCode::S;
+		binding.controller.Button = dae::Controller::ControllerButton::DPadDown;
+		commandBinding.Add({ 0.f, 1.f }, binding);
+
+		input.BindAxisCommand(static_cast<uint32_t>(BurgerTime::InputID::Move), InputCommand::AxisCommand::Create(m_pCharacterController, &CharacterController2D::Move));
 	}
+	//Throw
+	{
+		auto& commandBinding{ input.AddActionBinding(static_cast<uint32_t>(BurgerTime::InputID::Throw)) };
+		dae::InputCommand::ICDevices& binding{ commandBinding.deviceBinding };
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
+		binding.keyboard.Key = Keyboard::KeyCode::P;
+		binding.keyboard.State = Keyboard::KeyState::Released;
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, true);
+		binding.controller.Button = dae::Controller::ControllerButton::ButtonA;
+		binding.controller.ButtonState = dae::Controller::ControllerButtonState::Down;
+		binding.controller.ControllerID = 0;
+		input.BindActionCommand(static_cast<uint32_t>(BurgerTime::InputID::Throw), ActionCommand::Create(this, &PlayerController::ThrowPepper));
+	}	
 
 	m_pDamageSound = std::make_unique<AudioClip>("Sounds/04_Lose_Life.mp3");
 }

@@ -126,6 +126,12 @@
     <ClCompile Include="source\States\Ingredients\IngredientInPlateState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\HighScoreSerializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\States\Menu\MainMenuState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Components\PlayerController.h">
@@ -240,6 +246,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\States\Ingredients\IngredientInPlateState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\HighScoreSerializer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

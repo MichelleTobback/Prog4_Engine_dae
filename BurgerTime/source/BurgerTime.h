@@ -31,6 +31,11 @@ namespace dae
 			Level1, Level2, Level3
 		};
 
+		enum class InputID
+		{
+			Move, Throw, ChangeScene
+		};
+
 		// * rect.x, rect.y = spritestart pos
 		// * rect.z, rect.w = num cols, num rows
 		// * spriteSize	= pixel width/height of sprite
@@ -40,6 +45,8 @@ namespace dae
 		static void CreateDebugInput();
 		static void OpenMenu();
 		static void OpenLevel();
+
+		static void CreateInputBindings();
 
 	private:
 		BurgerTime() = default;

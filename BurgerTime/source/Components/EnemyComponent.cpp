@@ -16,6 +16,8 @@
 #include "States/Enemy/EnemyAttackState.h"
 #include "States/Enemy/EnemyStunnedState.h"
 
+#include "Components/BurgerIngredient.h"
+
 dae::EnemyComponent::EnemyComponent(GameObject* pOwner, CharacterInfoComponent* pCharacter, uint32_t reward)
 	: Component(pOwner), m_pCharacter{pCharacter}, m_Reward{reward}
 {
@@ -78,7 +80,7 @@ void dae::EnemyComponent::OnEndOverlap(const CollisionHit& hit)
     CollisionLayer overlappedLayer{ hit.pOtherCollider->GetCollisionLayer() };
     if (overlappedLayer == BurgerTime::INGREDIENT_COLLISION_LAYER)
     {
-        //m_pOverlappedBurger = nullptr;
+        m_pOverlappedBurger = nullptr;
     }
     else if (overlappedLayer == BurgerTime::LEVEL_COLLISION_LAYER)
     {

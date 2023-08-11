@@ -43,6 +43,7 @@ namespace dae
 
 		bool IsOnPlate() const { return m_OnPlate; }
 		void AddReward();
+		void AddBonus();
 
 	protected:
 		int GetWalkedFlags() const;
@@ -57,11 +58,13 @@ namespace dae
 		IngredientType m_Type;
 		RigidBody2DComponent* m_pRigidBody;
 		const float m_TileSize{ 8.f };
-		const int m_Length{ 4 }; //in tiles
+		const int m_Length{ 4 };
 		int m_WalkedOnTilesFlags{ 0 }, m_AllFlags{0};
 		bool m_OnPlate{ false };
 		uint32_t m_Reward;
 		BTGameMode* m_pCurrentGameMode{ nullptr };
+
+		uint32_t m_OverlappedEnemies{};
 
 		IngredientStates m_pStates{};
 		StateMachine* m_pStateMachine{ nullptr };

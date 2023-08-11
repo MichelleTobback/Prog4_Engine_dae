@@ -29,6 +29,7 @@
 
 void load()
 {
+	dae::BurgerTime::CreateInputBindings();
 	dae::BurgerTime::CreateDebugInput();
 
 	auto& sceneManager{ dae::SceneManager::GetInstance() };

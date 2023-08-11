@@ -15,6 +15,8 @@ namespace dae
 		T& Read(T& outValue);
 		template <typename T>
 		void ReadArray(std::vector<T>& pOutData);
+		template <typename T>
+		void ReadArray(T* pOutData, size_t size);
 		std::string& ReadString(std::string& outStr);
 
 		operator bool() const { return (m_In) ? true : false; }
@@ -70,6 +72,18 @@ void dae::BinaryReader::ReadArray(std::vector<T>& pOutData)
 		{
 			pOutData.resize(size);
 			m_In.read(reinterpret_cast<char*>(&pOutData[0]), sizeof(T) * size);
+		}
+	}
+}
+
+template <typename T>
+void dae::BinaryReader::ReadArray(T* pOutData, size_t size)
+{
+	if (m_In)
+	{
+		if (size > 0)
+		{
+			m_In.read(reinterpret_cast<char*>(pOutData), sizeof(T) * size);
 		}
 	}
 }

@@ -219,6 +219,7 @@
     <ClInclude Include="source\Audio\LoggingSoundSystem.h" />
     <ClInclude Include="source\Component\CameraComponent.h" />
     <ClInclude Include="source\Component\CircleComponent.h" />
+    <ClInclude Include="source\Component\InputHandlerComponent.h" />
     <ClInclude Include="source\Component\Physics\CharacterController2D.h" />
     <ClInclude Include="source\Component\Physics\ColliderComponent.h" />
     <ClInclude Include="source\Component\QuadComponent.h" />
@@ -235,6 +236,7 @@
     <ClInclude Include="source\Core\Command.h" />
     <ClInclude Include="source\Core\Delegate.h" />
     <ClInclude Include="source\Core\Memory\Allocator.h" />
+    <ClInclude Include="source\Input\InputCommand.h" />
     <ClInclude Include="source\State\GameState\GameState.h" />
     <ClInclude Include="source\Core\GeometryUtils.h" />
     <ClInclude Include="source\Core\Math.h" />
@@ -289,6 +291,7 @@
     <ClCompile Include="source\Audio\LoggingSoundSystem.cpp" />
     <ClCompile Include="source\Component\CameraComponent.cpp" />
     <ClCompile Include="source\Component\CircleComponent.cpp" />
+    <ClCompile Include="source\Component\InputHandlerComponent.cpp" />
     <ClCompile Include="source\Component\Physics\CharacterController2D.cpp" />
     <ClCompile Include="source\Component\Physics\ColliderComponent.cpp" />
     <ClCompile Include="source\Component\QuadComponent.cpp" />
@@ -303,6 +306,7 @@
     <ClCompile Include="source\Core\BinaryReader.cpp" />
     <ClCompile Include="source\Core\Command.cpp" />
     <ClCompile Include="source\Core\Memory\Allocator.cpp" />
+    <ClCompile Include="source\Input\InputCommand.cpp" />
     <ClCompile Include="source\State\GameState\GameState.cpp" />
     <ClCompile Include="source\Core\GeometryUtils.cpp" />
     <ClCompile Include="source\Core\Random.cpp" />

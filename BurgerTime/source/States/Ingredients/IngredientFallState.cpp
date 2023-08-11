@@ -31,6 +31,8 @@ void dae::IngredientFallState::OnExit()
 	ColliderComponent* pCollider{ GetIngredient().GetRigidBody().GetCollider(0) };
 	pCollider->SetTrigger(false);
 	pCollider->SetCollisionIgnoreLayer(BurgerTime::ENEMY_COLLISION_LAYER, true);
+
+	GetIngredient().AddBonus();
 }
 
 void dae::IngredientFallState::OnBeginOverlap(const CollisionHit& hit)
