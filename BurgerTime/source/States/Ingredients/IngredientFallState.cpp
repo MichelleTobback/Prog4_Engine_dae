@@ -2,6 +2,12 @@
 #include "Components/BurgerIngredient.h"
 #include "Scene/GameObject.h"
 #include "BurgerTime.h"
+#include "Audio/AudioClip.h"
+
+dae::IngredientFallState::IngredientFallState(BurgerIngredient* pIngredient)
+	: IngredientState(pIngredient), m_pFallSound{ std::make_unique<AudioClip>("Sounds/28_jingle.wav") }
+{
+}
 
 void dae::IngredientFallState::OnEnter()
 {
@@ -15,6 +21,8 @@ void dae::IngredientFallState::OnEnter()
 	GetIngredient().GetRigidBody().SetVelociy(glm::vec3{ 0.f, fallSpeed, 0.f });
 
 	m_MinHeight = GetIngredient().GetTransform().GetWorldPosition().y + 16.f;
+
+	m_pFallSound->Play();
 }
 
 dae::State::StatePtr dae::IngredientFallState::OnUpdate()

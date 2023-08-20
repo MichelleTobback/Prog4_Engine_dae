@@ -43,8 +43,7 @@ namespace dae
 		static bool IsIngredient(SpawnID id);
 
 		static void CreateDebugInput();
-		static void OpenMenu();
-		static void OpenLevel();
+		static void LoadScenes();
 
 		static void CreateInputBindings();
 

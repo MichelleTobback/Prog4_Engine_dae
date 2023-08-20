@@ -22,7 +22,8 @@ void dae::TextComponent::Update()
 			static_cast<Uint8>(m_Color.g * 255),
 			static_cast<Uint8>(m_Color.b * 255) 
 		};
-		const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), color);
+		const std::string txt{ (!m_Text.empty()) ? m_Text : " " };
+		const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), txt.c_str(), color);
 		if (surf == nullptr) 
 		{
 			throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());

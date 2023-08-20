@@ -3,11 +3,11 @@
 
 namespace dae
 {
+	class AudioClip;
 	class IngredientFallState : public IngredientState
 	{
 	public:
-		IngredientFallState(BurgerIngredient* pIngredient)
-			: IngredientState(pIngredient) {}
+		IngredientFallState(BurgerIngredient* pIngredient);
 		virtual ~IngredientFallState() = default;
 
 		virtual void OnEnter() override;
@@ -19,5 +19,6 @@ namespace dae
 
 	private:
 		float m_MinHeight{};
+		std::unique_ptr<AudioClip> m_pFallSound;
 	};
 }

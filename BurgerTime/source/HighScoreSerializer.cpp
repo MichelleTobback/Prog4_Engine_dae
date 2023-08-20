@@ -4,7 +4,7 @@
 
 void dae::GameDataSerializer::Serialize(const GameSaveData& data)
 {
-	if (BinaryWriter writer{ "SaveGame.bin" }; writer)
+	if (BinaryWriter writer{ "Content/SaveGame.bin" }; writer)
 	{
 		writer.Write(static_cast<unsigned char>(data.names.size()));
 		for (const auto& name : data.names)
@@ -17,7 +17,7 @@ void dae::GameDataSerializer::Serialize(const GameSaveData& data)
 
 void dae::GameDataSerializer::Deserialize(GameSaveData& data)
 {
-	if (BinaryReader reader{ "SaveGame.bin" }; reader)
+	if (BinaryReader reader{ "Content/SaveGame.bin" }; reader)
 	{
 		unsigned char numNames{};
 		reader.Read(numNames);
@@ -27,7 +27,7 @@ void dae::GameDataSerializer::Deserialize(GameSaveData& data)
 		{
 			reader.ReadString(data.names[i]);
 		}
-		unsigned char size{};
+		int size{};
 		reader.Read(size);
 		reader.ReadArray(&data.hiScores[0], static_cast<size_t>(size));
 	}

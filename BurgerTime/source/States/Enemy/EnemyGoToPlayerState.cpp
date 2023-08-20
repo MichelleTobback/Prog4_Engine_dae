@@ -79,7 +79,7 @@ dae::State::StatePtr dae::EnemyGoToPlayerState::OnUpdate()
 
 void dae::EnemyGoToPlayerState::OnExit()
 {
-    
+    m_pPlayer = nullptr;
 }
 
 void dae::EnemyGoToPlayerState::SetPlayer(CharacterInfoComponent* pPlayer)

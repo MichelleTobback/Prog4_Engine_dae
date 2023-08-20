@@ -7,8 +7,8 @@
 
 #include "BurgerTime.h"
 
-#include "State/GameState/GameState.h"
-#include "States/GameModes/BTGameMode.h"
+#include "States/GameStates/BTGameMode.h"
+#include "GameManager.h"
 
 dae::CharacterAnimationController::CharacterAnimationController(GameObject* pOwner, SpriteAnimatorComponent* pAnimator)
 	: Component(pOwner), m_pAnimator{pAnimator}
@@ -24,10 +24,12 @@ dae::CharacterAnimationController::CharacterAnimationController(GameObject* pOwn
 
 void dae::CharacterAnimationController::Awake()
 {
-	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode());
+	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
 
 	if (!m_pStateMachine)
 		m_pStateMachine = GetOwner()->GetScene()->Instantiate(0u, GetOwner())->AddComponent<StateMachine>(m_pStates[CharacterAnim::WalkDown].get());
+	else
+		m_pStateMachine->SetState(m_pStates[CharacterAnim::WalkDown].get());
 
 	if (!m_pAnimator)
 		m_pAnimator = GetOwner()->GetComponent<SpriteAnimatorComponent>();
@@ -39,6 +41,11 @@ void dae::CharacterAnimationController::Awake()
 	}
 	if (!m_pRigidBody)
 		m_pRigidBody = GetOwner()->GetComponent<RigidBody2DComponent>();
+}
+
+void dae::CharacterAnimationController::Sleep()
+{
+	m_pAnimator->GetClip(static_cast<size_t>(CharacterAnimationController::CharacterAnim::Die)).GetAnimEvent(4).Clear();
 }
 
 dae::SpriteAnimClip& dae::CharacterAnimationController::GetClip(CharacterAnim clip)

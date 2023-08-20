@@ -76,7 +76,6 @@ void dae::ComponentSystem::Clear()
 {
 	for (auto& component : m_Components)
 	{
-		component.second->Sleep();
 		component.second->OnDestroy();
 	}
 	m_Components.clear();

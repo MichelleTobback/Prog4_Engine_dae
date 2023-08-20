@@ -1,7 +1,7 @@
 #pragma once
 #include "Component/Component.h"
 #include "Component/Physics/RigidBody2DComponent.h"
-
+#include "Audio/AudioClip.h"
 #include "States/Ingredients/IngredientState.h"
 
 #include <glm/glm.hpp>
@@ -11,7 +11,6 @@ namespace dae
 {
 	class StateMachine;
 	class BTGameMode;
-	class AudioClip;
 	class RigidBody2DComponent;
 	class SpriteAtlasComponent;
 	class BurgerIngredient : public Component
@@ -68,8 +67,6 @@ namespace dae
 
 		IngredientStates m_pStates{};
 		StateMachine* m_pStateMachine{ nullptr };
-
-		static std::unique_ptr<AudioClip> m_pOverlapSound;
-		static std::unique_ptr<AudioClip> m_pFallSound;
+		std::unique_ptr<AudioClip> m_pBonusSound;
 	};
 }

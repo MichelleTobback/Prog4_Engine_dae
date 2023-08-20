@@ -3,7 +3,7 @@
 #include "Managers/SceneManager.h"
 #include "Managers/PhysicsSystem.h"
 
-#include <stack>
+#include <queue>
 #include <glm/glm.hpp>
 #include <unordered_map>
 
@@ -54,7 +54,7 @@ namespace dae
 		std::string m_Name;
 		GameObjectContainer m_Objects{};
 
-		std::stack<UUID> m_ObjectsPendingDestroy{};
+		std::queue<UUID> m_ObjectsPendingDestroy{};
 
 		std::unique_ptr<PhysicsScene> m_pPhysics;
 		bool m_Running{false};

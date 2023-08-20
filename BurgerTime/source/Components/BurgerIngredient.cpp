@@ -2,30 +2,21 @@
 #include "Scene/Scene.h"
 #include "Component/RenderComponent.h"
 #include "Component/SpriteAtlasComponent.h"
-#include "Audio/AudioClip.h"
-
-#include "State/GameState/GameState.h"
-#include "States/GameModes/BTGameMode.h"
+#include "States/GameStates/BTGameMode.h"
 
 #include "States/Ingredients/IngredientFallState.h"
 #include "States/Ingredients/IngredientIdleState.h"
 #include "States/Ingredients/IngredientInPlateState.h"
 #include "State/StateMachine.h"
+#include "GameManager.h"
 
 #include "BurgerTime.h"
 
-std::unique_ptr<dae::AudioClip> dae::BurgerIngredient::m_pOverlapSound{ nullptr };
-std::unique_ptr<dae::AudioClip> dae::BurgerIngredient::m_pFallSound{nullptr};
-
 dae::BurgerIngredient::BurgerIngredient(GameObject* pOwner, IngredientType type, SpriteAtlasComponent* pSpriteAtlas, RigidBody2DComponent* pRigidBody, uint32_t reward)
 	: Component(pOwner), m_pRigidBody{pRigidBody}, m_Type{type}, m_Reward{reward}
+	, m_pBonusSound{ std::make_unique<AudioClip>("Sounds/06 Bonus.mp3") }
 {
 	glm::vec4 spriteSrc { 112.f, 48.f + m_TileSize * static_cast<int>(type), m_TileSize, m_TileSize};
-
-	if (!m_pOverlapSound)
-		m_pOverlapSound = std::make_unique<AudioClip>("Sounds/13_item1.wav");
-	if (!m_pFallSound)
-		m_pFallSound = std::make_unique<AudioClip>("Sounds/28_jingle.wav");
 
 	for (int i{}; i < m_Length; ++i)
 		m_AllFlags |= (1 << (i + 1));
@@ -76,7 +67,6 @@ void dae::BurgerIngredient::Fall()
 
 		const float fallSpeed{ 60.f };
 		m_pRigidBody->SetVelociy(glm::vec3{ 0.f, fallSpeed, 0.f });
-		m_pFallSound->Play();
 
 		if (m_WalkedOnTilesFlags != m_AllFlags)
 			SetAllTilesTriggered();
@@ -110,7 +100,7 @@ void dae::BurgerIngredient::SetWalkedFlags(int flags)
 
 void dae::BurgerIngredient::Awake()
 {
-	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode());
+	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
 	m_pStateMachine->SetState(m_pStates.pIdle.get());
 	m_OnPlate = false;
 }
@@ -148,6 +138,7 @@ void dae::BurgerIngredient::AddBonus()
 	if (m_OverlappedEnemies >= 1 && m_OverlappedEnemies <= 6)
 	{
 		m_pCurrentGameMode->GetScore() += bonuses[m_OverlappedEnemies];
+		m_pBonusSound->Play();
 	}
 }
 

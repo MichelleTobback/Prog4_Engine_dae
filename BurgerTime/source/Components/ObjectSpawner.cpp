@@ -8,19 +8,35 @@ dae::ObjectSpawner::ObjectSpawner(GameObject* pOwner, uint32_t spawnId)
 {
 }
 
+void dae::ObjectSpawner::Awake()
+{
+	//if (m_pObjectInstance)
+	//	m_pObjectInstance->SetActive(true);
+}
+
+void dae::ObjectSpawner::Sleep()
+{
+	if (m_pObjectInstance)
+	{
+		m_pObjectInstance->Destroy();
+		m_pObjectInstance = nullptr;
+	}
+}
+
 dae::GameObject* dae::ObjectSpawner::Spawn()
 {
 	assert(IsRegistered() && "spawn id is not registered");
 	if (!m_pObjectInstance)
 	{
 		m_pObjectInstance = s_SpawnFuncMap[m_Id](GetScene());
+	}
+	if (m_pObjectInstance)
+	{
 		m_pObjectInstance->GetOnDestroyed() += [this](GameObject*)
 		{
 			m_pObjectInstance = nullptr;
 		};
-	}
-	if (m_pObjectInstance)
-	{
+
 		if (!m_pObjectInstance->IsActive())
 			m_pObjectInstance->SetActive(true);
 		m_pObjectInstance->GetTransform().SetLocalPosition(GetTransform().GetWorldPosition());

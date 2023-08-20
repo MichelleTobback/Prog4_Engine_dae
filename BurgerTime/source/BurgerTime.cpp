@@ -5,9 +5,12 @@
 
 #include "Input/Input.h"
 #include "Managers/SceneManager.h"
-#include "States/GameModes/BTGameMode.h"
-#include "States/GameModes/BTSinglePlayerGameMode.h"
+#include "States/GameStates/BTGameMode.h"
+#include "States/GameStates/BTSinglePlayerGameMode.h"
+#include "Prefabs.h"
+#include "GameManager.h"
 #include "Core/BitFlag.h"
+#include "Managers/ServiceLocator.h"
 
 size_t dae::BurgerTime::CreateAnimClip(SpriteAtlasComponent* pAtlas, SpriteAnimatorComponent* pAnimator, const glm::u32vec4& rect, bool flip, float spriteSize, float speed)
 {
@@ -54,13 +57,13 @@ void dae::BurgerTime::CreateDebugInput()
         BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
         binding.keyboard.Key = Keyboard::KeyCode::Num_1;
         binding.keyboard.State = Keyboard::KeyState::Pressed;
-        commandBinding.Add(0.f, binding);
+        commandBinding.Add(2.f, binding);
 
         binding.keyboard.Key = Keyboard::KeyCode::Num_2;
-        commandBinding.Add(1.f, binding);
+        commandBinding.Add(3.f, binding);
 
         binding.keyboard.Key = Keyboard::KeyCode::Num_3;
-        commandBinding.Add(2.f, binding);
+        commandBinding.Add(4.f, binding);
     }
     input.BindValueCommand(static_cast<uint32_t>(BurgerTime::InputID::ChangeScene), std::make_shared<InputCommand::ScalarCommand>([](float i)
         {
@@ -69,57 +72,47 @@ void dae::BurgerTime::CreateDebugInput()
             if (current != index)
             {
                 current = index;
-                GameState::GetInstance().SetGameMode(std::make_shared<BTSinglePlayerGameMode>(index));
+                GameManager::GetInstance().PushState(std::make_shared<BTSinglePlayerGameMode>(current));
             }
         }));
 }
 
-void dae::BurgerTime::OpenMenu()
+void dae::BurgerTime::LoadScenes()
 {
-}
+    SceneManager& sceneManager{ SceneManager::GetInstance() };
+    //sceneManager.LoadScene("Scenes/MainMenu.scene");
+    Scene& menu{ sceneManager.CreateScene("MainMenu", false) };
+    Prefabs::CreateMenuObject(&menu);
 
-void dae::BurgerTime::OpenLevel()
-{
+    sceneManager.LoadScene("Scenes/BurgerTimeLevel1NoBurger.scene");
+    //sceneManager.LoadScene("Scenes/BurgerTimeLevel2NoBurger.scene");
+    sceneManager.LoadScene("Scenes/BurgerTimeLevel1.scene");
+    sceneManager.LoadScene("Scenes/BurgerTimeLevel2.scene");
+    sceneManager.LoadScene("Scenes/BurgerTimeLevel1NoBurger.scene");
 }
 
 void dae::BurgerTime::CreateInputBindings()
 {
     auto& input{ Input::GetInstance().GetCommandHandler() };
-    //Move
+    //adjust volume
     {
-        auto& commandBinding{ input.AddAxisBinding(static_cast<uint32_t>(InputID::Move)) };
+        auto commandBinding{ input.AddValueBinding() };
         dae::InputCommand::ICDevices binding{};
+        binding.controller.ControllerID = -1;
         BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
-        binding.keyboard.Key = Keyboard::KeyCode::A;
         binding.keyboard.State = Keyboard::KeyState::Down;
-        BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, true);
-        binding.controller.Button = dae::Controller::ControllerButton::DPadLeft;
-        binding.controller.ButtonState = dae::Controller::ControllerButtonState::Pressed;
-        binding.controller.ControllerID = 0;
-        commandBinding.Add({ -1.f, 0.f }, binding);
 
-        binding.keyboard.Key = Keyboard::KeyCode::D;
-        binding.controller.Button = dae::Controller::ControllerButton::DPadRight;
-        commandBinding.Add({ 1.f, 0.f }, binding);
+        binding.keyboard.Key = Keyboard::KeyCode::F10;
+        commandBinding.second->Add(-1.f, binding);
 
-        binding.keyboard.Key = Keyboard::KeyCode::W;
-        binding.controller.Button = dae::Controller::ControllerButton::DPadUp;
-        commandBinding.Add({ 0.f, -1.f }, binding);
+        binding.keyboard.Key = Keyboard::KeyCode::F11;
+        commandBinding.second->Add(1.f, binding);
 
-        binding.keyboard.Key = Keyboard::KeyCode::S;
-        binding.controller.Button = dae::Controller::ControllerButton::DPadDown;
-        commandBinding.Add({ 0.f, 1.f }, binding);
+        input.BindValueCommand(commandBinding.first, std::make_shared<InputCommand::ScalarCommand>([](float value)
+            {
+                SoundSystem& sound{ ServiceLocator::GetSoundSystem() };
+                float volume{ sound.GetMasterVolume() + value};
+                sound.SetMasterVolume(volume);
+            }));
     }   
-    //Throw
-    {
-        auto& commandBinding{ input.AddActionBinding(static_cast<uint32_t>(InputID::Throw)) };
-        dae::InputCommand::ICDevices& binding{ commandBinding.deviceBinding };
-        BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
-        binding.keyboard.Key = Keyboard::KeyCode::P;
-        binding.keyboard.State = Keyboard::KeyState::Pressed;
-        BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, true);
-        binding.controller.Button = dae::Controller::ControllerButton::ButtonA;
-        binding.controller.ButtonState = dae::Controller::ControllerButtonState::Down;
-        binding.controller.ControllerID = 0;
-    }
 }

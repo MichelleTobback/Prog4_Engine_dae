@@ -9,6 +9,12 @@ dae::HealthComponent::HealthComponent(GameObject* pOwner, uint32_t max, uint32_t
 	m_pOnHealthChanged = std::make_unique<Delegate<void(uint32_t)>>();
 }
 
+void dae::HealthComponent::Sleep()
+{
+	m_pOnDeath->Clear();
+	m_pOnHealthChanged->Clear();
+}
+
 uint32_t dae::HealthComponent::DealDamage(uint32_t amount)
 {
 	if (m_CurrentValue > 0)

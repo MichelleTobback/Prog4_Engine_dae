@@ -21,6 +21,9 @@ namespace dae
 		ObjectSpawner& operator=(const ObjectSpawner& other) = delete;
 		ObjectSpawner& operator=(ObjectSpawner&& other) = delete;
 
+		virtual void Awake() override;
+		virtual void Sleep() override;
+
 		GameObject* Spawn();
 		bool IsRegistered() const;
 		uint32_t GetSpawnID() const;

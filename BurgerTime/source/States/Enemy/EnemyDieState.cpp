@@ -1,11 +1,10 @@
 #include "EnemyDieState.h"
 #include "Components/CharacterInfo.h"
 #include "Scene/GameObject.h"
-
 #include "Components/EnemyComponent.h"
 
 dae::EnemyDieState::EnemyDieState(EnemyComponent* pEnemy)
-    : EnemyState(pEnemy)
+    : EnemyState(pEnemy), m_pDieSound{ std::make_unique<AudioClip>("Sounds/15_hit.wav") }
 {
 }
 
@@ -18,6 +17,7 @@ void dae::EnemyDieState::OnEnter()
         m_Layer = pCollider->GetCollisionLayer();
         pCollider->SetCollisionLayer(CollisionLayer::None);
     }
+    m_pDieSound->Play();
 }
 
 dae::State::StatePtr dae::EnemyDieState::OnUpdate()

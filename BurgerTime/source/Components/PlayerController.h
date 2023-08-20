@@ -13,7 +13,7 @@ namespace dae
 	class PlayerController : public Component
 	{
 	public:
-		PlayerController(GameObject* pOwner, CharacterController2D* pCharactarerController, int controllerIndex = -1);
+		PlayerController(GameObject* pOwner, CharacterController2D* pCharactarerController, int controllerIndex = 0, bool useKey = true);
 		virtual ~PlayerController() override = default;
 
 		PlayerController(const PlayerController& other) = delete;

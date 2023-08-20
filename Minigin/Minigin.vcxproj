@@ -230,6 +230,7 @@
     <ClInclude Include="source\Component\SpriteComponent.h" />
     <ClInclude Include="source\Component\TagComponent.h" />
     <ClInclude Include="source\Component\UI\ButtonComponent.h" />
+    <ClInclude Include="source\Component\UI\TextInputComponent.h" />
     <ClInclude Include="source\Component\UUIDComponent.h" />
     <ClInclude Include="source\Core\BinaryReader.h" />
     <ClInclude Include="source\Core\BitFlag.h" />
@@ -237,7 +238,6 @@
     <ClInclude Include="source\Core\Delegate.h" />
     <ClInclude Include="source\Core\Memory\Allocator.h" />
     <ClInclude Include="source\Input\InputCommand.h" />
-    <ClInclude Include="source\State\GameState\GameState.h" />
     <ClInclude Include="source\Core\GeometryUtils.h" />
     <ClInclude Include="source\Core\Math.h" />
     <ClInclude Include="source\Core\Random.h" />
@@ -302,12 +302,12 @@
     <ClCompile Include="source\Component\SpriteComponent.cpp" />
     <ClCompile Include="source\Component\TagComponent.cpp" />
     <ClCompile Include="source\Component\UI\ButtonComponent.cpp" />
+    <ClCompile Include="source\Component\UI\TextInputComponent.cpp" />
     <ClCompile Include="source\Component\UUIDComponent.cpp" />
     <ClCompile Include="source\Core\BinaryReader.cpp" />
     <ClCompile Include="source\Core\Command.cpp" />
     <ClCompile Include="source\Core\Memory\Allocator.cpp" />
     <ClCompile Include="source\Input\InputCommand.cpp" />
-    <ClCompile Include="source\State\GameState\GameState.cpp" />
     <ClCompile Include="source\Core\GeometryUtils.cpp" />
     <ClCompile Include="source\Core\Random.cpp" />
     <ClCompile Include="source\Core\UUID.cpp" />

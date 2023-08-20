@@ -18,6 +18,7 @@ dae::BTTileGridComponent::BTTileGridComponent(GameObject* pOwner, uint32_t cols,
 		pTile = std::make_unique<BTTile>(worldPos, index);
 		++index;
 	}
+	MapGrid();
 }
 
 void dae::BTTileGridComponent::Awake()

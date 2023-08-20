@@ -3,8 +3,8 @@
 #include <memory>
 #include "Scene/Scene.h"
 
-#include "State/GameState/GameState.h"
-#include "States/GameModes/BTGameMode.h"
+#include "States/GameStates/BTGameMode.h"
+#include "GameManager.h"
 
 #include "Components/CharacterAnimationController.h"
 #include "HealthComponent.h"
@@ -13,7 +13,7 @@
 #include "BurgerTime.h"
 #include "Prefabs.h"
 
-dae::PlayerController::PlayerController(GameObject* pOwner, CharacterController2D* pCharactarerController, int controllerIndex)
+dae::PlayerController::PlayerController(GameObject* pOwner, CharacterController2D* pCharactarerController, int controllerIndex, bool useKey)
 	: Component{ pOwner }
 	, m_pCharacterController{ pCharactarerController }
 	, m_ControllerIndex{ controllerIndex }
@@ -23,13 +23,13 @@ dae::PlayerController::PlayerController(GameObject* pOwner, CharacterController2
 	{
 		auto& commandBinding{ input.AddAxisBinding(static_cast<uint32_t>(BurgerTime::InputID::Move)) };
 		dae::InputCommand::ICDevices binding{};
-		BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, useKey);
 		binding.keyboard.Key = Keyboard::KeyCode::A;
 		binding.keyboard.State = Keyboard::KeyState::Down;
-		BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, true);
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, controllerIndex >= 0);
 		binding.controller.Button = dae::Controller::ControllerButton::DPadLeft;
 		binding.controller.ButtonState = dae::Controller::ControllerButtonState::Pressed;
-		binding.controller.ControllerID = 0;
+		binding.controller.ControllerID = m_ControllerIndex;
 		commandBinding.Add({ -1.f, 0.f }, binding);
 
 		binding.keyboard.Key = Keyboard::KeyCode::D;
@@ -50,13 +50,13 @@ dae::PlayerController::PlayerController(GameObject* pOwner, CharacterController2
 	{
 		auto& commandBinding{ input.AddActionBinding(static_cast<uint32_t>(BurgerTime::InputID::Throw)) };
 		dae::InputCommand::ICDevices& binding{ commandBinding.deviceBinding };
-		BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, useKey);
 		binding.keyboard.Key = Keyboard::KeyCode::P;
 		binding.keyboard.State = Keyboard::KeyState::Released;
-		BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, true);
+		BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, controllerIndex >= 0);
 		binding.controller.Button = dae::Controller::ControllerButton::ButtonA;
 		binding.controller.ButtonState = dae::Controller::ControllerButtonState::Down;
-		binding.controller.ControllerID = 0;
+		binding.controller.ControllerID = m_ControllerIndex;
 		input.BindActionCommand(static_cast<uint32_t>(BurgerTime::InputID::Throw), ActionCommand::Create(this, &PlayerController::ThrowPepper));
 	}	
 
@@ -71,18 +71,16 @@ void dae::PlayerController::Awake()
 	pHealth->GetOnHealthChanged() += std::bind(&PlayerController::OnHit, this, std::placeholders::_1);
 
 	CharacterAnimationController* pAnimController{ GetOwner()->GetComponent<CharacterAnimationController>() };
-	//pAnimController->GetClip(CharacterAnimationController::CharacterAnim::Die).GetOnClipEndDelegate() += std::bind(&PlayerController::OnDeath, this);
 	pAnimController->GetClip(CharacterAnimationController::CharacterAnim::Die).GetAnimEvent(4) += std::bind(&PlayerController::OnDeath, this);
 }
 
 void dae::PlayerController::LateUpdate()
 {
-	
 }
 
 void dae::PlayerController::Reset()
 {
-	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode());
+	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
 	if (m_pCurrentGameMode)
 		m_Peppers = m_pCurrentGameMode->GetPlayerMaxPeppers();
 }

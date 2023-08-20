@@ -1,6 +1,6 @@
 #pragma once
 #include "States/Enemy/EnemyState.h"
-
+#include "Audio/AudioClip.h"
 namespace dae
 {
 	enum class CollisionLayer;
@@ -16,5 +16,6 @@ namespace dae
 
 	private:
 		CollisionLayer m_Layer{};
+		std::unique_ptr<AudioClip> m_pDieSound;
 	};
 }

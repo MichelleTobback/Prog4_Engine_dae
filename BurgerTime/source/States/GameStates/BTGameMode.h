@@ -1,22 +1,21 @@
 #pragma once
-#include "State/GameState/GameState.h"
+#include "States/GameStates/GameState.h"
 #include "Components/BTTileGridComponent.h"
 
 namespace dae
 {
+	class CameraComponent;
 	class PlayerController;
-	class BTTileGridComponent;
-	class BTGameMode : public GameMode
+	class BTGameMode : public GameState
 	{
 	public:
-		BTGameMode(size_t level);
+		BTGameMode(size_t lvlIdx);
 		virtual ~BTGameMode() = default;
 
-		virtual void OnEnter() override;
-		virtual StatePtr OnUpdate() override = 0;
-		virtual void OnExit() override;
+		virtual void OnEnter(Scene& scene) override;
+		virtual void OnExit(Scene& scene) override;
 
-		void OnSceneLoaded(Scene*, size_t index);
+		virtual void OnSceneLoaded(Scene*, size_t index);
 		void OnPlayerLostLife();
 		void OnPlayerDeath();
 		void AddIngredient();
@@ -38,18 +37,21 @@ namespace dae
 
 	protected:
 		virtual void StartRound() {}
-		virtual GameObject* CreateHUD() { return nullptr; };
+		virtual GameObject* CreateHUD(Scene&) { return nullptr; };
+		virtual GameObject* CreatePlayer(dae::Scene* pScene);
+		std::vector<BTTile*>& GetPlayerSpawns() { return m_pPlayerSpawns; }
 		void SetMaxPlayerLifes(uint32_t lifes) { m_PlayerMaxLifes = lifes; }
 		void SetMaxPlayerPeppers(uint32_t peppers) { m_PlayerMaxPeppers = peppers; }
 		void LoadLevels();
 		void OpenNextLevel();
 
 	private:
-		void CreateGrid();
+		void CreateGrid(Scene& scene);
 
 		GameObject* m_pLevelRoot{ nullptr };
 		GameObject* m_pHUD{ nullptr };
 		BTTileGridComponent* m_pGrid{nullptr};
+
 		uint32_t m_PlayerMaxLifes{ 3 };
 		uint32_t m_PlayerMaxPeppers{ 5 };
 		uint32_t m_Ingredients{};
@@ -57,6 +59,10 @@ namespace dae
 		static ObservableType<uint32_t> m_Score;
 		std::vector<PlayerController*> m_pPlayers;
 		std::vector<size_t> m_ScenesIndices;
+		std::vector<BTTile*> m_pPlayerSpawns;
 		size_t m_CurrentLevel{};
+		CameraComponent* m_pCamera{ nullptr };
+
+		unsigned short m_MusicId{};
 	};
 }

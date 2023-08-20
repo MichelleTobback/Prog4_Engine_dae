@@ -19,6 +19,24 @@ dae::InputCommand::ICAxisBinding& dae::InputCommand::ICHandler::AddAxisBinding(u
     return *m_AxisCommands[id];
 }
 
+std::pair<uint32_t, dae::InputCommand::ICActionBinding*> dae::InputCommand::ICHandler::AddActionBinding()
+{
+	uint32_t id = FindAvailableID(m_ActionCommands);
+	return std::make_pair(id, &AddActionBinding(id));
+}
+
+std::pair<uint32_t, dae::InputCommand::ICScalarBinding*> dae::InputCommand::ICHandler::AddValueBinding()
+{
+	uint32_t id{ FindAvailableID(m_ValueCommands) };
+	return std::make_pair(id, &AddValueBinding(id));
+}
+
+std::pair <uint32_t, dae::InputCommand::ICAxisBinding*> dae::InputCommand::ICHandler::AddAxisBinding()
+{
+	uint32_t id{ FindAvailableID(m_AxisCommands) };
+	return std::make_pair(id, &AddAxisBinding(id));
+}
+
 void dae::InputCommand::ICHandler::BindActionCommand(uint32_t id, const std::shared_ptr<ActionCommand>& actionCommand)
 {
     auto it{ m_ActionCommands.find(id) };

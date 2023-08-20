@@ -25,7 +25,7 @@ namespace dae
 	public:
 		GameObject(Scene* pScene);
 		GameObject(Scene* pScene, UUID uuid);
-		virtual ~GameObject() = default;
+		virtual ~GameObject();
 
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;

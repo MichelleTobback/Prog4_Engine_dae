@@ -8,7 +8,7 @@
 #endif
 
 #include "Core/Minigin.h"
-#include "State/GameState/GameState.h"
+#include "GameManager.h"
 #include "Prefabs.h"
 #include <iostream>
 
@@ -23,8 +23,8 @@
 #include "Components/NodeComponent.h"
 #include "Components/ObjectSpawner.h"
 
-#include "States/GameModes/BTSinglePlayerGameMode.h"
-#include "States/GameModes/MainMenuGameMode.h"
+#include "States/GameStates/BTSinglePlayerGameMode.h"
+#include "States/GameStates/MainMenuGameMode.h"
 #include "Editor/BTEditorGameMode.h"
 
 void load()
@@ -44,6 +44,14 @@ void load()
 	dae::ObjectSpawner::Register(static_cast<uint32_t>(dae::BurgerTime::SpawnID::MrHotDog), [](dae::Scene* pScene)->dae::GameObject*
 		{
 			return dae::Prefabs::CreateEnemy(dae::Prefabs::CreateMrHotDog(pScene));
+		});
+	dae::ObjectSpawner::Register(static_cast<uint32_t>(dae::BurgerTime::SpawnID::MrPickle), [](dae::Scene* pScene)->dae::GameObject*
+		{
+			return dae::Prefabs::CreateEnemy(dae::Prefabs::CreateMrPickle(pScene));
+		});
+	dae::ObjectSpawner::Register(static_cast<uint32_t>(dae::BurgerTime::SpawnID::MrEgg), [](dae::Scene* pScene)->dae::GameObject*
+		{
+			return dae::Prefabs::CreateEnemy(dae::Prefabs::CreateMrEgg(pScene));
 		});
 	dae::ObjectSpawner::Register(static_cast<uint32_t>(dae::BurgerTime::SpawnID::TopBun), [](dae::Scene* pScene)->dae::GameObject*
 		{
@@ -70,35 +78,12 @@ void load()
 			return dae::Prefabs::CreateBurgerIngredient(pScene, dae::BurgerIngredient::IngredientType::Cheese);
 		});
 
-	auto& gameState{ dae::GameState::GetInstance() };
-	//gameState.SetGameMode(std::make_shared<dae::BTSinglePlayerGameMode>());
-	gameState.SetGameMode(std::make_shared<dae::MainMenuGameMode>());
-	//gameState.SetGameMode(std::make_shared<dae::BTEditorGameMode>());
+	dae::BurgerTime::LoadScenes();
 
-	//auto& scene{ sceneManager.CreateScene("MainMenu") };
-	//auto& scene{ sceneManager.LoadScene("Scenes/TestPath.scene")};
-	//auto& scene{ sceneManager.LoadScene("Scenes/BurgerTimeLevel1.scene") };
-
-	//dae::Prefabs::CreateTestLevel(&scene);
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{24.f, 40.f, 0.f});
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 24.f, 72.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 24.f, 120.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 24.f, 152.f, 0.f });
-	//
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{ 64.f, 8.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 64.f, 88.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 64.f, 120.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 64.f, 152.f, 0.f });
-	//
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{ 112.f, 8.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 112.f, 40.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 112.f, 88.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 112.f, 152.f, 0.f });
-	//
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::TopBun)->GetTransform().Translate(glm::vec3{ 160.f, 8.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Lettuce)->GetTransform().Translate(glm::vec3{ 160.f, 40.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::Patty)->GetTransform().Translate(glm::vec3{ 160.f, 72.f, 0.f });
-	//dae::Prefabs::CreateBurgerIngredient(&scene, dae::BurgerIngredient::IngredientType::BottomBun)->GetTransform().Translate(glm::vec3{ 160.f, 104.f, 0.f });
+	auto& gameManager{ dae::GameManager::GetInstance() };
+	//gameManager.PushState(std::make_shared<dae::BTSinglePlayerGameMode>(2));
+	gameManager.PushState(std::make_shared<dae::MainMenuGameMode>());
+	//gameManager.PushState(std::make_shared<dae::BTEditorGameMode>(2));
 }
 
 int main(int, char* []) 

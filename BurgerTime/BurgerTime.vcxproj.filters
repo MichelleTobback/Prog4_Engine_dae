@@ -63,13 +63,13 @@
     <ClCompile Include="source\Components\ObjectSpawner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\States\GameModes\BTSinglePlayerGameMode.cpp">
+    <ClCompile Include="source\States\GameStates\BTSinglePlayerGameMode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Components\BTTileGridComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\States\GameModes\BTGameMode.cpp">
+    <ClCompile Include="source\States\GameStates\BTGameMode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Components\HealthComponent.cpp">
@@ -111,7 +111,7 @@
     <ClCompile Include="source\Components\PepperComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\States\GameModes\MainMenuGameMode.cpp">
+    <ClCompile Include="source\States\GameStates\MainMenuGameMode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Editor\BTEditorGameMode.cpp">
@@ -130,6 +130,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\States\Menu\MainMenuState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\States\GameStates\HiScoreGameState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\States\GameStates\BTCoopGameMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\States\GameStates\BTVersusGameMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GameManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\States\GameStates\EnterNameMenuState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\States\Enemy\EnemyControlledState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -182,13 +200,13 @@
     <ClInclude Include="source\Components\ObjectSpawner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\States\GameModes\BTSinglePlayerGameMode.h">
+    <ClInclude Include="source\States\GameStates\BTSinglePlayerGameMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\Components\BTTileGridComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\States\GameModes\BTGameMode.h">
+    <ClInclude Include="source\States\GameStates\BTGameMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\Components\HealthComponent.h">
@@ -227,7 +245,7 @@
     <ClInclude Include="source\Components\PepperComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\States\GameModes\MainMenuGameMode.h">
+    <ClInclude Include="source\States\GameStates\MainMenuGameMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\States\Menu\MainMenuState.h">
@@ -249,6 +267,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\HighScoreSerializer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\States\GameStates\HiScoreGameState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\States\GameStates\BTCoopGameMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\States\GameStates\BTVersusGameMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\GameManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\States\StackedStateMachine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\States\GameStates\GameState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\States\GameStates\EnterNameMenuState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\States\Enemy\EnemyControlledState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

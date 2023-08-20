@@ -1,8 +1,8 @@
 #include "SnapToGridComponent.h"
 #include "Component/TransformComponent.h"
 
-#include "State/GameState/GameState.h"
-#include "States/GameModes/BTGameMode.h"
+#include "GameManager.h"
+#include "States/GameStates/BTGameMode.h"
 
 dae::SnapToGridComponent::SnapToGridComponent(GameObject* pOwner, RigidBody2DComponent* pRigidBody)
 	: Component(pOwner), m_pRigidBody{pRigidBody}
@@ -15,7 +15,7 @@ void dae::SnapToGridComponent::Awake()
 
 void dae::SnapToGridComponent::Update()
 {
-	BTGameMode* pGameMode = dynamic_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode());
+	BTGameMode* pGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
 	if (pGameMode)
 	{
 		m_pGrid = &pGameMode->GetGrid();

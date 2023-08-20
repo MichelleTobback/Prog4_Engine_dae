@@ -30,6 +30,7 @@ namespace dae
 		CharacterAnimationController& operator=(CharacterAnimationController&& other) = delete;
 
 		virtual void Awake() override;
+		virtual void Sleep() override;
 
 		template <typename State>
 		void AddState(CharacterAnim id, size_t clipId);

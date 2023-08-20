@@ -1,12 +1,12 @@
 #pragma once
-#include "State/GameState/GameState.h"
+#include "States/GameStates/GameState.h"
 
 namespace dae
 {
-	class BTEditorGameMode final : public GameMode
+	class BTEditorGameMode final : public GameState
 	{
 	public:
-		BTEditorGameMode();
+		BTEditorGameMode(size_t sceneIndex);
 		virtual ~BTEditorGameMode() = default;
 
 		BTEditorGameMode(const BTEditorGameMode& other) = delete;
@@ -14,9 +14,8 @@ namespace dae
 		BTEditorGameMode& operator=(const BTEditorGameMode& other) = delete;
 		BTEditorGameMode& operator=(BTEditorGameMode&& other) = delete;
 
-		virtual void OnEnter() override;
-		virtual StatePtr OnUpdate() override;
-		virtual void OnExit() override;
+		virtual void OnEnter(Scene& scene) override;
+		virtual void OnExit(Scene& scene) override;
 
 	private:
 		size_t m_SceneIndex{};

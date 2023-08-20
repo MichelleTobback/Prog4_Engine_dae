@@ -81,6 +81,10 @@ namespace dae
 			ICScalarBinding& AddValueBinding(uint32_t id);
 			ICAxisBinding& AddAxisBinding(uint32_t id);
 
+			std::pair<uint32_t, ICActionBinding*> AddActionBinding();
+			std::pair<uint32_t, ICScalarBinding*> AddValueBinding();
+			std::pair<uint32_t, ICAxisBinding*> AddAxisBinding();
+
 			void BindActionCommand(uint32_t id, const std::shared_ptr<ActionCommand>& actionCommand);
 			void BindValueCommand(uint32_t id, const std::shared_ptr<ScalarCommand>& valueBinding);
 			void BindAxisCommand(uint32_t id, const std::shared_ptr<AxisCommand>& axisBinding);
@@ -101,6 +105,9 @@ namespace dae
 			bool HandleControllerAxisCommand(ICController& device, Controller* pController);
 			bool HandleKeyboardAxisCommand(ICKeyboard& device, Keyboard* pKeyboard);
 
+			template <typename T>
+			uint32_t FindAvailableID(const std::unordered_map<uint32_t, std::unique_ptr<T>>& commandMap);
+
 			std::unordered_map<uint32_t, std::unique_ptr<ICActionBinding>> m_ActionCommands{};
 			std::unordered_map<uint32_t, std::unique_ptr<ICScalarBinding>> m_ValueCommands{};
 			std::unordered_map<uint32_t, std::unique_ptr<ICAxisBinding>> m_AxisCommands{};
@@ -112,5 +119,15 @@ namespace dae
 			deviceBindings.push_back(std::make_pair(devices, value));
 			return deviceBindings.back().first;
 		}
-	}
+		template<typename T>
+		inline uint32_t ICHandler::FindAvailableID(const std::unordered_map<uint32_t, std::unique_ptr<T>>& commandMap)
+		{
+			int lowestAvailableID{};
+			while (commandMap.find(lowestAvailableID) != commandMap.end()) 
+			{
+				lowestAvailableID++;
+			}
+			return lowestAvailableID;
+		}
+}
 }

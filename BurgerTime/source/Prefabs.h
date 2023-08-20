@@ -21,13 +21,19 @@ namespace dae
 		static GameObject* CreateSinglePlayerHUD(GameObject* pLevelObject, GameObject* pPlayer);
 		static GameObject* CreateTextObject(Scene* pScene, const std::string& text, std::shared_ptr<Font> pFont, const glm::vec4& color);
 
+		//menu
+		static GameObject* CreateMenuObject(Scene* pScene);
+
 		//Scene
 		static GameObject* CreatePepper(Scene* pScene);
 		static GameObject* CreateEnemy(GameObject* pObject);
+		static GameObject* CreateControlledEnemy(GameObject* pObject);
 		static GameObject* CreateMrHotDog(Scene* pScene);
+		static GameObject* CreateMrPickle(Scene* pScene);
+		static GameObject* CreateMrEgg(Scene* pScene);
 		static GameObject* CreateBurgerPlate(Scene* pScene, RigidBody2DComponent* pRigidBody);
 		static GameObject* CreateBurgerIngredient(Scene* pScene, BurgerIngredient::IngredientType type);
-		static GameObject* CreatePeterPepper(Scene* pScene);
+		static GameObject* CreatePeterPepper(Scene* pScene, int index = 0, bool useKey = true);
 		static GameObject* CreateTestLevel(Scene* pScene);
 
 	private:

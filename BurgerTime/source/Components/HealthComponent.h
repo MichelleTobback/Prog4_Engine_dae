@@ -15,6 +15,8 @@ namespace dae
 		HealthComponent& operator=(const HealthComponent& other) = delete;
 		HealthComponent& operator=(HealthComponent&& other) = delete;
 
+		virtual void Sleep() override;
+
 		//returns remaining
 		uint32_t DealDamage(uint32_t amount);
 		void Heal();

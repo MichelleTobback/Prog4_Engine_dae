@@ -9,8 +9,8 @@
 #include "Components/NodeComponent.h"
 #include "Components/ObjectSpawner.h"
 
-#include "State/GameState/GameState.h"
-#include "States/GameModes/BTGameMode.h"
+#include "GameManager.h"
+#include "States/GameStates/BTGameMode.h"
 
 #include "Prefabs.h" //LADDER_COLLISION_LAYER
 
@@ -88,6 +88,14 @@ void dae::BurgerTimeLevelPanel::OnImGuiRender()
 	if (m_Mode == EditMode::Select && ImGui::Button("Add Mr Hotdog Spawner"))
 	{
 		pNewGameObject = AddSpawner(dae::BurgerTime::SpawnID::MrHotDog);
+	}
+	if (m_Mode == EditMode::Select && ImGui::Button("Add Mr Egg Spawner"))
+	{
+		pNewGameObject = AddSpawner(dae::BurgerTime::SpawnID::MrEgg);
+	}
+	if (m_Mode == EditMode::Select && ImGui::Button("Add Mr Pickle Spawner"))
+	{
+		pNewGameObject = AddSpawner(dae::BurgerTime::SpawnID::MrPickle);
 	}
 	ImGui::Separator();
 	ImGui::Text("ingredient Spawners");
@@ -315,7 +323,7 @@ dae::GameObject* dae::BurgerTimeLevelPanel::AddSpawner(BurgerTime::SpawnID id)
 
 void dae::BurgerTimeLevelPanel::SpawnAll()
 {
-	BTGameMode* pGameMode{ dynamic_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode()) };
+	BTGameMode* pGameMode{ dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState()) };
 	if (pGameMode)
 	{
 		pGameMode->OnPlayerLostLife();

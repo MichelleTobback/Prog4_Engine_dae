@@ -5,8 +5,7 @@
 
 #include "Components/CharacterInfo.h"
 
-#include "State/GameState/GameState.h"
-#include "States/GameModes/BTGameMode.h"
+#include "States/GameStates/BTGameMode.h"
 #include "BurgerTime.h"
 
 #include "States/Enemy/EnemyGoToPlayerState.h"
@@ -15,6 +14,8 @@
 #include "States/Enemy/EnemyFallState.h"
 #include "States/Enemy/EnemyAttackState.h"
 #include "States/Enemy/EnemyStunnedState.h"
+#include "GameManager.h"
+#include "State/StateMachine.h"
 
 #include "Components/BurgerIngredient.h"
 
@@ -43,7 +44,7 @@ void dae::EnemyComponent::Awake()
     if (m_pCharacter->Get().pHealth)
         m_pCharacter->Get().pHealth->GetOnDeath() += std::bind(&EnemyComponent::OnDeath, this);
 
-    m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameState::GetInstance().GetGameMode());
+    m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
 }
 
 void dae::EnemyComponent::Stun()
@@ -62,7 +63,7 @@ void dae::EnemyComponent::OnOverlap(const CollisionHit& hit)
     if (overlappedLayer == BurgerTime::INGREDIENT_COLLISION_LAYER
         && hit.pOtherCollider->GetRigidBody()->GetVelocity().y > 0.1f)
     {
-        if (hit.pOther->GetTransform().GetWorldPosition().y + 2.f > GetTransform().GetWorldPosition().y)
+        if (hit.pOther->GetTransform().GetWorldPosition().y + 6.f > GetTransform().GetWorldPosition().y)
             m_pOverlappedBurger = hit.pOtherCollider->GetRigidBody();
         else
             GetCharacter()->Get().pHealth->DealDamage(1);

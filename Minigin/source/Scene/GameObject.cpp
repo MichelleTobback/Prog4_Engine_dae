@@ -33,6 +33,11 @@ dae::GameObject::GameObject(Scene* pScene, UUID uuid)
 	}
 }
 
+dae::GameObject::~GameObject()
+{
+	OnDestroy();
+}
+
 void dae::GameObject::Awake()
 {
 	m_ComponentSystem->Awake();
@@ -67,11 +72,14 @@ void dae::GameObject::LateUpdate()
 void dae::GameObject::SetActive(bool active)
 {
 	bool alreadySet{active == IsActive()};
+	if (alreadySet)
+		return;
+
 	SetFlag(GameObjectFlag::Active, active);
 
-	if (active && !alreadySet)
+	if (active)
 		Awake();
-	else if (!alreadySet)
+	else
 		Sleep();
 
 	for (auto pChild : m_pChildren)
@@ -186,11 +194,14 @@ void dae::GameObject::RemoveChild(GameObject* pChild)
 
 void dae::GameObject::Destroy()
 {
-	m_IsValid = false;
-	m_pScene->DestroyGameObject(this);
-
-	for (GameObject* pChild : m_pChildren)
+	if (m_IsValid)
 	{
-		pChild->Destroy();
+		m_IsValid = false;
+		Sleep();
+
+		for (GameObject* pChild : m_pChildren)
+		{
+			pChild->Destroy();
+		}
 	}
 }

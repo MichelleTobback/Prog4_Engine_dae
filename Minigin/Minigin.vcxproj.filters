@@ -267,9 +267,6 @@
     <ClInclude Include="source\Component\TagComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="source\State\GameState\GameState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="source\State\StateMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -453,9 +450,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Component\TagComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\State\GameState\GameState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\Component\Physics\CharacterController2D.cpp">

@@ -5,59 +5,92 @@
 #include "Components/HealthComponent.h"
 #include "Components/PlayerController.h"
 #include "Components/CharacterInfo.h"
+#include "Component/CameraComponent.h"
 #include "BurgerTime.h"
-#include "States/GameModes/MainMenuGameMode.h"
+#include "States/GameStates/MainMenuGameMode.h"
+#include "States/GameStates/HiScoreGameState.h"
+#include "GameManager.h"
+#include "Prefabs.h"
+
+#include "Managers/ServiceLocator.h"
 
 dae::ObservableType<uint32_t> dae::BTGameMode::m_Score{};
 
-dae::BTGameMode::BTGameMode(size_t level)
- : m_CurrentLevel{level}
+dae::BTGameMode::BTGameMode(size_t lvlIdx)
+ : GameState(lvlIdx), m_CurrentLevel{ 0 }, m_ScenesIndices{2, 3, 4}
 {
-	LoadLevels();
+	for (size_t i{}; i < m_ScenesIndices.size(); ++i)
+	{
+		if (m_ScenesIndices[i] == lvlIdx)
+		{
+			m_CurrentLevel = i;
+			break;
+		}
+	}
+
+	m_MusicId = ServiceLocator::GetSoundSystem().AddMusic("Sounds/02 Game Music.mp3");
 }
 
-void dae::BTGameMode::OnEnter()
+void dae::BTGameMode::OnEnter(Scene& scene)
 {
+	ServiceLocator::GetSoundSystem().PlayMusic(m_MusicId, 90.f, -1);
+
 	m_Ingredients = 0;
 	if (m_CurrentLevel == 0)
+	{
+		m_Score.GetOnValueChangedDelegate() += [](uint32_t value) 
+		{
+			auto& hiScore{ GameManager::GetInstance().GetHiScore() };
+			if (value > hiScore())
+				hiScore = value;
+		};
 		m_Score = 0;
+	}
 
-	SceneManager::GetInstance().GetOnSceneLoaded() += std::bind(&BTGameMode::OnSceneLoaded, this, std::placeholders::_1, std::placeholders::_2);
-	SceneManager::GetInstance().OpenSceneByIndex(m_ScenesIndices[m_CurrentLevel]);
+	CreateGrid(scene);
+	if (m_pGrid)
+	{
+		m_MaxIngredients = 0;
+		m_pPlayerSpawns.clear();
+		m_pGrid->ForEachSpawner([this](BTTile& tile)
+			{
+				if (tile.pSpawner && BurgerTime::IsIngredient(static_cast<BurgerTime::SpawnID>(tile.pSpawner->GetSpawnID())))
+					++m_MaxIngredients;
+				else if (tile.pSpawner && static_cast<BurgerTime::SpawnID>(tile.pSpawner->GetSpawnID()) == BurgerTime::SpawnID::Player)
+				{
+					m_pPlayerSpawns.push_back(&tile);
+				}
+			});
+
+		RespawnAll();
+	}
+
+	m_pHUD = CreateHUD(scene);
+
+	m_pCamera = scene.Instantiate(0u, nullptr)->AddComponent<dae::CameraComponent>(0.5f);
+	m_pCamera->GetTransform().Translate(glm::vec3{ 24.f, 64.f, 0.f });
+	m_pCamera->SetCurrent();
 }
 
-void dae::BTGameMode::OnExit()
+void dae::BTGameMode::OnExit(Scene&)
 {
+	ServiceLocator::GetSoundSystem().StopMusic();
+	GameManager::GetInstance().UpdateHiScores(m_Score());
+
 	if (m_pGrid)
 	{
 		RespawnAll();
 		m_pGrid->GetOnGridMappedDelegate().Clear();
 	}
+	//m_pHUD->Destroy();
+	m_pHUD = nullptr;
 	m_pGrid = nullptr;
-	SceneManager::GetInstance().GetCurrent()->Sleep();
+	m_Score.GetOnValueChangedDelegate().Clear();
 }
 
 void dae::BTGameMode::OnSceneLoaded(Scene*, size_t)
 {
-	m_Ingredients = 0;
-
-	CreateGrid();
-
-	if (m_pGrid)
-	{
-		m_pGrid->GetOnGridMappedDelegate() += [this]()
-		{
-			m_MaxIngredients = 0;
-			m_pGrid->ForEachSpawner([this](BTTile& tile)
-				{
-					if (tile.pSpawner && BurgerTime::IsIngredient(static_cast<BurgerTime::SpawnID>(tile.pSpawner->GetSpawnID())))
-						++m_MaxIngredients;
-				});
-
-			RespawnAll();
-			m_pHUD = CreateHUD();
-		};
-	}
+	
 }
 
 void dae::BTGameMode::OnPlayerLostLife()
@@ -67,8 +100,8 @@ void dae::BTGameMode::OnPlayerLostLife()
 
 void dae::BTGameMode::OnPlayerDeath()
 {
-	auto& gameState{ dae::GameState::GetInstance() };
-	gameState.SetGameMode(std::make_shared<dae::MainMenuGameMode>());
+	auto& gameManager{ dae::GameManager::GetInstance() };
+	gameManager.PushState(std::make_unique<HiScoreGameState>());
 }
 
 void dae::BTGameMode::AddIngredient()
@@ -80,12 +113,13 @@ void dae::BTGameMode::AddIngredient()
 	}
 }
 
+dae::GameObject* dae::BTGameMode::CreatePlayer(dae::Scene* pScene)
+{
+	return Prefabs::CreatePeterPepper(pScene);
+}
+
 void dae::BTGameMode::LoadLevels()
 {
-	m_ScenesIndices.push_back(SceneManager::GetInstance().LoadScene("Scenes/BurgerTimeLevel1NoBurger.scene"));
-	m_ScenesIndices.push_back(SceneManager::GetInstance().LoadScene("Scenes/BurgerTimeLevel1.scene"));
-	m_ScenesIndices.push_back(SceneManager::GetInstance().LoadScene("Scenes/BurgerTimeLevel2.scene"));
-
 	if (m_CurrentLevel >= m_ScenesIndices.size())
 		m_CurrentLevel = 0;
 }
@@ -95,16 +129,18 @@ void dae::BTGameMode::OpenNextLevel()
 	++m_CurrentLevel;
 	if (m_CurrentLevel == m_ScenesIndices.size())
 		m_CurrentLevel = 0;
-	SceneManager::GetInstance().GetOnSceneLoaded() += std::bind(&BTGameMode::OnSceneLoaded, this, std::placeholders::_1, std::placeholders::_2);
-	SceneManager::GetInstance().OpenSceneByIndex(m_ScenesIndices[m_CurrentLevel]);
 
-	OnExit();
-	OnEnter();
+	SceneManager::GetInstance().GetOnSceneLoaded() += [this](Scene* pScene, size_t)
+	{
+		OnExit(*pScene);
+		OnEnter(*pScene);
+	};
+	SceneManager::GetInstance().OpenSceneByIndex(m_ScenesIndices[m_CurrentLevel]);
 }
 
-void dae::BTGameMode::CreateGrid()
+void dae::BTGameMode::CreateGrid(Scene& scene)
 {
-	auto pObjects{ SceneManager::GetInstance().GetCurrent()->GetGameObjectWithTag("Lvl")};
+	auto pObjects{ scene.GetGameObjectWithTag("Lvl")};
 	m_pLevelRoot = pObjects.size() > 0 ? pObjects[0] : nullptr;
 
 	if (!m_pLevelRoot)
@@ -141,7 +177,9 @@ void dae::BTGameMode::RespawnAllActiveCharacters()
 				|| tile.pSpawner->GetSpawnID() == static_cast<uint32_t>(BurgerTime::SpawnID::MrHotDog))
 				|| tile.pSpawner->GetSpawnID() == static_cast<uint32_t>(BurgerTime::SpawnID::MrEgg)
 				|| tile.pSpawner->GetSpawnID() == static_cast<uint32_t>(BurgerTime::SpawnID::MrPickle))
+			{
 				tile.pSpawner->Spawn();
+			}
 		});
 }
 

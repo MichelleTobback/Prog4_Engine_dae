@@ -1,11 +1,5 @@
 #include "StateMachine.h"
 
-//dae::StateMachine::StateMachine(GameObject* pOwner, State::StatePtr pEntry)
-//	: Component(pOwner)
-//	, m_pCurrent{pEntry}
-//{
-//	
-//}
 
 dae::StateMachine::StateMachine(GameObject* pOwner, State::StatePtr pState)
 	: Component(pOwner)

@@ -38,8 +38,7 @@ namespace dae
 		CharacterInfoComponent* GetCharacter() { return m_pCharacter; }
 		CharacterInfoComponent* GetOverlappedPlayer() { return m_pOverlappedPlayer; }
 		RigidBody2DComponent* GetOverlappedBurger() const {return m_pOverlappedBurger;}
-		const States& GetStates() const { return m_States; }
-
+		States& GetStates() { return m_States; }
 
 	private:
 		void OnDeath();

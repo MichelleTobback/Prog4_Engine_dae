@@ -2,6 +2,12 @@
 #include "Components/BurgerIngredient.h"
 #include "Scene/GameObject.h"
 #include "BurgerTime.h"
+#include "Audio/AudioClip.h"
+
+dae::IngredientIdleState::IngredientIdleState(BurgerIngredient* pIngredient)
+	: IngredientState(pIngredient), m_pOverlapSound{ std::make_unique<AudioClip>("Sounds/13_item1.wav") }
+{
+}
 
 void dae::IngredientIdleState::OnEnter()
 {
@@ -70,6 +76,7 @@ void dae::IngredientIdleState::OnBeginOverlap(const CollisionHit& hit)
 		hit.pCollider->SetCollisionIgnoreLayer(BurgerTime::PLAYER_COLLISION_LAYER, true);
 		transform.SetLocalPosition(glm::vec3{ pos.x, 2.f, pos.z });
 		m_WalkedOnTilesFlags |= tileFlag;
+		m_pOverlapSound->Play();
 	}
 	else if (collidingLayer == BurgerTime::INGREDIENT_COLLISION_LAYER
 		&& hit.pOtherCollider->GetRigidBody()->GetTransform().GetWorldPosition().y 

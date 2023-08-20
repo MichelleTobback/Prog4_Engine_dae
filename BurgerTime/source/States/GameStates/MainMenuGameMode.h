@@ -1,9 +1,10 @@
 #pragma once
-#include "State/GameState/GameState.h"
+#include "States/GameStates/GameState.h"
 
 namespace dae
 {
-	class MainMenuGameMode final : public GameMode
+	class Scene;
+	class MainMenuGameMode final : public GameState
 	{
 	public:
 		MainMenuGameMode();
@@ -14,16 +15,14 @@ namespace dae
 		MainMenuGameMode& operator=(const MainMenuGameMode& other) = delete;
 		MainMenuGameMode& operator=(MainMenuGameMode&& other) = delete;
 
-		virtual void OnEnter() override;
-		virtual StatePtr OnUpdate() override;
-		virtual void OnExit() override;
+		virtual void OnEnter(Scene& scene) override;
+		virtual void OnExit(Scene& scene) override;
 
 	private:
-		void OnSceneLoaded(Scene& scene);
 		void OnSinglePlayerModeSelected();
 		void OnVersusModeSelected();
 		void OnCoOpModeSelected();
 
-		size_t m_SceneIndex{};
+		void CreateScene(Scene* pScene);
 	};
 }

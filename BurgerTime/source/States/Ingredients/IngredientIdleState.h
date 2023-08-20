@@ -3,12 +3,12 @@
 
 namespace dae
 {
+	class AudioClip;
 	class RigidBody2DComponent;
 	class IngredientIdleState : public IngredientState
 	{
 	public:
-		IngredientIdleState(BurgerIngredient* pIngredient)
-			: IngredientState(pIngredient) {}
+		IngredientIdleState(BurgerIngredient* pIngredient);
 		virtual ~IngredientIdleState() = default;
 
 		virtual void OnEnter() override;
@@ -23,5 +23,7 @@ namespace dae
 		int m_WalkedOnTilesFlags{ 0 };
 		int m_AllFlags{ 0 };
 		float m_OverlappedYPos{};
+
+		std::unique_ptr<AudioClip> m_pOverlapSound;
 	};
 }
