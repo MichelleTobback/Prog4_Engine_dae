@@ -75,14 +75,9 @@ void dae::BurgerTime::LoadScenes()
     Scene& menu{ sceneManager.CreateScene("MainMenu", false) };
     Prefabs::CreateMenuObject(&menu);
 
-    sceneManager.LoadScene("Scenes/BurgerTimeLevel1NoBurger.scene");
     sceneManager.LoadScene("Scenes/BurgerTimeLevel1.scene");
     sceneManager.LoadScene("Scenes/BurgerTimeLevel2.scene");
     sceneManager.LoadScene("Scenes/BurgerTimeLevel3.scene");
-
-    //Prefabs::CreateTestLevel(&sceneManager.CreateScene("BurgerTimeLevel3", false));
-
-    sceneManager.LoadScene("Scenes/BurgerTimeLevel1NoBurger.scene");
 }
 
 void dae::BurgerTime::CreateInputBindings()

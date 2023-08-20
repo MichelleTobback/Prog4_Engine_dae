@@ -72,7 +72,7 @@ void dae::SdlWindow::SdlWindowImpl::Init()
         SDL_WINDOWPOS_CENTERED,
         m_Desc.width,
         m_Desc.height,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_OPENGL //| SDL_WINDOW_RESIZABLE
     );
     if (m_pWindow == nullptr)
     {
