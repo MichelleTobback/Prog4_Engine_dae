@@ -9,7 +9,7 @@ dae::TextInputComponent::TextInputComponent(GameObject* pOwner, TextComponent* p
 	auto& commandBinding{ input.AddActionBinding(1) };
 	dae::InputCommand::ICDevices& binding{ commandBinding.deviceBinding };
 	BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
-	binding.keyboard.Key = Keyboard::KeyCode::Comma;
+	binding.keyboard.Key = Keyboard::KeyCode::Backspace;
 	binding.keyboard.State = Keyboard::KeyState::Released;
 	input.BindActionCommand(1, ActionCommand::Create(this, &TextInputComponent::RemoveChar));
 }

@@ -29,11 +29,15 @@ namespace dae
 		void SpawnAllPlayers();
 		void SpawnPlayer(size_t index);
 
+		void RespawnAfterDuration(GameObject* pObject, float duration);
+
 		const std::vector<PlayerController*>& GetPlayers() const { return m_pPlayers; }
 		PlayerController* GetPlayer(size_t index) const { return m_pPlayers[index]; }
 		uint32_t GetPlayerMaxLifes() const { return m_PlayerMaxLifes; }
 		uint32_t GetPlayerMaxPeppers() const { return m_PlayerMaxPeppers; }
 		ObservableType<uint32_t>& GetScore() { return m_Score; }
+		glm::vec3 GetClosestPlayerPos(const glm::vec3& pos) const;
+		void OpenNextLevel();
 
 	protected:
 		virtual void StartRound() {}
@@ -43,7 +47,6 @@ namespace dae
 		void SetMaxPlayerLifes(uint32_t lifes) { m_PlayerMaxLifes = lifes; }
 		void SetMaxPlayerPeppers(uint32_t peppers) { m_PlayerMaxPeppers = peppers; }
 		void LoadLevels();
-		void OpenNextLevel();
 
 	private:
 		void CreateGrid(Scene& scene);

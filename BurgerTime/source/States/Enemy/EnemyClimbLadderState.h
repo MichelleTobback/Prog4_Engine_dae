@@ -17,9 +17,8 @@ namespace dae
 		virtual StatePtr OnUpdate() override;
 		virtual void OnExit() override;
 
-		void SetEndTile(NodeComponent* pNode);
-
 	private:
+		void SetEndTile();
 		NodeComponent* GetNode(const glm::vec3& pos);
 
 		size_t m_NextNodeIndex{};

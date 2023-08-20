@@ -23,7 +23,7 @@ std::vector<GameObject*> dae::Scene::GetGameObjectWithTag(const std::string& tag
 	std::vector<GameObject*> tags {};
 	for (auto& [uuid, pGameObject] : m_Objects)
 	{
-		if (pGameObject &&pGameObject->HasTag(tag))
+		if (pGameObject && pGameObject->IsValid() && pGameObject->HasTag(tag))
 			tags.push_back(pGameObject.get());
 	}
 	return tags;

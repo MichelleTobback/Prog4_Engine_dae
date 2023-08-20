@@ -38,6 +38,8 @@ namespace dae
 		bool IsButtonUp(ControllerButton button) const;
 		bool IsButtonPressed(ControllerButton button) const;
 
+		bool IsConnected() const;
+
 	private:
 		class ControllerImpl;
 		std::unique_ptr<ControllerImpl> m_pImpl{};

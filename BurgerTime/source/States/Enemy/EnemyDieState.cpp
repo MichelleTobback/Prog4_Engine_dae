@@ -2,6 +2,8 @@
 #include "Components/CharacterInfo.h"
 #include "Scene/GameObject.h"
 #include "Components/EnemyComponent.h"
+#include "States/GameStates/BTGameMode.h"
+#include "GameManager.h"
 
 dae::EnemyDieState::EnemyDieState(EnemyComponent* pEnemy)
     : EnemyState(pEnemy), m_pDieSound{ std::make_unique<AudioClip>("Sounds/15_hit.wav") }
@@ -41,4 +43,8 @@ void dae::EnemyDieState::OnExit()
     {
         pCollider->SetCollisionLayer(m_Layer);
     }
+
+    BTGameMode* pGameMode{ dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState()) };
+    if (pGameMode)
+        pGameMode->RespawnAfterDuration(pRigidBody->GetOwner(), 5.f);
 }

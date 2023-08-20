@@ -107,7 +107,10 @@ void dae::BurgerIngredient::Awake()
 
 void dae::BurgerIngredient::PlateEnter()
 {
+	if (m_OnPlate)
+		return;
 	m_OnPlate = true;
+	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
 	m_pCurrentGameMode->AddIngredient();
 }
 
@@ -137,6 +140,7 @@ void dae::BurgerIngredient::AddBonus()
 
 	if (m_OverlappedEnemies >= 1 && m_OverlappedEnemies <= 6)
 	{
+		m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
 		m_pCurrentGameMode->GetScore() += bonuses[m_OverlappedEnemies];
 		m_pBonusSound->Play();
 	}

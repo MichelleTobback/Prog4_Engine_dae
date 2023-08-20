@@ -182,6 +182,7 @@
     <ClCompile Include="source\States\Enemy\EnemyState.cpp" />
     <ClCompile Include="source\States\Enemy\EnemyStunnedState.cpp" />
     <ClCompile Include="source\GameManager.cpp" />
+    <ClCompile Include="source\States\Enemy\EnemyWaitState.cpp" />
     <ClCompile Include="source\States\GameStates\BTCoopGameMode.cpp" />
     <ClCompile Include="source\States\GameStates\BTGameMode.cpp" />
     <ClCompile Include="source\States\GameStates\BTSinglePlayerGameMode.cpp" />
@@ -228,6 +229,7 @@
     <ClInclude Include="source\States\Enemy\EnemyState.h" />
     <ClInclude Include="source\States\Enemy\EnemyStunnedState.h" />
     <ClInclude Include="source\GameManager.h" />
+    <ClInclude Include="source\States\Enemy\EnemyWaitState.h" />
     <ClInclude Include="source\States\GameStates\BTCoopGameMode.h" />
     <ClInclude Include="source\States\GameStates\BTGameMode.h" />
     <ClInclude Include="source\States\GameStates\BTSinglePlayerGameMode.h" />

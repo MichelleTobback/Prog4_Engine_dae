@@ -6,6 +6,8 @@
 #include "Components/CharacterInfo.h"
 #include "Components/EnemyComponent.h"
 #include "Core/Random.h"
+#include "GameManager.h"
+#include "States/GameStates/BTGameMode.h"
 
 #include <glm/gtx/norm.hpp>
 
@@ -16,18 +18,24 @@ dae::EnemyGoToPlayerState::EnemyGoToPlayerState(EnemyComponent* pEnemy)
 
 void dae::EnemyGoToPlayerState::OnEnter()
 {
+    m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
     auto players{ GetEnemy()->GetScene()->GetGameObjectWithTag("Player")};
     if (players.size() > 0)
     {
-        SetPlayer(players[0]->GetComponent<CharacterInfoComponent>());
         CalculatePath();
     }
 }
 
 dae::State::StatePtr dae::EnemyGoToPlayerState::OnUpdate()
 {
-    if (m_pPath.size() == 0)
-        return this;
+    const float epsilon{ Random::GetRandomFloatInRange(0.1f, 32.f)};
+    const glm::vec3 currentPos{ GetEnemy()->GetCharacter()->Get().pController->GetTransform().GetWorldPosition() };
+    const glm::vec3 currentPlayerPos{ m_pCurrentGameMode->GetClosestPlayerPos(currentPos) };
+    if (m_pPath.size() == 0 || glm::length2(currentPlayerPos - m_PlayerPos) > epsilon)
+    {
+        m_PlayerPos = currentPlayerPos;
+        CalculatePath();
+    }
 
     if (GetEnemy()->GetCharacter()->Get().pHealth->GetValue() == 0)
         return GetEnemy()->GetStates().pDieState.get();
@@ -39,20 +47,7 @@ dae::State::StatePtr dae::EnemyGoToPlayerState::OnUpdate()
     const glm::vec3& pos{ GetEnemy()->GetCharacter()->Get().pController->GetTransform().GetWorldPosition() };
 
     //if (IsOnLadder() && (m_NextNodeIndex - 1) > 0)
-    //{
-    //    EnemyClimbLadderState* pNextState{ reinterpret_cast<EnemyClimbLadderState*>(GetCharacter()->pStates[1].get()) };
-    //    NodeComponent* pNode{ m_pPath[m_NextNodeIndex - 1] };
-    //    const float epsilon{ 0.001f };
-    //    for (auto edge : pNode->GetEdges())
-    //    {
-    //        glm::vec3 nodePos{ edge.pTo->GetTransform().GetWorldPosition() };
-    //        if (std::abs((nodePos - pos).y) > epsilon)
-    //        {
-    //            pNextState->SetEndTile(edge.pTo);
-    //            return pNextState;
-    //        }
-    //    }
-    //}
+    //    return GetEnemy()->GetStates().pClimbLadderState.get();
 
     if (m_NextNodeIndex != m_pPath.size())
     {
@@ -70,21 +65,12 @@ dae::State::StatePtr dae::EnemyGoToPlayerState::OnUpdate()
             ++m_NextNodeIndex;
         }
     }
-    if (m_NextNodeIndex % 5 == 0 || m_NextNodeIndex == m_pPath.size())
-    {
-        CalculatePath();
-    }
     return this;
 }
 
 void dae::EnemyGoToPlayerState::OnExit()
 {
-    m_pPlayer = nullptr;
-}
-
-void dae::EnemyGoToPlayerState::SetPlayer(CharacterInfoComponent* pPlayer)
-{
-    m_pPlayer = pPlayer;
+    m_pCurrentGameMode = nullptr;
 }
 
 dae::NodeComponent* dae::EnemyGoToPlayerState::GetNode(const glm::vec3& pos)
@@ -101,14 +87,16 @@ dae::NodeComponent* dae::EnemyGoToPlayerState::GetNode(const glm::vec3& pos)
 
 void dae::EnemyGoToPlayerState::CalculatePath()
 {
-    NodeComponent* pStart{ GetNode(GetEnemy()->GetCharacter()->Get().pController->GetTransform().GetWorldPosition()) };
-    NodeComponent* pEnd{ m_pPlayer ? GetNode(m_pPlayer->GetTransform().GetWorldPosition()) : nullptr};
+    const glm::vec3 currentPos{ GetEnemy()->GetCharacter()->Get().pController->GetTransform().GetWorldPosition() };
+    NodeComponent* pStart{ GetNode(currentPos) };
+    NodeComponent* pEnd{ (m_pCurrentGameMode) ? GetNode(m_PlayerPos) : nullptr};
 
     if (pStart && pEnd)
     {
         AStar pathFinder{};
         m_pPath = pathFinder.FindPath(pStart, pEnd);
-        m_NextNodeIndex = 0;
+        if (m_NextNodeIndex >= m_pPath.size())
+            m_NextNodeIndex = 0;
     }
 }
 
@@ -116,5 +104,6 @@ bool dae::EnemyGoToPlayerState::IsOnLadder()
 {
     size_t current{ m_NextNodeIndex > 1 ? m_NextNodeIndex - 1 : 0 };
     return (m_NextNodeIndex > 0 && m_pPath.size() != 0 && current < m_pPath.size()
-        && m_pPath[current]->GetEdges().size() > 2);
+        && m_pPath[current]->GetEdges().size() == 2
+        && std::abs(GetCharacter().pController->GetDirection().y) > 0.001f);
 }

@@ -1,5 +1,6 @@
 #include "ObjectSpawner.h"
 #include "Scene/GameObject.h"
+#include "Core/Time.h"
 
 std::unordered_map<uint32_t, dae::SpawnFunc> dae::ObjectSpawner::s_SpawnFuncMap;
 
@@ -23,6 +24,20 @@ void dae::ObjectSpawner::Sleep()
 	}
 }
 
+void dae::ObjectSpawner::Update()
+{
+	const float epsilon{ 0.001f };
+	if (m_WaitTime > epsilon)
+	{
+		m_WaitTime -= Time::GetInstance().GetDeltaTime();
+		if (m_WaitTime <= epsilon)
+		{
+			m_WaitTime = 0.f;
+			Spawn();
+		}
+	}
+}
+
 dae::GameObject* dae::ObjectSpawner::Spawn()
 {
 	assert(IsRegistered() && "spawn id is not registered");
@@ -32,18 +47,22 @@ dae::GameObject* dae::ObjectSpawner::Spawn()
 	}
 	if (m_pObjectInstance)
 	{
-		m_pObjectInstance->GetOnDestroyed() += [this](GameObject*)
-		{
-			m_pObjectInstance = nullptr;
-		};
-
-		if (!m_pObjectInstance->IsActive())
-			m_pObjectInstance->SetActive(true);
+		//m_pObjectInstance->GetOnDestroyed() += [this](GameObject*)
+		//{
+		//	m_pObjectInstance = nullptr;
+		//};
+		//m_pObjectInstance->SetActive(false);
+		m_pObjectInstance->SetActive(true);
 		m_pObjectInstance->GetTransform().SetLocalPosition(GetTransform().GetWorldPosition());
 		m_pOnObjectSpawned->Invoke(m_pObjectInstance);
 	}
 
 	return m_pObjectInstance;
+}
+
+void dae::ObjectSpawner::SpawnDelayed(float time)
+{
+	m_WaitTime = time;
 }
 
 bool dae::ObjectSpawner::IsRegistered() const

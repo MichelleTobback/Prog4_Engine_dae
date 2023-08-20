@@ -17,7 +17,7 @@ void dae::HiScoreGameState::OnEnter(Scene& scene)
     m_pMusic->Play();
     scene.GetGameObjectWithTag("hs")[0]->SetActive(true);
     ButtonComponent* pButton{ scene.GetGameObjectWithTag("MButton")[0]->GetComponent<ButtonComponent>() };
-    pButton->GetOnReleasedDelegate() += std::bind(&HiScoreGameState::Next, this);
+    pButton->GetOnPressedDelegate() += std::bind(&HiScoreGameState::Next, this);
 
     auto pNames{ scene.GetGameObjectWithTag("hsname") };
     auto pScores{ scene.GetGameObjectWithTag("hsscore") };
@@ -45,13 +45,15 @@ void dae::HiScoreGameState::OnEnter(Scene& scene)
 
 void dae::HiScoreGameState::OnExit(Scene& scene)
 {
-    scene.GetGameObjectWithTag("hs")[0]->SetActive(false);
+    auto pObjects{ scene.GetGameObjectWithTag("hs") };
+    pObjects[0]->SetActive(false);
     ButtonComponent* pButton{ scene.GetGameObjectWithTag("MButton")[0]->GetComponent<ButtonComponent>() };
-    pButton->GetOnReleasedDelegate().Clear();
+    pButton->GetOnPressedDelegate().Clear();
 }
 
 void dae::HiScoreGameState::Next()
 {
     auto& gameManager{ dae::GameManager::GetInstance() };
-    gameManager.PopWhile([](size_t prevScene) {return prevScene != 0; });
+    gameManager.PopState(3);
+    //gameManager.PopWhile([](size_t prevScene) {return prevScene != 0; });
 }

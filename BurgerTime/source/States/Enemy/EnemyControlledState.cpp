@@ -4,18 +4,19 @@
 #include "Components/EnemyComponent.h"
 #include "Scene/Scene.h"
 #include "BurgerTime.h"
+#include "Input/Input.h"
 
 dae::EnemyControlledState::EnemyControlledState(EnemyComponent* pEnemy)
     : EnemyState(pEnemy)
 {
     m_pInput = GetEnemy()->GetScene()->Instantiate(GetEnemy()->GetOwner())->AddComponent<InputHandlerComponent>();
-
+	bool isSecondController{ Input::GetInstance().GetController(1)->IsConnected() };
 	auto& commandBinding{ m_pInput->GetHandler().AddAxisBinding(static_cast<uint32_t>(BurgerTime::InputID::Move))};
 	dae::InputCommand::ICDevices binding{};
 	BitFlag::Set(binding.flags, InputCommand::ICFlag::ControllerButton, true);
 	binding.controller.Button = dae::Controller::ControllerButton::DPadLeft;
 	binding.controller.ButtonState = dae::Controller::ControllerButtonState::Pressed;
-	binding.controller.ControllerID = 0;
+	binding.controller.ControllerID = isSecondController;
 	commandBinding.Add({ -1.f, 0.f }, binding);
 
 	binding.keyboard.Key = Keyboard::KeyCode::D;

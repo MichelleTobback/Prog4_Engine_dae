@@ -75,17 +75,25 @@ void dae::BTGameMode::OnEnter(Scene& scene)
 void dae::BTGameMode::OnExit(Scene&)
 {
 	ServiceLocator::GetSoundSystem().StopMusic();
+	m_Score.GetOnValueChangedDelegate().Clear();
 	GameManager::GetInstance().UpdateHiScores(m_Score());
 
+	m_pCamera->GetOwner()->Destroy();
 	if (m_pGrid)
 	{
 		RespawnAll();
 		m_pGrid->GetOnGridMappedDelegate().Clear();
 	}
-	//m_pHUD->Destroy();
+	//for (auto playerSpawn : m_pPlayerSpawns)
+	//{
+	//	if (playerSpawn->pSpawner->GetInstance())
+	//		playerSpawn->pSpawner->GetInstance()->Destroy();
+	//}
+	m_pPlayerSpawns.clear();
+	if (m_pHUD)
+		m_pHUD->Destroy();
 	m_pHUD = nullptr;
 	m_pGrid = nullptr;
-	m_Score.GetOnValueChangedDelegate().Clear();
 }
 
 void dae::BTGameMode::OnSceneLoaded(Scene*, size_t)
@@ -111,6 +119,26 @@ void dae::BTGameMode::AddIngredient()
 	{
 		OpenNextLevel();
 	}
+}
+
+glm::vec3 dae::BTGameMode::GetClosestPlayerPos(const glm::vec3& pos) const
+{
+	glm::vec3 closestPos{};
+	float closestDistance{FLT_MAX};
+	for (const auto& playerSpawn : m_pPlayerSpawns)
+	{
+		GameObject* pPlayer{ playerSpawn->pSpawner->GetInstance() };
+		if (!pPlayer)
+			continue;
+		const glm::vec3 currentPos{ pPlayer->GetTransform().GetWorldPosition() };
+		const float distance{ glm::distance2(currentPos, pos) };
+		if (distance < closestDistance)
+		{
+			closestDistance = distance;
+			closestPos = currentPos;
+		}
+	}
+	return closestPos;
 }
 
 dae::GameObject* dae::BTGameMode::CreatePlayer(dae::Scene* pScene)
@@ -212,6 +240,17 @@ void dae::BTGameMode::SpawnPlayer(size_t index)
 				if ((i + 1) == index)
 					tile.pSpawner->Spawn();
 				++i;
+			}
+		});
+}
+
+void dae::BTGameMode::RespawnAfterDuration(GameObject* pObject, float duration)
+{
+	m_pGrid->ForEachSpawner([pObject, duration](BTTile& tile)
+		{
+			if (tile.pSpawner->GetInstance() == pObject)
+			{
+				tile.pSpawner->SpawnDelayed(duration);
 			}
 		});
 }

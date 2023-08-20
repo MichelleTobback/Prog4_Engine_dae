@@ -2,6 +2,8 @@
 
 #include <xhash>
 
+//https://www.youtube.com/watch?v=O_0nUE4S8T8
+
 namespace dae
 {
 	class UUID final

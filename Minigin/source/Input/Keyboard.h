@@ -59,7 +59,7 @@ namespace dae
 
             Return = 40,
             Escape = 41,
-            Backslash = 42,
+            Backspace = 42,
             Tab = 43,
             Space = 44,
 

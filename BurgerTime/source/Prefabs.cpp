@@ -347,8 +347,9 @@ dae::GameObject* dae::Prefabs::CreateControlledEnemy(GameObject* pObject)
 {
     GameObject* pEnemy{ CreateEnemy(pObject) };
     EnemyComponent* pEnemyComponent{ pEnemy->GetComponent<EnemyComponent>() };
-    pEnemyComponent->GetStates().pGoToPlayerState = std::make_unique<EnemyControlledState>(pEnemyComponent);
-    pEnemy->GetComponent<StateMachine>()->SetState(pEnemyComponent->GetStates().pGoToPlayerState.get());
+    auto pState{ std::make_unique<EnemyControlledState>(pEnemyComponent) };
+    pEnemy->GetComponent<StateMachine>()->SetState(pState.get());
+    pEnemyComponent->GetStates().pGoToPlayerState = std::move(pState);
     return pEnemy;
 }
 

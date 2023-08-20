@@ -35,10 +35,8 @@ void dae::CharacterAnimationController::Awake()
 		m_pAnimator = GetOwner()->GetComponent<SpriteAnimatorComponent>();
 
 	if (!m_pHealth)
-	{
 		m_pHealth = GetOwner()->GetComponent<HealthComponent>();
-		m_pHealth->GetOnHealthChanged() += std::bind(&CharacterAnimationController::OnHit, this, std::placeholders::_1);
-	}
+	m_pHealth->GetOnHealthChanged() += std::bind(&CharacterAnimationController::OnHit, this, std::placeholders::_1);
 	if (!m_pRigidBody)
 		m_pRigidBody = GetOwner()->GetComponent<RigidBody2DComponent>();
 }

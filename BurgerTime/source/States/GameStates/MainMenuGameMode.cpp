@@ -22,26 +22,26 @@ void dae::MainMenuGameMode::OnEnter(Scene& scene)
 {
     scene.GetGameObjectWithTag("main")[0]->SetActive(true);
     ButtonComponent* pButton{scene.GetGameObjectWithTag("SPButton")[0]->GetComponent<ButtonComponent>()};
-    pButton->GetOnReleasedDelegate() += std::bind(&MainMenuGameMode::OnSinglePlayerModeSelected, this);
+    pButton->GetOnPressedDelegate() += std::bind(&MainMenuGameMode::OnSinglePlayerModeSelected, this);
 
     pButton = scene.GetGameObjectWithTag("COButton")[0]->GetComponent<ButtonComponent>();
-    pButton->GetOnReleasedDelegate() += std::bind(&MainMenuGameMode::OnCoOpModeSelected, this);
+    pButton->GetOnPressedDelegate() += std::bind(&MainMenuGameMode::OnCoOpModeSelected, this);
 
     pButton = scene.GetGameObjectWithTag("VSButton")[0]->GetComponent<ButtonComponent>();
-    pButton->GetOnReleasedDelegate() += std::bind(&MainMenuGameMode::OnVersusModeSelected, this);
+    pButton->GetOnPressedDelegate() += std::bind(&MainMenuGameMode::OnVersusModeSelected, this);
 }
 
 void dae::MainMenuGameMode::OnExit(Scene& scene)
 {
     scene.GetGameObjectWithTag("main")[0]->SetActive(false);
     ButtonComponent* pButton{ scene.GetGameObjectWithTag("SPButton")[0]->GetComponent<ButtonComponent>() };
-    pButton->GetOnReleasedDelegate().Clear();
+    pButton->GetOnPressedDelegate().Clear();
 
     pButton = scene.GetGameObjectWithTag("COButton")[0]->GetComponent<ButtonComponent>();
-    pButton->GetOnReleasedDelegate().Clear();
+    pButton->GetOnPressedDelegate().Clear();
 
     pButton = scene.GetGameObjectWithTag("VSButton")[0]->GetComponent<ButtonComponent>();
-    pButton->GetOnReleasedDelegate().Clear();
+    pButton->GetOnPressedDelegate().Clear();
 }
 
 void dae::MainMenuGameMode::OnSinglePlayerModeSelected()

@@ -104,9 +104,11 @@ void dae::BTTileGridComponent::ForEachSpawner(const BTTileFunc& fn)
 
 void dae::BTTileGridComponent::MapGrid()
 {
-	auto gridObjects{ GetOwner()->GetChildren() };
-	for (auto pTile : gridObjects)
+	m_Spawners.clear();
+	const auto& gridObjects{ GetOwner()->GetChildren() };
+	for (size_t i{}; i < gridObjects.size(); ++i)
 	{
+		GameObject* pTile{ gridObjects[i] };
 		const glm::vec3& worldPos{ pTile->GetTransform().GetWorldPosition() };
 		const uint32_t index{ GetIndex(worldPos) };
 

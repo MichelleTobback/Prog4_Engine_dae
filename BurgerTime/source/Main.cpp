@@ -29,6 +29,7 @@
 
 void load()
 {
+	dae::BurgerTime::PrintControls();
 	dae::BurgerTime::CreateInputBindings();
 	dae::BurgerTime::CreateDebugInput();
 
@@ -83,7 +84,7 @@ void load()
 	auto& gameManager{ dae::GameManager::GetInstance() };
 	//gameManager.PushState(std::make_shared<dae::BTSinglePlayerGameMode>(2));
 	gameManager.PushState(std::make_shared<dae::MainMenuGameMode>());
-	//gameManager.PushState(std::make_shared<dae::BTEditorGameMode>(2));
+	//gameManager.PushState(std::make_shared<dae::BTEditorGameMode>(4));
 }
 
 int main(int, char* []) 

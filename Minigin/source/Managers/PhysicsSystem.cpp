@@ -3,6 +3,9 @@
 
 #include <algorithm>
 
+//used the following youtube series as guide for collision detection logic
+//https://www.youtube.com/watch?v=lzI7QUyl66g&list=PLSlpr6o9vURwq3oxVZSimY8iC-cdd3kIs
+
 void dae::PhysicsScene::ForEachRigidBody(const std::function<void(RigidBody2DComponent*)>& fn)
 {
 	std::for_each(m_pRigidBodies.begin(), m_pRigidBodies.end(), fn);

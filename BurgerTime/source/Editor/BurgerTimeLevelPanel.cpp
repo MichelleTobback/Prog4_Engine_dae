@@ -72,6 +72,17 @@ void dae::BurgerTimeLevelPanel::OnImGuiRender()
 		pNewGameObject = Prefabs::CreateBurgerPlate(GetScene(), m_pPlatesRigid);
 		pNewGameObject->GetTransform().Translate(m_SelectedTiles.begin()->second->pos);
 	}
+	if (m_Mode == EditMode::Select && ImGui::Button("remove Plate"))
+	{
+		for (auto& tile : m_SelectedTiles)
+		{
+			if (tile.second->pPlate)
+			{
+				tile.second->pPlate->GetOwner()->RemoveComponent<BurgerPlate>();
+				tile.second->pPlate = nullptr;
+			}
+		}
+	}
 	//if (m_Mode == EditMode::Select && ImGui::Button("Add Mr Hotdog"))
 	//{
 	//	pNewGameObject = Prefabs::CreateEnemy(Prefabs::CreateMrHotDog(GetScene()));
@@ -128,6 +139,18 @@ void dae::BurgerTimeLevelPanel::OnImGuiRender()
 	if (m_Mode == EditMode::Select && ImGui::Button("Spawn All"))
 	{
 		SpawnAll();
+	}
+
+	ImGui::Separator();
+	ImGui::Text("edit collider");
+
+	if (m_Mode == EditMode::Select && ImGui::Button("ignore ingredient"))
+	{
+		for (auto& tile : m_SelectedTiles)
+		{
+			if (tile.second->pCollider)
+				tile.second->pCollider->SetCollisionIgnoreLayer(BurgerTime::INGREDIENT_COLLISION_LAYER, true);
+		}
 	}
 
 	if (pNewGameObject)

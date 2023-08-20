@@ -50,7 +50,6 @@ void dae::GameObject::Sleep()
 
 void dae::GameObject::OnDestroy()
 {
-	m_pOnDestroyed->Invoke(this);
 	m_ComponentSystem->Clear();
 }
 
@@ -198,7 +197,7 @@ void dae::GameObject::Destroy()
 	{
 		m_IsValid = false;
 		Sleep();
-
+		m_pOnDestroyed->Invoke(this);
 		for (GameObject* pChild : m_pChildren)
 		{
 			pChild->Destroy();

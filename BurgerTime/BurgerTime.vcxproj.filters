@@ -150,6 +150,9 @@
     <ClCompile Include="source\States\Enemy\EnemyControlledState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\States\Enemy\EnemyWaitState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Components\PlayerController.h">
@@ -291,6 +294,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\States\Enemy\EnemyControlledState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\States\Enemy\EnemyWaitState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

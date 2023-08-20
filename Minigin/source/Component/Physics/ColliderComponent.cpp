@@ -12,6 +12,9 @@
 	#include "Scene/Scene.h"
 #endif
 
+//used the following youtube series as guide for collision detection logic
+//https://www.youtube.com/watch?v=lzI7QUyl66g&list=PLSlpr6o9vURwq3oxVZSimY8iC-cdd3kIs
+
 dae::ColliderComponent::ColliderComponent(GameObject* pOwner, ColliderType type)
 	: Component(pOwner), m_Type{ type }, m_Flags{ CollisionFlags::None }
 {

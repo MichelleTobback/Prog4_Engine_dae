@@ -14,6 +14,7 @@
 #include "States/Enemy/EnemyFallState.h"
 #include "States/Enemy/EnemyAttackState.h"
 #include "States/Enemy/EnemyStunnedState.h"
+#include "States/Enemy/EnemyWaitState.h"
 #include "GameManager.h"
 #include "State/StateMachine.h"
 
@@ -28,11 +29,13 @@ dae::EnemyComponent::EnemyComponent(GameObject* pOwner, CharacterInfoComponent* 
     m_States.pFallState = std::make_unique<EnemyFallState>(this);
     m_States.pAttackState = std::make_unique<EnemyAttackState>(this);
     m_States.pStunnedState = std::make_unique<EnemyStunnedState>(this, 3.f);
+    m_States.pWaitState = std::make_unique<EnemyWaitState>(this, 3.f);
 }
 
 void dae::EnemyComponent::Awake()
 {
     m_pStateMachine = GetOwner()->GetComponent<StateMachine>();
+    m_pStateMachine->SetState(m_States.pWaitState.get());
 
 	RigidBody2DComponent* pRigidBody{ m_pCharacter->Get().pController->GetRigidBody() };
     if (pRigidBody)

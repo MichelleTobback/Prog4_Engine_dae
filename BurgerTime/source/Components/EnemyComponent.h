@@ -20,6 +20,7 @@ namespace dae
 			std::unique_ptr<EnemyState> pFallState{ nullptr };
 			std::unique_ptr<EnemyState> pAttackState{ nullptr };
 			std::unique_ptr<EnemyState> pStunnedState{ nullptr };
+			std::unique_ptr<EnemyState> pWaitState{ nullptr };
 		};
 
 		EnemyComponent(GameObject* pOwner, CharacterInfoComponent* pCharacter, uint32_t reward);

@@ -6,6 +6,7 @@
 
 namespace dae
 {
+	class BTGameMode;
 	class NodeComponent;
 	class CharacterInfoComponent;
 	class EnemyGoToPlayerState final : public EnemyState
@@ -18,15 +19,16 @@ namespace dae
 		virtual StatePtr OnUpdate() override;
 		virtual void OnExit() override;
 
-		void SetPlayer(CharacterInfoComponent* pPlayer);
-
 	private:
 		NodeComponent* GetNode(const glm::vec3& pos);
 		void CalculatePath();
 		bool IsOnLadder();
+		bool PlayerMoved();
 		
 		size_t m_NextNodeIndex{};
 		std::vector<NodeComponent*> m_pPath;
-		CharacterInfoComponent* m_pPlayer{ nullptr };
+		glm::vec3 m_PlayerPos{};
+
+		BTGameMode* m_pCurrentGameMode{ nullptr };
 	};
 }

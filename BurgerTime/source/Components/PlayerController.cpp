@@ -18,7 +18,8 @@ dae::PlayerController::PlayerController(GameObject* pOwner, CharacterController2
 	, m_pCharacterController{ pCharactarerController }
 	, m_ControllerIndex{ controllerIndex }
 {
-	auto& input{ GetOwner()->AddComponent<InputHandlerComponent>()->GetHandler() };
+	m_pInput = GetOwner()->GetScene()->Instantiate(GetOwner())->AddComponent<InputHandlerComponent>();
+	auto& input{ m_pInput->GetHandler() };
 	//Move
 	{
 		auto& commandBinding{ input.AddAxisBinding(static_cast<uint32_t>(BurgerTime::InputID::Move)) };
@@ -74,15 +75,22 @@ void dae::PlayerController::Awake()
 	pAnimController->GetClip(CharacterAnimationController::CharacterAnim::Die).GetAnimEvent(4) += std::bind(&PlayerController::OnDeath, this);
 }
 
+void dae::PlayerController::Sleep()
+{
+	m_Peppers.GetOnValueChangedDelegate().Clear();
+}
+
 void dae::PlayerController::LateUpdate()
 {
 }
 
 void dae::PlayerController::Reset()
 {
+	//m_pInput->GetOwner()->SetActive(true);
 	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
 	if (m_pCurrentGameMode)
 		m_Peppers = m_pCurrentGameMode->GetPlayerMaxPeppers();
+	m_IsDead = false;
 }
 
 void dae::PlayerController::ThrowPepper()
@@ -103,18 +111,25 @@ void dae::PlayerController::ThrowPepper()
 
 void dae::PlayerController::OnHit(uint32_t health)
 {
+	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
 	if (m_pCurrentGameMode)
 	{
 		if (health < m_pCurrentGameMode->GetPlayerMaxLifes() && health > 0)
 			m_pDamageSound->Play();
 	}
+	//m_pInput->GetOwner()->SetActive(false);
+	m_pCharacterController->GetRigidBody()->SetVelociy({});
 }
 
 void dae::PlayerController::OnDeath()
 {
+	m_pCurrentGameMode = dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState());
 	HealthComponent* pHealth{ GetOwner()->GetComponent<HealthComponent>() };
 	if (pHealth->GetValue() > 0)
 		m_pCurrentGameMode->OnPlayerLostLife();
-	else
+	else if (!m_IsDead)
+	{
+		m_IsDead = true;
 		m_pCurrentGameMode->OnPlayerDeath();
+	}
 }

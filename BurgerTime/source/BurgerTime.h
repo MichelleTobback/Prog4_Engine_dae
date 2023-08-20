@@ -46,6 +46,7 @@ namespace dae
 		static void LoadScenes();
 
 		static void CreateInputBindings();
+		static void PrintControls();
 
 	private:
 		BurgerTime() = default;

@@ -82,23 +82,24 @@ void dae::GameManager::PopWhile(const std::function<bool(size_t)>& fn)
 {
 	SceneManager& sceneManager{ SceneManager::GetInstance() };
 	Scene* pCurrentScene{ sceneManager.GetCurrent() };
-
+	size_t currentIndex{ sceneManager.GetCurrentIndex() };
 	size_t prevSceneIdx{ m_PrevScenes.top() };
 	int amount{};
 	while (!m_PrevScenes.empty() && fn(prevSceneIdx))
 	{
-		prevSceneIdx = m_PrevScenes.top();
 		m_PrevScenes.pop();
+		currentIndex = prevSceneIdx;
+		prevSceneIdx = m_PrevScenes.top();
 		++amount;
 	}
 
-	if (sceneManager.GetCurrentIndex() != prevSceneIdx)
+	if (sceneManager.GetCurrentIndex() != currentIndex)
 	{
 		sceneManager.GetOnSceneLoaded() += [this, amount, pCurrentScene](Scene* pScene, size_t)
 		{
 			m_pStateMachine->Pop(*pCurrentScene, *pScene, amount);
 		};
-		sceneManager.OpenSceneByIndex(prevSceneIdx);
+		sceneManager.OpenSceneByIndex(currentIndex);
 	}
 	else
 	{
@@ -137,7 +138,7 @@ void dae::GameManager::UpdateHiScores(uint32_t score)
 			}))};
 
 		size_t nameIdx = m_SaveData.names.size();
-		if (nameCount != 1)
+		if (nameCount > 1)
 			m_SaveData.names.push_back(m_PlayerName);
 		else
 		{
@@ -150,9 +151,10 @@ void dae::GameManager::UpdateHiScores(uint32_t score)
 		std::sort(m_SaveData.hiScores.begin(), m_SaveData.hiScores.end(),
 			[](const SaveGame::HighScore& hi0, const SaveGame::HighScore& hi1) 
 			{
-				return hi0.hiScore > hi1.hiScore || (hi0.nameIndex && !hi1.nameIndex);
+				return hi0.hiScore > hi1.hiScore;
 			});
 
+		m_HiScore.GetOnValueChangedDelegate().Clear();
 		m_HiScore = m_SaveData.hiScores.front().hiScore;
 	}
 }

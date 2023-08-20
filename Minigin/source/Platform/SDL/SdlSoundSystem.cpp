@@ -204,7 +204,7 @@ void dae::SdlSoundSystem::SdlSoundSystemImpl::StopMusic()
 }
 
 void dae::SdlSoundSystem::SdlSoundSystemImpl::PauseMusic()
-{
+{ 
 	Mix_PauseMusic();
 }
 

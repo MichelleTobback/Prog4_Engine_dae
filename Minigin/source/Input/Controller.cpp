@@ -46,6 +46,12 @@ public:
 		return m_CurrentState.Gamepad.wButtons & button;
 	}
 
+	bool IsConnected() const
+	{
+		XINPUT_STATE state;
+		return XInputGetState(m_ControllerIndex, &state) == ERROR_SUCCESS;
+	}
+
 private:
 	XINPUT_STATE m_PreviousState{};
 	XINPUT_STATE m_CurrentState{};
@@ -87,5 +93,10 @@ bool dae::Controller::IsButtonUp(ControllerButton button) const
 bool dae::Controller::IsButtonPressed(ControllerButton button) const
 {
 	return m_pImpl->IsButtonPressed(static_cast<unsigned int>(button));
+}
+
+bool dae::Controller::IsConnected() const
+{
+	return m_pImpl->IsConnected();
 }
 

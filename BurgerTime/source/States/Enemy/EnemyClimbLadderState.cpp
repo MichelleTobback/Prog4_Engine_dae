@@ -14,7 +14,9 @@ dae::EnemyClimbLadderState::EnemyClimbLadderState(EnemyComponent* pEnemy)
 
 void dae::EnemyClimbLadderState::OnEnter()
 {
-    
+    CharacterController2D* pController{ GetCharacter().pController };
+    m_MoveDir = pController->GetDirection();
+    SetEndTile();
 }
 
 dae::State::StatePtr dae::EnemyClimbLadderState::OnUpdate()
@@ -26,7 +28,7 @@ dae::State::StatePtr dae::EnemyClimbLadderState::OnUpdate()
     const float distanceSqrt{ glm::distance2(pos, m_EndPos) };
     const float epsilonSqrt{ 8.f };
 
-    if (distanceSqrt < epsilonSqrt)
+    if (distanceSqrt < epsilonSqrt || std::abs(glm::length2(pController->GetRigidBody()->GetVelocity())) < epsilonSqrt)
     {
         return GetEnemy()->GetStates().pGoToPlayerState.get();
     }
@@ -39,17 +41,22 @@ void dae::EnemyClimbLadderState::OnExit()
     
 }
 
-void dae::EnemyClimbLadderState::SetEndTile(NodeComponent* pNode)
+void dae::EnemyClimbLadderState::SetEndTile()
 {
-    NodeComponent* pCurrent{ pNode }, *pPrev{nullptr};
     const glm::vec3& pos{ GetEnemy()->GetTransform().GetWorldPosition() };
+    NodeComponent* pCurrent{ GetNode(pos) }, * pPrev{nullptr};
+    if (!pCurrent)
+    {
+        m_EndPos = pos;
+        return;
+    }
     const glm::vec3 up{ 0.f, 1.f, 0.f };
     for (auto& edge : pCurrent->GetEdges())
     {
         glm::vec3 nodePos{ edge.pTo->GetTransform().GetWorldPosition() };
         glm::vec3 direction{ nodePos - pos };
-
-        if (glm::dot(up, direction) > 0 || glm::dot(-up, direction) > 0)
+        glm::vec3 moveDir{ m_MoveDir.x, m_MoveDir.y, 0.f };
+        if (glm::dot(moveDir, direction) >= 0)
         {
             pPrev = pCurrent;
             pCurrent = edge.pTo;
@@ -72,8 +79,6 @@ void dae::EnemyClimbLadderState::SetEndTile(NodeComponent* pNode)
     }
 
     m_EndPos = pCurrent->GetTransform().GetWorldPosition();
-    m_MoveDir = glm::vec2{ m_EndPos.x - pos.x, m_EndPos.y - pos.y };
-    glm::normalize(m_MoveDir);
 }
 
 dae::NodeComponent* dae::EnemyClimbLadderState::GetNode(const glm::vec3& pos)

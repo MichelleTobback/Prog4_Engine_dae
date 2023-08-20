@@ -23,8 +23,10 @@ namespace dae
 
 		virtual void Awake() override;
 		virtual void Sleep() override;
+		virtual void Update() override;
 
 		GameObject* Spawn();
+		void SpawnDelayed(float time);
 		bool IsRegistered() const;
 		uint32_t GetSpawnID() const;
 		GameObject* GetInstance();
@@ -35,6 +37,7 @@ namespace dae
 	private:
 		GameObject* m_pObjectInstance{ nullptr };
 		uint32_t m_Id;
+		float m_WaitTime{};
 
 		static std::unordered_map<uint32_t, SpawnFunc> s_SpawnFuncMap;
 		std::unique_ptr<Delegate<void(GameObject*)>> m_pOnObjectSpawned;

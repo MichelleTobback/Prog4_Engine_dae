@@ -11,6 +11,7 @@
 #include "GameManager.h"
 #include "Core/BitFlag.h"
 #include "Managers/ServiceLocator.h"
+#include <iostream>
 
 size_t dae::BurgerTime::CreateAnimClip(SpriteAtlasComponent* pAtlas, SpriteAnimatorComponent* pAnimator, const glm::u32vec4& rect, bool flip, float spriteSize, float speed)
 {
@@ -52,27 +53,18 @@ void dae::BurgerTime::CreateDebugInput()
 {
     auto& input{ Input::GetInstance().GetCommandHandler() };
     {
-        auto& commandBinding{ input.AddValueBinding(static_cast<uint32_t>(InputID::ChangeScene)) };
-        dae::InputCommand::ICDevices binding{ };
+        auto& commandBinding{ input.AddActionBinding(static_cast<uint32_t>(InputID::ChangeScene)) };
+        dae::InputCommand::ICDevices& binding{ commandBinding.deviceBinding };
         BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
         binding.keyboard.Key = Keyboard::KeyCode::Num_1;
         binding.keyboard.State = Keyboard::KeyState::Pressed;
-        commandBinding.Add(2.f, binding);
-
-        binding.keyboard.Key = Keyboard::KeyCode::Num_2;
-        commandBinding.Add(3.f, binding);
-
-        binding.keyboard.Key = Keyboard::KeyCode::Num_3;
-        commandBinding.Add(4.f, binding);
     }
-    input.BindValueCommand(static_cast<uint32_t>(BurgerTime::InputID::ChangeScene), std::make_shared<InputCommand::ScalarCommand>([](float i)
+    input.BindActionCommand(static_cast<uint32_t>(BurgerTime::InputID::ChangeScene), std::make_shared<ActionCommand>([]()
         {
-            static int current{-1};
-            int index{ static_cast<int>(i) };
-            if (current != index)
+            BTGameMode* pGameMode{ dynamic_cast<BTGameMode*>(&GameManager::GetInstance().GetState()) };
+            if (pGameMode)
             {
-                current = index;
-                GameManager::GetInstance().PushState(std::make_shared<BTSinglePlayerGameMode>(current));
+                pGameMode->OpenNextLevel();
             }
         }));
 }
@@ -80,14 +72,16 @@ void dae::BurgerTime::CreateDebugInput()
 void dae::BurgerTime::LoadScenes()
 {
     SceneManager& sceneManager{ SceneManager::GetInstance() };
-    //sceneManager.LoadScene("Scenes/MainMenu.scene");
     Scene& menu{ sceneManager.CreateScene("MainMenu", false) };
     Prefabs::CreateMenuObject(&menu);
 
     sceneManager.LoadScene("Scenes/BurgerTimeLevel1NoBurger.scene");
-    //sceneManager.LoadScene("Scenes/BurgerTimeLevel2NoBurger.scene");
     sceneManager.LoadScene("Scenes/BurgerTimeLevel1.scene");
     sceneManager.LoadScene("Scenes/BurgerTimeLevel2.scene");
+    sceneManager.LoadScene("Scenes/BurgerTimeLevel3.scene");
+
+    //Prefabs::CreateTestLevel(&sceneManager.CreateScene("BurgerTimeLevel3", false));
+
     sceneManager.LoadScene("Scenes/BurgerTimeLevel1NoBurger.scene");
 }
 
@@ -98,7 +92,7 @@ void dae::BurgerTime::CreateInputBindings()
     {
         auto commandBinding{ input.AddValueBinding() };
         dae::InputCommand::ICDevices binding{};
-        binding.controller.ControllerID = -1;
+        binding.controller.ControllerID = static_cast<unsigned int>(-1);
         BitFlag::Set(binding.flags, InputCommand::ICFlag::Keyboard, true);
         binding.keyboard.State = Keyboard::KeyState::Down;
 
@@ -115,4 +109,16 @@ void dae::BurgerTime::CreateInputBindings()
                 sound.SetMasterVolume(volume);
             }));
     }   
+}
+
+void dae::BurgerTime::PrintControls()
+{
+    std::cout << "=================================================\n";
+    std::cout << "===========       controls         ==============\n";
+    std::cout << "=================================================\n";
+    std::cout << "1 skip level\n";
+    std::cout << "F10 / F11 : change volume\n";
+    std::cout << "WASD / controller arrow buttons : move\n";
+    std::cout << "P / controller A button : throw pepper\n";
+    std::cout << "=================================================\n";
 }

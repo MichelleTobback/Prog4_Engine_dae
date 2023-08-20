@@ -13,7 +13,7 @@ void dae::EnterNameMenuState::OnEnter(Scene& scene)
 {
 	scene.GetGameObjectWithTag("en")[0]->SetActive(true);
 	ButtonComponent* pButton{ scene.GetGameObjectWithTag("NButton")[0]->GetComponent<ButtonComponent>() };
-	pButton->GetOnReleasedDelegate() += std::bind(&EnterNameMenuState::StartGame, this);
+	pButton->GetOnPressedDelegate() += std::bind(&EnterNameMenuState::StartGame, this);
 }
 
 void dae::EnterNameMenuState::OnExit(Scene& scene)
@@ -21,7 +21,7 @@ void dae::EnterNameMenuState::OnExit(Scene& scene)
 	GameObject* pCanvas{ scene.GetGameObjectWithTag("en")[0] };
 	pCanvas->SetActive(false);
 	ButtonComponent* pButton{ scene.GetGameObjectWithTag("NButton")[0]->GetComponent<ButtonComponent>() };
-	pButton->GetOnReleasedDelegate().Clear();
+	pButton->GetOnPressedDelegate().Clear();
 
 	for (auto pChild : pCanvas->GetChildren())
 	{

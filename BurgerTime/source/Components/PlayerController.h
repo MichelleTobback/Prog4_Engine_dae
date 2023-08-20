@@ -9,6 +9,7 @@
 
 namespace dae
 {
+	class InputHandlerComponent;
 	class BTGameMode;
 	class PlayerController : public Component
 	{
@@ -22,6 +23,7 @@ namespace dae
 		PlayerController& operator=(PlayerController&& other) = delete;
 
 		virtual void Awake() override;
+		virtual void Sleep() override;
 		virtual void LateUpdate() override;
 
 		ObservableType<uint32_t>& GetPeppers() { return m_Peppers; }
@@ -35,11 +37,12 @@ namespace dae
 
 		CharacterController2D* m_pCharacterController;
 		int m_ControllerIndex;
-		bool m_Reset{ false };
+		bool m_IsDead{ false };
 
 		ObservableType<uint32_t> m_Peppers{};
 
 		BTGameMode* m_pCurrentGameMode{nullptr};
 		std::unique_ptr<AudioClip> m_pDamageSound;
+		InputHandlerComponent* m_pInput{ nullptr };
 	};
 }
