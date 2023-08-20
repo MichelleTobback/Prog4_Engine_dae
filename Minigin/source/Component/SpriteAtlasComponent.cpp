@@ -25,7 +25,7 @@ void dae::SpriteAtlasComponent::SetTexture(TextureComponent* pTexture)
 
 uint32_t dae::SpriteAtlasComponent::AddSprite(const glm::vec4& src, bool flipHorizontal, bool flipVertical)
 {
-	for (int i{}; i < m_pSprites.size(); ++i)
+	for (uint32_t i{}; i < m_pSprites.size(); ++i)
 	{
 		const float epsilon{ 0.1f };
 		if (glm::length2(src - m_pSprites[i]->GetSource()) < epsilon 

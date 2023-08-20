@@ -47,11 +47,17 @@ void dae::BTGameMode::OnEnter(Scene& scene)
 		m_Score = 0;
 	}
 
+	for (auto spawn : m_pPlayerSpawns)
+	{
+		if (spawn->pSpawner && spawn->pSpawner->GetInstance())
+			spawn->pSpawner->GetInstance()->Destroy();
+	}
+	m_pPlayerSpawns.clear();
+
 	CreateGrid(scene);
 	if (m_pGrid)
 	{
 		m_MaxIngredients = 0;
-		m_pPlayerSpawns.clear();
 		m_pGrid->ForEachSpawner([this](BTTile& tile)
 			{
 				if (tile.pSpawner && BurgerTime::IsIngredient(static_cast<BurgerTime::SpawnID>(tile.pSpawner->GetSpawnID())))
@@ -81,14 +87,8 @@ void dae::BTGameMode::OnExit(Scene&)
 	m_pCamera->GetOwner()->Destroy();
 	if (m_pGrid)
 	{
-		RespawnAll();
 		m_pGrid->GetOnGridMappedDelegate().Clear();
 	}
-	//for (auto playerSpawn : m_pPlayerSpawns)
-	//{
-	//	if (playerSpawn->pSpawner->GetInstance())
-	//		playerSpawn->pSpawner->GetInstance()->Destroy();
-	//}
 	m_pPlayerSpawns.clear();
 	if (m_pHUD)
 		m_pHUD->Destroy();
