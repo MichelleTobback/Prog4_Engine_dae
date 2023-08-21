@@ -23,27 +23,27 @@ namespace dae
 {
 	struct SceneFileData
 	{
-		int numGameObjects{};
+		int32_t numGameObjects{};
 	};
 
 	struct GameObjectData
 	{
-		glm::vec3 transform{}; // xy = pos, z = rot
+		Vec3 transform{}; // xy = pos, z = rot
 		uint64_t uuid{};
 		uint64_t parentUuid{}; //0 = root
-		int numComponents{};
+		int32_t numComponents{};
 	};
 
 	struct SpriteFileData
 	{
-		glm::vec4 source{};
+		Vec4 source{};
 		uint64_t textureUuid{};
 	};
 
 	struct SpriteAtlasFileData
 	{
 		uint64_t textureUuid{};
-		int numSprites{};
+		int32_t numSprites{};
 	};
 
 	static void SerializeComponent(Component* pComponent, BinaryWriter& out, ComponentFactory& factory)
@@ -76,7 +76,7 @@ namespace dae
 
 	static void DeserializeComponentTypes(BinaryReader& in, ComponentFactory& factory, std::unordered_map<ComponentID, ComponentID>& sceneIdToCurrentId)
 	{
-		size_t componentCount{};
+		uint64_t componentCount{};
 		in.Read(componentCount);
 
 		for (size_t i{}; i < componentCount; ++i)

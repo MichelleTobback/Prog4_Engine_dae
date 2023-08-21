@@ -1,5 +1,5 @@
 #pragma once
-
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 
@@ -66,8 +66,8 @@ void dae::BinaryReader::ReadArray(std::vector<T>& pOutData)
 {
 	if (m_In)
 	{
-		int size{};
-		m_In.read(reinterpret_cast<char*>(&size), sizeof(int));
+		uint32_t size{};
+		m_In.read(reinterpret_cast<char*>(&size), sizeof(uint32_t));
 		if (size > 0)
 		{
 			pOutData.resize(size);
@@ -108,7 +108,7 @@ bool dae::BinaryWriter::WriteArray(T* pData, size_t size)
 {
 	if (m_Out)
 	{
-		Write(static_cast<int>(size));
+		Write(static_cast<uint32_t>(size));
 		if (size > 0)
 		{
 			m_Out.write(reinterpret_cast<const char*>(pData), sizeof(T) * size);

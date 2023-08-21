@@ -28,7 +28,7 @@ namespace dae
 		OnGameObjectDeserializedFn m_Func;
 	};
 
-	using ComponentID = size_t;
+	using ComponentID = uint64_t;
 
 	struct SerializableType
 	{

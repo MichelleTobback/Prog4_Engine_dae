@@ -18,9 +18,9 @@ namespace dae
     //=================================
     struct QuadBlock
     {
-        glm::vec4 color{};
-        glm::vec2 size{};
-        bool isSolid{};
+        Vec4 color{};
+        Vec2 size{};
+        uint8_t isSolid{};
     };
 
     QuadSerializer::QuadSerializer()
@@ -211,7 +211,7 @@ namespace dae
         }
         else
         {
-            out.Write(0);
+            out.Write<int32_t>(0);
         }
     }
 
@@ -238,8 +238,8 @@ namespace dae
     //=================================
     struct TextBlock
     {
-        glm::vec4 color{};
-        int fontSize{};
+        Vec4 color{};
+        uint32_t fontSize{};
     };
 
     TextComponentSerializer::TextComponentSerializer()
@@ -285,7 +285,7 @@ namespace dae
     //=================================
     struct SpriteBlock
     {
-        glm::vec4 source{};
+        Vec4 source{};
         uint64_t textureUuid{};
     };
 
@@ -343,7 +343,7 @@ namespace dae
     struct SpriteAtlasBlock
     {
         uint64_t textureUuid{};
-        int numSprites{};
+        int32_t numSprites{};
     };
 
     SpriteAtlasComponentSerializer::SpriteAtlasComponentSerializer()
@@ -432,15 +432,15 @@ namespace dae
     struct ColliderInfo
     {
         uint64_t uuid{};
-        int type{};
+        uint32_t type{};
     };
 
     struct RigdiBody2DBlock
     {
         float restitution{};
         float mass{};
-        int collisionMode{};
-        int numColliders{};
+        uint32_t collisionMode{};
+        uint32_t numColliders{};
     };
 
     RigidBody2DComponentSerializer::RigidBody2DComponentSerializer()
@@ -459,7 +459,7 @@ namespace dae
         data.restitution = pRigidBody->GetRestitution();
 
         std::vector<ColliderInfo> colliders(data.numColliders);
-        for (int i{}; i < data.numColliders; ++i)
+        for (uint32_t i{}; i < data.numColliders; ++i)
         {
             colliders[i].uuid = pColliders[i]->GetUUID();
             colliders[i].type = static_cast<int>(pColliders[i]->GetType());
@@ -470,7 +470,7 @@ namespace dae
         if (colliders.size() > 0)
             out.WriteArray(&colliders[0], colliders.size());
         else
-            out.Write(0);
+            out.Write<int32_t>(0);
     }
     Component* RigidBody2DComponentSerializer::Deserialize(DeserializeParams& params)
     {
@@ -544,9 +544,9 @@ namespace dae
     //=================================
     struct ColliderBlock
     {
-        int flags{};
-        int layer{};
-        int ingoreLayer{};
+        uint32_t flags{};
+        uint32_t layer{};
+        uint32_t ingoreLayer{};
     };
 
     struct Box2DColliderBlock
@@ -614,7 +614,7 @@ namespace dae
     {
         TagComponent* pTag{ pComponent->As<TagComponent>() };
         const auto& tags{ pTag->GetAll() };
-        out.Write(tags.size());
+        out.Write(static_cast<uint64_t>(tags.size()));
         for (const auto& tag : tags)
         {
             out.WriteString(tag);
@@ -624,10 +624,10 @@ namespace dae
     {
         if (params.pGameObject)
         {
-            size_t numTags{};
+            uint64_t numTags{};
             params.in.Read(numTags);
 
-            for (size_t i{}; i < numTags; ++i)
+            for (uint64_t i{}; i < numTags; ++i)
             {
                 std::string tag{};
                 params.in.ReadString(tag);

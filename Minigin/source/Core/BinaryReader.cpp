@@ -19,8 +19,8 @@ std::string& dae::BinaryReader::ReadString(std::string& outStr)
 {
 	if (m_In)
 	{
-		int size{};
-		m_In.read(reinterpret_cast<char*>(&size), sizeof(int));
+		int32_t size{};
+		m_In.read(reinterpret_cast<char*>(&size), sizeof(int32_t));
 
 		if (size > 0)
 		{
@@ -52,7 +52,7 @@ bool dae::BinaryWriter::WriteString(const std::string& str)
 {
 	if (m_Out)
 	{
-		int length{ static_cast<int>(str.length()) };
+		int32_t length{ static_cast<int32_t>(str.length()) };
 		Write(length);
 		
 		if (length > 0)

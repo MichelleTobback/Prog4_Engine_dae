@@ -27,7 +27,7 @@ void dae::GameDataSerializer::Deserialize(GameSaveData& data)
 		{
 			reader.ReadString(data.names[i]);
 		}
-		int size{};
+		int32_t size{};
 		reader.Read(size);
 		reader.ReadArray(&data.hiScores[0], static_cast<size_t>(size));
 	}
